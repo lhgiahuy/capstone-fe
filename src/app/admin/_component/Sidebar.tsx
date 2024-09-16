@@ -16,23 +16,25 @@ import {
   LogOut,
   User,
   Users,
+  Wallet,
+  BellRing,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <Command className="bg-secondary rounded-none text-white bg-gray-950">
+    <Command className="bg-secondary rounded-none text-white bg-gray-950 ">
       <CommandInput placeholder="Type a command or search..." />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+      <CommandList className="max-h-[400px]">
+        <CommandEmpty>Không tìm thấy.</CommandEmpty>
         <CommandGroup heading="Đề xuất">
           <CommandItem>
             <LayoutDashboard className="mr-2 h-4 w-4" />
-            <Link href="./">Bảng số liệu</Link>
+            <Link href="./admin">Bảng số liệu</Link>
           </CommandItem>
           <CommandItem>
             <Newspaper className="mr-2 h-4 w-4" />
-            <Link href="./event">Sự kiện</Link>
+            <Link href="./eventManagement">Sự kiện</Link>
           </CommandItem>
           <CommandItem>
             <Folders className="mr-2 h-4 w-4" />
@@ -41,6 +43,14 @@ export default function Sidebar() {
           <CommandItem>
             <Users className="mr-2 h-4 w-4" />
             <Link href="./users">Người dùng</Link>
+          </CommandItem>
+          <CommandItem>
+            <Wallet className="mr-2 h-4 w-4" />
+            <Link href="./transactions">Giao dịch</Link>
+          </CommandItem>
+          <CommandItem>
+            <BellRing className="mr-2 h-4 w-4" />
+            <Link href="./notifications">Thông báo</Link>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />

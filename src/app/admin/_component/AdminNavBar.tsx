@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../img/logo.png";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+// import logo from "../img/logo.png";
+import logo from "../../../img/logo.png";
+
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "../../../components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +21,7 @@ export default function AdminNavBar() {
   return (
     <div className="bg-primary dark:bg-slate-700 py-2 px-5 flex justify-between">
       <Link href="/">
-        <Image src={logo} alt="TraversyPress" width={40} />
+        <Image src={logo} alt="Admin" width={40} />
       </Link>
 
       <DropdownMenu>
@@ -26,7 +32,7 @@ export default function AdminNavBar() {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link href="/profile">Hồ sơ</Link>

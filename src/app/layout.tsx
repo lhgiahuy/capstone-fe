@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import AdminNavBar from "@/components/AdminNavBar";
-import Sidebar from "@/components/Sidebar";
+import AdminNavBar from "@/app/admin/_component/AdminNavBar";
+import Sidebar from "@/app/admin/_component/Sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "TraversyPress",
+  title: "Admin Dashboard",
   description: "Admin Dashboard",
 };
 
