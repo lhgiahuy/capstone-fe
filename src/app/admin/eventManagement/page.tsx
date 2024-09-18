@@ -1,4 +1,4 @@
-import { EventManagement } from "./_component/EventManagement";
+import { EventManagement } from "./_component/event-management";
 
 export default function Event() {
   return (

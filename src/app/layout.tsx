@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import AdminNavBar from "@/app/admin/_component/AdminNavBar";
-import Sidebar from "@/app/admin/_component/Sidebar";
+
+import Sidebar from "@/app/admin/_component/side-bar";
+import AdminNavBar from "./admin/_component/admin-navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,10 +33,10 @@ export default function RootLayout({
       >
         <AdminNavBar />
         <div className="flex">
-          <div className="hidden md:block h-[100vh] w-[350px]">
+          <div className="hidden md:block h-[100vh] w-[50px]">
             <Sidebar />
           </div>
-          <div className="p-5 w-full md:max-w-[1140px]">{children}</div>
+          <div className="p-5 w-full md:max-w-[1340px]">{children}</div>
         </div>
       </body>
     </html>
