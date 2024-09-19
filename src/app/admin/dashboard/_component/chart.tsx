@@ -38,13 +38,13 @@ const chartConfig = {
 
 export function Chart() {
   return (
-    <Card className="h-[650px]">
+    <Card className="h-[620px] flex flex-col">
       <CardHeader>
         <CardTitle>Sự kiện</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+      <CardContent className="flex-grow overflow-y-auto">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <BarChart
             accessibilityLayer
             data={chartData}
@@ -75,7 +75,7 @@ export function Chart() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
+      <CardFooter className="shrink-0 flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           Các hoạt động sự kiện <TrendingUp className="h-4 w-4" />
         </div>

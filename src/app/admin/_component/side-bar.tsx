@@ -29,8 +29,8 @@ export default function Sidebar() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="./admin/dashboard"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              href="/admin/dashboard"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
             >
               <Home className="h-5 w-5" />
               <span className="sr-only">Bảng số liệu</span>
@@ -41,8 +41,8 @@ export default function Sidebar() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="./admin/orders"
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              href="/admin/orders"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-black md:h-8 md:w-8"
             >
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Orders</span>
@@ -53,8 +53,8 @@ export default function Sidebar() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="./admin/eventManagement"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              href="/admin/event-management"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
             >
               <Package className="h-5 w-5" />
               <span className="sr-only">Products</span>
@@ -66,7 +66,7 @@ export default function Sidebar() {
           <TooltipTrigger asChild>
             <Link
               href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
             >
               <Users2 className="h-5 w-5" />
               <span className="sr-only">Customers</span>
@@ -78,7 +78,7 @@ export default function Sidebar() {
           <TooltipTrigger asChild>
             <Link
               href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
             >
               <LineChart className="h-5 w-5" />
               <span className="sr-only">Analytics</span>
