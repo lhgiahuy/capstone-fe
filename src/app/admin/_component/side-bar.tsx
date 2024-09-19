@@ -14,7 +14,6 @@ import {
   ShoppingCart,
   Users2,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
