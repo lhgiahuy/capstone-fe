@@ -6,21 +6,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
+import { Calendar, LayoutDashboard, Package2, User } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Separator } from "@/components/ui/separator";
 
 const containerVariants = {
   close: {
-    width: "4rem",
+    width: "3.25rem",
     transition: {
       type: "string",
       damping: 15,
@@ -28,7 +22,7 @@ const containerVariants = {
     },
   },
   open: {
-    width: "12rem",
+    width: "18rem",
     transition: {
       type: "string",
       damping: 15,
@@ -53,6 +47,24 @@ export default function Sidebar() {
   const handleMouseLeave = () => {
     setIsOpen(false);
   };
+
+  const menu = [
+    {
+      title: "Bảng số liệu",
+      link: "/admin/bang-so-lieu",
+      icon: <LayoutDashboard className="h-5 w-5" />,
+    },
+    {
+      title: "Quản lý sự kiện",
+      link: "/admin/quan-ly-su-kien",
+      icon: <Calendar className="h-5 w-5" />,
+    },
+    {
+      title: "Quản lý người dùng",
+      link: "/admin/quan-ly-nguoi-dung",
+      icon: <User className="h-5 w-5" />,
+    },
+  ];
   return (
     <TooltipProvider>
       <motion.nav
@@ -61,77 +73,34 @@ export default function Sidebar() {
         variants={containerVariants}
         animate={containerControls}
         initial="close"
-        className="flex flex-col items-center gap-4 px-2 sm:py-4"
+        className="flex flex-col items-center overflow-hidden gap-4 px-2 sm:py-4"
       >
-        <Link
-          href="/admin"
-          className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
-        >
-          <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-          <span className="sr-only">Acme Inc</span>
-        </Link>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="/admin/dashboard"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
-            >
-              <Home className="h-5 w-5" />
-              <span className="sr-only">Bảng số liệu</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right">Bảng số liệu</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="w-full flex justify-center">
+        <div className="flex gap-4 px-1 items-center w-full">
+          <Link
+            href="/admin"
+            className="group flex h-8 w-8 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+          >
+            <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
+          </Link>
+          <p className="text-xl font-bold">Fvent</p>
+        </div>
+        <Separator />
+        {menu.map((item, index) => (
+          <Tooltip key={index}>
+            <TooltipTrigger asChild>
               <Link
-                href="/admin/orders"
-                className="flex h-9 w-9 items-center justify-center w-full rounded-lg bg-accent text-accent-foreground transition-colors hover:text-black md:h-8 md:w-8"
+                href={item.link}
+                className="w-full flex justify-start items-center gap-4 px-2 hover:bg-accent group"
               >
-                <ShoppingCart className="h-5 w-5" />
-                <span className="sr-only">Orders</span>
+                <div className="flex items-center justify-center w-full rounded-lg text-muted-foreground transition-colors group-hover:text-accent-foreground md:h-8 md:w-8">
+                  {item.icon}
+                </div>
+                <p className="text-sm font-semibold truncate">{item.title}</p>
               </Link>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right">Orders</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="/admin/event-management"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
-            >
-              <Package className="h-5 w-5" />
-              <span className="sr-only">Products</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right">Products</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
-            >
-              <Users2 className="h-5 w-5" />
-              <span className="sr-only">Customers</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right">Customers</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-black md:h-8 md:w-8"
-            >
-              <LineChart className="h-5 w-5" />
-              <span className="sr-only">Analytics</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right">Analytics</TooltipContent>
-        </Tooltip>
+            </TooltipTrigger>
+            <TooltipContent side="right">{item.title}</TooltipContent>
+          </Tooltip>
+        ))}
       </motion.nav>
     </TooltipProvider>
   );
