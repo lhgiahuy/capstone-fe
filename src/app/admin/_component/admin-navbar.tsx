@@ -16,17 +16,38 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Breadcrumbs from "../dashboard/_component/breadcrumb";
-
-export default function AdminNavBar() {
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+interface BreadcrumbsProps {
+  links: string[];
+}
+export default function AdminNavBar({ links }: BreadcrumbsProps) {
   return (
-    <div className="dark:bg-slate-700 py-8 px-8 flex justify-between items-center">
-      <Breadcrumbs />
+    <div className="dark:bg-slate-700 py-8 flex justify-between items-center">
+      <Breadcrumb className="hidden md:flex">
+        <BreadcrumbList>
+          {links.map((item, index) => (
+            <span key={index} className="flex items-center">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="#">{item}</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {index < links.length - 1 && <BreadcrumbSeparator />}
+            </span>
+          ))}
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="relative ml-auto pr-4 flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Search..."
+          placeholder="Tìm kiếm..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
       </div>
