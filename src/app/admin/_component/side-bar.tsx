@@ -6,7 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Calendar, LayoutDashboard, Package2, User } from "lucide-react";
+import {
+  Calendar,
+  LayoutDashboard,
+  Package2,
+  User,
+  HandCoins,
+} from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -63,6 +69,11 @@ export default function Sidebar() {
       title: "Quản lý người dùng",
       link: "/admin/quan-ly-nguoi-dung",
       icon: <User className="h-5 w-5" />,
+    },
+    {
+      title: "Quản lý rút tiền",
+      link: "/admin/quan-ly-rut-tien",
+      icon: <HandCoins className="h-5 w-5" />,
     },
   ];
   return (
