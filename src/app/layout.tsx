@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
+import JotaiProvider from "@/components/providers/jotai-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -28,7 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen bg-slate-100">{children}</div>
+        <JotaiProvider>
+          <QueryProvider>
+            <div className="min-h-screen bg-slate-100">{children}</div>
+          </QueryProvider>
+        </JotaiProvider>
       </body>
     </html>
   );
