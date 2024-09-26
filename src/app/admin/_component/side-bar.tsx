@@ -12,6 +12,8 @@ import {
   Package2,
   User,
   BellRing,
+  HandCoins,
+  ArrowRightLeft,
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -74,6 +76,16 @@ export default function Sidebar() {
       title: "Thông báo",
       link: "/admin/thong-bao",
       icon: <BellRing className="h-5 w-5" />,
+    },
+    {
+      title: "Quản lý rút tiền",
+      link: "/admin/quan-ly-rut-tien",
+      icon: <HandCoins className="h-5 w-5" />,
+    },
+    {
+      title: "Giao dịch",
+      link: "/admin/giao-dich",
+      icon: <ArrowRightLeft className="h-5 w-5" />,
     },
   ];
   return (

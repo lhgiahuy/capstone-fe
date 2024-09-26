@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import * as React from "react";
-import { Pencil, CircleX } from "lucide-react";
+import { Pencil, CircleX, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const events = [
   {
@@ -83,7 +90,7 @@ export function EventManagement() {
         </SelectContent>
       </Select>
 
-      <Table>
+      <Table className="bg-white rounded-sm  mt-2">
         <TableCaption>Danh sách sự kiện.</TableCaption>
         <TableHeader>
           <TableRow>
@@ -109,13 +116,30 @@ export function EventManagement() {
               <TableCell>{event.paymentStatus}</TableCell>
               {/* <TableCell className="text-right">{event.totalAmount}</TableCell> */}
               <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="flex space-x-2">
                   {/* Edit Button */}
-                  <Button variant="outline" size="sm">
+                  <Button className="bg-gray-200" variant="default" size="sm">
                     <Pencil className="h-4 w-4" />
                   </Button>
                   {/* Delete Button */}
-                  <Button variant="destructive" size="sm">
+                  <Button
+                    className="bg-orange-200"
+                    variant="destructive"
+                    size="sm"
+                  >
                     <CircleX className="h-4 w-4" />
                   </Button>
                 </div>
