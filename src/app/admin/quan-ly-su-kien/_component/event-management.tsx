@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import * as React from "react";
-import { Pencil, CircleX, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -94,7 +94,7 @@ export function EventManagement() {
         <TableCaption>Danh sách sự kiện.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Ảnh</TableHead>
+            <TableHead>Ảnh</TableHead>
             <TableHead>Tên sự kiện</TableHead>
             <TableHead>Địa điểm</TableHead>
             <TableHead>Thời gian</TableHead>
@@ -107,7 +107,9 @@ export function EventManagement() {
         <TableBody>
           {events.map((event) => (
             <TableRow key={event.invoice}>
-              <TableCell className="font-medium">{event.invoice}</TableCell>
+              <TableCell className="font-medium">
+                <div className="w-32 h-32 rounded-md bg-slate-300"></div>
+              </TableCell>
               <TableCell>{event.paymentMethod}</TableCell>
               <TableCell>{event.paymentMethod}</TableCell>
               <TableCell>{event.paymentMethod}</TableCell>
@@ -129,20 +131,6 @@ export function EventManagement() {
                     <DropdownMenuItem>Delete</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <div className="flex space-x-2">
-                  {/* Edit Button */}
-                  <Button className="bg-gray-200" variant="default" size="sm">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  {/* Delete Button */}
-                  <Button
-                    className="bg-orange-200"
-                    variant="destructive"
-                    size="sm"
-                  >
-                    <CircleX className="h-4 w-4" />
-                  </Button>
-                </div>
               </TableCell>
             </TableRow>
           ))}

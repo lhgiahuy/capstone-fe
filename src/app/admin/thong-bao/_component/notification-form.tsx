@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const FormSchema = z.object({
   role: z.string().min(2, {
@@ -102,7 +103,7 @@ export function Notification() {
                     <SelectGroup>
                       <SelectLabel>Vai trò</SelectLabel>
                       <SelectItem value="organizer">Người tổ chức</SelectItem>
-                      <SelectItem value="user">người dùng</SelectItem>
+                      <SelectItem value="user">Người dùng</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -136,7 +137,7 @@ export function Notification() {
               <FormLabel>Nội dung</FormLabel>
               <FormDescription>Nhập nội dung thông báo</FormDescription>
               <FormControl className="h-60">
-                <Input placeholder="Nhập nội dung" {...field} />
+                <Textarea placeholder="Nhập nội dung" {...field} />
               </FormControl>
 
               <FormMessage />
