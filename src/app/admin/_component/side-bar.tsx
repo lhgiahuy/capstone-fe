@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Package2,
   User,
+  BellRing,
   HandCoins,
   ArrowRightLeft,
 } from "lucide-react";
@@ -70,6 +71,11 @@ export default function Sidebar() {
       title: "Quản lý người dùng",
       link: "/admin/quan-ly-nguoi-dung",
       icon: <User className="h-5 w-5" />,
+    },
+    {
+      title: "Thông báo",
+      link: "/admin/thong-bao",
+      icon: <BellRing className="h-5 w-5" />,
     },
     {
       title: "Quản lý rút tiền",
