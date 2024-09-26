@@ -129,6 +129,20 @@ export function EventManagement() {
                     <DropdownMenuItem>Delete</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <div className="flex space-x-2">
+                  {/* Edit Button */}
+                  <Button className="bg-gray-200" variant="default" size="sm">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  {/* Delete Button */}
+                  <Button
+                    className="bg-orange-200"
+                    variant="destructive"
+                    size="sm"
+                  >
+                    <CircleX className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
