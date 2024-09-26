@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import JotaiProvider from "@/components/providers/jotai-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { lexend } from "./font";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -26,14 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${lexend.className} antialiased`}>
         <JotaiProvider>
           <QueryProvider>
             <div className="min-h-screen bg-slate-100">{children}</div>
           </QueryProvider>
         </JotaiProvider>
+        <Toaster />
       </body>
     </html>
   );
