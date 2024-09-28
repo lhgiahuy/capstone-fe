@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 const FormSchema = z.object({
   role: z.string().min(2, {
@@ -143,7 +144,15 @@ export function Notification() {
             </FormItem>
           )}
         />
-        <Button type="submit">Gửi thông báo</Button>
+        <div className="flex justify-between ">
+          <Link href="/admin/thong-bao">
+            <Button className="w-[120px]">Quay lại</Button>
+          </Link>
+
+          <Button type="submit" className="bg-blue-500">
+            Gửi thông báo
+          </Button>
+        </div>
       </form>
     </Form>
   );
