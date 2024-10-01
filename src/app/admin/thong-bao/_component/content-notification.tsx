@@ -10,8 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export function ContentNotification() {
   return (
@@ -34,21 +32,13 @@ export function ContentNotification() {
           <CardDescription>Meeting tomorrow</CardDescription>
           <div className="text-[12px]"> Reply-To: bobjohnson@example.com</div>
         </CardHeader>
-        <CardContent className="grid w-full  gap-4 h-[280px]">
+        <CardContent className="grid w-full  gap-4 h-[360px]">
           <div className=" border-gray border-2 rounded-sm px-4 py-2">
             Hi, let s have a meeting tomorrow to discuss the project. It s
             crucial that we align on our next steps to ensure the project s
             success.
           </div>
         </CardContent>
-        <div className="mt-4">
-          <div className="flex justify-between mx-6 my-4 ">
-            <Button className="w-[120px]">Đóng</Button>
-            <Link href="/admin/hoi-dap">
-              <Button className="bg-blue-600 w-[120px]">Hồi đáp</Button>
-            </Link>
-          </div>
-        </div>
       </Card>
     </div>
   );

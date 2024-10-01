@@ -12,8 +12,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ContentNotification } from "./content-notification";
+import { BellPlus } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 const Data = [
   {
@@ -62,47 +64,56 @@ export function ListNotification() {
   };
 
   return (
-    <div className="flex">
-      <div className="w-[40%] h-[540px] overflow-y-auto pr-2">
-        {Data.map((notification) => (
-          <Card
-            key={notification.id}
-            className="mb-4 cursor-pointer h-[160px]"
-            onClick={() => handleClick(notification.id)}
-          >
-            <CardHeader>
-              <div className="flex justify-between">
-                <div className="flex">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={notification.avatar} alt="imgAvatar" />
-                    <AvatarFallback className="text-black">
-                      {notification.fallback}
-                    </AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="ml-4 translate-y-2">
-                    {notification.sender}
-                  </CardTitle>
-                </div>
-                <div>{notification.timeAgo}</div>
-              </div>
-              <CardDescription>{notification.subject}</CardDescription>
-            </CardHeader>
-            <CardFooter className="flex gap-2">
-              {notification.tags.map((tag, index) => (
-                <Button key={index} variant="outline">
-                  {tag}
-                </Button>
-              ))}
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+    <>
+      <Link href="/admin/gui-thong-bao">
+        <Button className="mb-4">
+          <BellPlus className="mr-[4px] " />
+          Tạo thông báo
+        </Button>
+      </Link>
 
-      {showFullContent && (
-        <div className="ml-4 w-[60%] h-[540px]  p-2 rounded-md">
-          <ContentNotification />
+      <div className="flex">
+        <div className="w-[40%] h-[520px] overflow-y-auto pr-2">
+          {Data.map((notification) => (
+            <Card
+              key={notification.id}
+              className="mb-4 cursor-pointer h-[160px]"
+              onClick={() => handleClick(notification.id)}
+            >
+              <CardHeader>
+                <div className="flex justify-between">
+                  <div className="flex">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={notification.avatar} alt="imgAvatar" />
+                      <AvatarFallback className="text-black">
+                        {notification.fallback}
+                      </AvatarFallback>
+                    </Avatar>
+                    <CardTitle className="ml-4 translate-y-2">
+                      {notification.sender}
+                    </CardTitle>
+                  </div>
+                  <div>{notification.timeAgo}</div>
+                </div>
+                <CardDescription>{notification.subject}</CardDescription>
+              </CardHeader>
+              <CardFooter className="flex gap-2">
+                {notification.tags.map((tag, index) => (
+                  <Button key={index} variant="outline">
+                    {tag}
+                  </Button>
+                ))}
+              </CardFooter>
+            </Card>
+          ))}
         </div>
-      )}
-    </div>
+
+        {showFullContent && (
+          <div className="ml-4 w-[60%] h-[540px]  p-2 rounded-md">
+            <ContentNotification />
+          </div>
+        )}
+      </div>
+    </>
   );
 }

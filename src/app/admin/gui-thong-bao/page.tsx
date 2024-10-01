@@ -4,7 +4,7 @@ import { Notification } from "./_component/notification-form";
 export default function ReplyNotification() {
   return (
     <>
-      <AdminNavBar links={["Trả lời"]} />
+      <AdminNavBar links={["Tạo thông báo"]} />
       {/* <div className="flex justify-center"> */}
       <div className="flex justify-center">
         <Notification />

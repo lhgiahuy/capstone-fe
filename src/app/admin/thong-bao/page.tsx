@@ -6,7 +6,6 @@ export default function Event() {
   return (
     <>
       <AdminNavBar links={["Thông báo"]} />
-      {/* <div className="flex justify-center"> */}
       <div>
         <ListNotification />
       </div>
