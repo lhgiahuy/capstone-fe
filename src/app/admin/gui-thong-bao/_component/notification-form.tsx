@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import * as React from "react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const FormSchema = z.object({
   subject: z.string().min(1, {
@@ -110,10 +111,12 @@ export function Notification() {
 
           {preview && (
             <div className="flex mt-4 justify-center">
-              <img
+              <Image
                 src={preview}
                 alt="Preview"
-                className="h-70 w-[640px] object-cover rounded"
+                width={640}
+                height={10}
+                className=" object-cover rounded"
               />
             </div>
           )}
