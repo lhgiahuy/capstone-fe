@@ -20,6 +20,7 @@ import * as React from "react";
 
 import Link from "next/link";
 import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
 
 const FormSchema = z.object({
   subject: z.string().min(1, {
@@ -130,7 +131,7 @@ export function Notification() {
               <FormLabel>Nội dung</FormLabel>
               <FormDescription>Nhập nội dung thông báo</FormDescription>
               <FormControl className="h-60">
-                <Input placeholder="Nhập nội dung" {...field} />
+                <Textarea placeholder="Nhập nội dung" {...field} />
               </FormControl>
 
               <FormMessage />
