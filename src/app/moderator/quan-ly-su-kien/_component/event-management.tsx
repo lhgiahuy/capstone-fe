@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -26,55 +28,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-const events = [
-  {
-    invoice: "Ảnh 1",
-    paymentStatus: "Được duyệt",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "Ảnh 2",
-    paymentStatus: "Hủy",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "Ảnh 3",
-    paymentStatus: "Đang chờ",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "Ảnh 4",
-    paymentStatus: "Được duyệt",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "Ảnh 5",
-    paymentStatus: "Được duyệt",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "Ảnh 6",
-    paymentStatus: "Đang chờ",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "Ảnh 7",
-    paymentStatus: "Hủy",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getEvents } from "@/app/action/getEvent";
+import { Events } from "@/app/types/events.type";
 
 export function EventManagement() {
+  const { data } = useQuery<Events[]>({
+    queryKey: ["events"],
+    queryFn: () => getEvents(),
+  });
+  console.log(data);
+
   return (
     <div>
       <Select>
@@ -106,14 +73,18 @@ export function EventManagement() {
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {events.map((event) => (
-            <TableRow key={event.invoice}>
+          {data?.map((event) => (
+            <TableRow key={event.eventId}>
               <TableCell className="font-medium">
-                <div className="w-32 h-32 rounded-md bg-slate-300"></div>
+                <Link href="/moderator/duyet-su-kien">
+                  <div className="w-32 h-32 rounded-md bg-slate-300"></div>
+                </Link>
               </TableCell>
-              <TableCell>{event.paymentMethod}</TableCell>
-              <TableCell>{event.paymentMethod}</TableCell>
+              <TableCell>{event.eventName}</TableCell>
+              <TableCell>{event.location}</TableCell>
+
               <TableCell>{event.paymentMethod}</TableCell>
               <TableCell>{event.paymentMethod}</TableCell>
               <TableCell>{event.paymentMethod}</TableCell>
@@ -132,7 +103,7 @@ export function EventManagement() {
                     ? "Được duyệt"
                     : event.paymentStatus === "Đang chờ"
                     ? "Đang chờ"
-                    : "Hủy"}
+                    : "Không được duyệt"}
                 </Badge>
               </TableCell>
               {/* <TableCell className="text-right">{event.totalAmount}</TableCell> */}
