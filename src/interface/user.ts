@@ -8,8 +8,8 @@ export interface User {
   cardUrl: string;
   verified: boolean;
   roleName: string;
-  createdAt: Date;
-  updatedAt: Date | null;
+  createdAt: string;
+  updatedAt: string | null;
   isDeleted: boolean;
-  deletedAt: Date | null;
+  deletedAt: string | null;
 }

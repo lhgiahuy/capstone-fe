@@ -5,9 +5,21 @@ import AdminNavBar from "../_component/admin-navbar";
 import { getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getFirstLetterOfName } from "@/lib/utils";
+import { cn, getFirstLetterOfName } from "@/lib/utils";
 import { DataTable } from "@/components/table/data-table";
 import { User } from "@/interface/user";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { parseISO } from "date-fns";
 
 export default function Event() {
   const { data, isPending } = useQuery({
@@ -17,18 +29,30 @@ export default function Event() {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "username",
-      header: "Username",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tên đăng nhập
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
     },
     {
       accessorKey: "avatarUrl",
-      header: "Avatar",
+      header: "Ảnh đại diện",
       cell: ({ row }) => (
-        <Avatar>
-          <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
-          <AvatarFallback>
-            {getFirstLetterOfName(row.original.username)}
-          </AvatarFallback>
-        </Avatar>
+        <div className="w-full flex justify-center">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
+            <AvatarFallback>
+              {getFirstLetterOfName(row.original.username)}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       ),
     },
     {
@@ -37,62 +61,110 @@ export default function Event() {
     },
     {
       accessorKey: "firstName",
-      header: "First Name",
+      header: "Tên",
     },
     {
       accessorKey: "lastName",
-      header: "Last Name",
+      header: "Họ",
     },
     {
       accessorKey: "phoneNumber",
-      header: "Phone Number",
+      header: "Số điện thoại",
     },
     {
       accessorKey: "cardUrl",
-      header: "Card",
+      header: "Thẻ sinh viên",
       cell: ({ row }) => <a href={row.original.cardUrl}>View Card</a>, // Example to render link
     },
     {
       accessorKey: "verified",
-      header: "Verified",
-      cell: ({ row }) => (row.original.verified ? "Yes" : "No"), // Show Yes/No for boolean
+      header: "Xác nhận",
+      cell: ({ row }) =>
+        row.original.verified ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
     },
     {
       accessorKey: "roleName",
-      header: "Role",
+      header: "Vai trò",
+      cell: ({ row }) => (
+        <Badge
+          className={cn(
+            row.original.roleName === "admin"
+              ? "bg-red-400 hover:bg-red-400"
+              : row.original.roleName === "manager"
+              ? "bg-orange-400 hover:bg-orange-400"
+              : "bg-green-400 hover:bg-green-400",
+            "capitalize"
+          )}
+        >
+          {row.original.roleName}
+        </Badge>
+      ),
     },
     {
       accessorKey: "createdAt",
       header: "Created At",
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(), // Format the date
+      cell: ({ row }) => parseISO(row.original.createdAt).toUTCString(),
     },
     {
       accessorKey: "updatedAt",
       header: "Updated At",
       cell: ({ row }) =>
         row.original.updatedAt
-          ? new Date(row.original.updatedAt).toLocaleDateString()
+          ? parseISO(row.original.updatedAt).toUTCString()
           : "N/A", // Format date or show N/A if null
     },
     {
       accessorKey: "isDeleted",
       header: "Deleted",
-      cell: ({ row }) => (row.original.isDeleted ? "Yes" : "No"), // Show Yes/No for boolean
+      cell: ({ row }) => (row.original.isDeleted ? "Có" : "Không"), // Show Yes/No for boolean
     },
     {
       accessorKey: "deletedAt",
       header: "Deleted At",
       cell: ({ row }) =>
         row.original.deletedAt
-          ? new Date(row.original.deletedAt).toLocaleDateString()
+          ? parseISO(row.original.deletedAt).toUTCString()
           : "N/A", // Format date or show N/A if null
     },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const user = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(user.email)}
+              >
+                Sao chép email người dùng
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
+              <DropdownMenuItem>Xoá người dùng</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+      enableHiding: false, // disable hiding for this column
+    },
   ];
+  const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
   return (
     <>
       <AdminNavBar links={["Quản lý người dùng"]} />
       <div className="">
-        {isPending ? <></> : <DataTable columns={columns} data={data} />}
+        {isPending ? (
+          <></>
+        ) : (
+          <DataTable hideColumns={hideColumns} columns={columns} data={data} />
+        )}
       </div>
     </>
   );
