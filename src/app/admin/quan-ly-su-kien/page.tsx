@@ -1,65 +1,93 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import AdminNavBar from "../_component/admin-navbar";
 
 import { ColumnDef } from "@tanstack/react-table";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { getFirstLetterOfName } from "@/lib/utils";
+
 import { DataTable } from "@/components/table/data-table";
+import { User } from "@/interface/user";
 
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
+// import { Badge } from "@/components/ui/badge";
+// import { parseISO } from "date-fns";
 import { getEvents } from "@/action/event";
-import { Event } from "@/interface/event";
+import AdminNavBar from "../_component/admin-navbar";
 
-export default function Events() {
+export default function Event() {
   const { data, isPending } = useQuery({
     queryKey: ["events"],
     queryFn: getEvents,
   });
-  const columns: ColumnDef<Event>[] = [
+  const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "eventId",
-      header: "eventId",
+      accessorKey: "eventName",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tên sự kiện
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
     },
     // {
     //   accessorKey: "avatarUrl",
-    //   header: "Avatar",
+    //   header: "Ảnh đại diện",
     //   cell: ({ row }) => (
-    //     <Avatar>
-    //       <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
-    //       <AvatarFallback>
-    //         {getFirstLetterOfName(row.original.username)}
-    //       </AvatarFallback>
-    //     </Avatar>
+    //     <div className="w-full flex justify-center">
+    //       <Avatar className="w-8 h-8">
+    //         <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
+    //         <AvatarFallback>
+    //           {getFirstLetterOfName(row.original.username)}
+    //         </AvatarFallback>
+    //       </Avatar>
+    //     </div>
     //   ),
     // },
-    {
-      accessorKey: "eventName",
-      header: "eventName",
-    },
+
     {
       accessorKey: "description",
-      header: "description",
+      header: "Mô tả",
+    },
+    {
+      accessorKey: "organizerName",
+      header: "Người tổ chức",
     },
     {
       accessorKey: "startTime",
-      header: "startTime",
+      header: "Ngày bắt đầu",
     },
     {
       accessorKey: "endTime",
-      header: "endTime",
+      header: "Ngày kết thúc",
     },
     {
       accessorKey: "maxAttendees",
-      header: "maxAttendees",
+      header: "Số người tham gia",
+    },
+    {
+      accessorKey: "statusId",
+      header: "Trạng thái",
     },
   ];
-  console.log(data);
+  const hideColumns = ["description", "isDeleted", "deletedAt"];
   return (
     <>
       <AdminNavBar links={["Quản lý sự kiện"]} />
       <div className="">
-        {isPending ? <></> : <DataTable columns={columns} data={data.items} />}
+        {isPending ? (
+          <></>
+        ) : (
+          <DataTable
+            hideColumns={hideColumns}
+            columns={columns}
+            data={data.items}
+          />
+        )}
       </div>
     </>
   );
