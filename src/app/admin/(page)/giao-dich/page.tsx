@@ -1,4 +1,4 @@
-import AdminNavBar from "../_component/admin-navbar";
+import AdminNavBar from "../../_component/admin-navbar";
 import { TopMoney } from "./_component/top-money";
 import { UsersTable } from "./_component/users-table";
 

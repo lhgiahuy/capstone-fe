@@ -1,4 +1,4 @@
-import AdminNavBar from "../_component/admin-navbar";
+import AdminNavBar from "../../_component/admin-navbar";
 import WithdrawTable from "./_component/table-withdraw";
 
 export default function Withdraw() {

@@ -14,7 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../../../../components/ui/tabs";
+} from "../../../../../components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -22,8 +22,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../../components/ui/dropdown-menu";
-import { Button } from "../../../../components/ui/button";
+} from "../../../../../components/ui/dropdown-menu";
+import { Button } from "../../../../../components/ui/button";
 import {
   Table,
   TableBody,
@@ -31,8 +31,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../components/ui/table";
-import { Badge } from "../../../../components/ui/badge";
+} from "../../../../../components/ui/table";
+import { Badge } from "../../../../../components/ui/badge";
 import { File, ListFilter } from "lucide-react";
 
 export const description = "A simple area chart";

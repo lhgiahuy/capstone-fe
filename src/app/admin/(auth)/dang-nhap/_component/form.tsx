@@ -11,7 +11,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -44,7 +43,7 @@ export default function LoginForm() {
         setIsLoading(false);
         throw new Error(res?.error || "Lỗi đăng nhập");
       }
-      router.push("/");
+      router.push("/admin");
       setIsLoading(false);
       toast({ title: "Đăng nhập", description: "..." });
     } catch (error: any) {
@@ -65,7 +64,7 @@ export default function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Email*" {...field} />
+                <Input placeholder="Tên đăng nhập hoặc email*" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,9 +87,9 @@ export default function LoginForm() {
             <Checkbox />
             <div className="text-sm text-gray-500">Ghi nhớ đăng nhập</div>
           </div>
-          <Link href="/" className="font-semibold">
+          {/* <Link href="/" className="font-semibold">
             Quên mật khẩu?
-          </Link>
+          </Link> */}
         </div>
         <Button
           type="submit"

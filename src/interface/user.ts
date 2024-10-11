@@ -13,3 +13,8 @@ export interface User {
   isDeleted: boolean;
   deletedAt: string | null;
 }
+
+export interface LoginResponse {
+  token: string | null;
+  error: string | null;
+}

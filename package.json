@@ -53,6 +53,7 @@
     "jotai-tanstack-query": "^0.8.8",
     "lucide-react": "^0.440.0",
     "next": "14.2.8",
+    "next-auth": "^4.24.8",
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-day-picker": "^8.10.1",

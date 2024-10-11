@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Button } from "../../../../components/ui/button";
-import { Progress } from "../../../../components/ui/progress";
+import { Button } from "../../../../../components/ui/button";
+import { Progress } from "../../../../../components/ui/progress";
 
 export const description = "A bar chart with an active bar";
 

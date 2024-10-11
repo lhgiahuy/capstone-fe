@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import AdminNavBar from "../_component/admin-navbar";
+import AdminNavBar from "../../_component/admin-navbar";
 import { getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

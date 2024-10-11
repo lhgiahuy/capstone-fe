@@ -1,4 +1,4 @@
-import AdminNavBar from "../_component/admin-navbar";
+import AdminNavBar from "../../_component/admin-navbar";
 import { EventManagement } from "./_component/event-management";
 
 export default function Event() {

@@ -1,4 +1,4 @@
-import AdminNavBar from "../_component/admin-navbar";
+import AdminNavBar from "../../_component/admin-navbar";
 import { Notification } from "./_component/notification-form";
 
 export default function ReplyNotification() {
