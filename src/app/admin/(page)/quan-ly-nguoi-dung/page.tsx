@@ -163,7 +163,11 @@ export default function Event() {
         {isPending ? (
           <></>
         ) : (
-          <DataTable hideColumns={hideColumns} columns={columns} data={data} />
+          <DataTable
+            hideColumns={hideColumns}
+            columns={columns}
+            data={data.items}
+          />
         )}
       </div>
     </>

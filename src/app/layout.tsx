@@ -3,10 +3,10 @@ import "./globals.css";
 import JotaiProvider from "@/components/providers/jotai-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { lexend } from "./font";
-import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/components/providers/auth-provider";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className="flex flex-col gap-8 w-full px-32">
-      <h1 className="text-5xl font-semibold">Đăng nhập</h1>
+      <h1 className="text-5xl font-semibold">Admin đăng nhập</h1>
       <LoginForm />
     </div>
   );
