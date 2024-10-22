@@ -11,13 +11,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
-import { getEvents } from "@/action/event";
+import { getEvent } from "@/action/event";
 import AdminNavBar from "../../_component/admin-navbar";
 
 export default function Event() {
   const { data, isPending } = useQuery({
     queryKey: ["events"],
-    queryFn: getEvents,
+    queryFn: getEvent,
   });
   const columns: ColumnDef<User>[] = [
     {
