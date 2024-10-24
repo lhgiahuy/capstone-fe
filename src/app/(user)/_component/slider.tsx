@@ -10,13 +10,13 @@ import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 
 const images = [
-  "/images/event-bg-2.png",
-  "/images/event-bg-3.png",
+  "/images/event-bg.png",
+  "/images/event-bg.png",
   "/images/event-bg.png",
 ];
 export default function Slider() {
   return (
-    <section className="container flex flex-col gap-4">
+    <section className="flex flex-col gap-4">
       <div className="text-primary font-semibold text-4xl">Sự kiện nổi bật</div>
       <Carousel
         plugins={[

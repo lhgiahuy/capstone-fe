@@ -92,7 +92,6 @@ import EventList from "./_component/event-list";
 export default function Page() {
   return (
     <div className="flex flex-col gap-8">
-      <UserNavBar />
       <Banner />
       <Slider />
       <EventList title="Talkshow" />

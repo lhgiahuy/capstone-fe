@@ -1,3 +1,4 @@
+import { Event } from "@/interface/event";
 import dateFormat from "@/lib/dateFormat";
 import { cn } from "@/lib/utils";
 import { Calendar } from "lucide-react";
@@ -5,13 +6,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface EventCardProps {
-  data: any;
+  data: Event;
   className?: string;
 }
 
 export default function EventCard({ data, className }: EventCardProps) {
   return (
-    <Link href="#" className={cn("flex w-full flex-col h-64 gap-2", className)}>
+    <Link
+      href={`/su-kien/${data?.eventId}`}
+      className={cn("flex w-full flex-col h-64 gap-2", className)}
+    >
       <div className="relative w-full h-full rounded-lg overflow-hidden">
         <Image
           src="/images/auth-bg.jpg"

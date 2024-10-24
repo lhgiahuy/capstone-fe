@@ -17,7 +17,7 @@ export default function EventList({ title }: EventListProps) {
     queryFn: getEvent,
   });
   return (
-    <section className="container flex flex-col gap-8">
+    <section className="flex flex-col gap-8">
       <div className="flex w-full justify-between items-center">
         {title ? (
           <div className="text-primary font-semibold text-4xl">{title}</div>
