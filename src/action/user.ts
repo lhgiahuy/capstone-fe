@@ -19,5 +19,5 @@ export async function loginUser(data: TypeOfLoginForm) {
 }
 
 export async function getMe(config: AxiosRequestConfig = {}) {
-  return await userAxios.get("/user/me", { ...config });
+  return await userAxios.get("/users/me", { ...config });
 }

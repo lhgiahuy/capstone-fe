@@ -10,7 +10,7 @@ import Image from "next/image";
 const images = ["/images/event-bg-1.png", "/images/auth-bg.jpg"];
 export default function Banner() {
   return (
-    <section className="container">
+    <section>
       <Carousel
         plugins={[
           Autoplay({

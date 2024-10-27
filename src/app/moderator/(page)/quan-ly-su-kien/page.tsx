@@ -27,7 +27,7 @@ import NavBar from "../_component/moderator-navbar";
 export default function Event() {
   const { data, isPending } = useQuery({
     queryKey: ["events"],
-    queryFn: getEvent,
+    queryFn: () => getEvent(),
   });
   const columns: ColumnDef<User>[] = [
     {
