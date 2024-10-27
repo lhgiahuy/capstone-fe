@@ -22,7 +22,7 @@ export default async function Page() {
       <h1 className="text-5xl font-semibold">Đăng nhập</h1>
       <div className="flex gap-2">
         <p>Chưa có tài khoản?</p>
-        <Link href="/dang-ky" className="text-orange-500 hover:text-orange-600">
+        <Link href="/dang-ky" className="text-primary hover:text-primary/80">
           Đăng ký
         </Link>
       </div>

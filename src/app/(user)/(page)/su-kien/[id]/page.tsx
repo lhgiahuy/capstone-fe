@@ -3,10 +3,16 @@
 import { getEventById } from "@/action/event";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Separator } from "@/components/ui/separator";
 import { Event } from "@/interface/event";
-import dateFormat from "@/lib/dateFormat";
+import { formatDate } from "@/lib/date";
 import { useQuery } from "@tanstack/react-query";
-import { Clock, Locate, MapPinned } from "lucide-react";
+import { Clock, MapPinned } from "lucide-react";
 import Image from "next/image";
 
 export default function EventDetail({ params }: { params: { id: string } }) {
@@ -44,7 +50,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
             <div className="flex flex-col gap-8">
               <div className="flex gap-4">
                 <Clock className="text-primary" />
-                <p>{dateFormat(data.startTime, "p, d MMMM, y")}</p>
+                <p>{formatDate(data.startTime, "p, d MMMM, y")}</p>
               </div>
               <div className="flex gap-4">
                 <MapPinned className="text-primary" />
@@ -61,10 +67,11 @@ export default function EventDetail({ params }: { params: { id: string } }) {
         <div className="bg-foreground text-background rounded-lg w-full min-h-screen p-4">
           <p>{data.description}</p>
         </div>
-        <div className="bg-foreground text-background h-fit p-4 rounded-lg w-1/3 items-center shrink-0 flex flex-col gap-4">
-          <h2 className="font-semibold text-xl self-start">Ban Tổ Chức</h2>
-          <div className="flex gap-8 py-8 items-center justify-center">
-            <div className="rounded-full overflow-hidden relative p-10">
+        <div className="bg-foreground text-background h-full p-4 rounded-lg w-[18rem] shrink-0 flex flex-col gap-4">
+          <h2 className="font-semibold text-sm">Tổ chức bởi</h2>
+          <Separator></Separator>
+          <div className="flex items-center">
+            <div className="rounded-full overflow-hidden relative p-4">
               <Image
                 src="/images/organizer-avt.png"
                 alt=""
@@ -72,9 +79,36 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                 className="object-cover"
               ></Image>
             </div>
-            <div className="flex flex-col gap-4">
-              <p>Organizer Name</p>
-              <Button>Xem thông tin</Button>
+            <div className="flex flex-col">
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button variant="link" className="text-background">
+                    Organizer Name
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  className="w-80 bg-foreground text-background"
+                  align="start"
+                >
+                  <div className="flex justify-between space-x-4">
+                    <Avatar>
+                      <AvatarImage src="/images/organizer-avt.png" />
+                      <AvatarFallback>VC</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">Organizer Name</h4>
+                      <p className="text-sm">
+                        The React Framework – created and maintained by @vercel.
+                      </p>
+                      <div className="flex items-center pt-2">
+                        <span className="text-xs text-muted-foreground">
+                          Joined December 2021
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             </div>
           </div>
         </div>

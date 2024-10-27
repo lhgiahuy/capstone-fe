@@ -17,7 +17,7 @@ import AdminNavBar from "../../_component/admin-navbar";
 export default function Event() {
   const { data, isPending } = useQuery({
     queryKey: ["events"],
-    queryFn: getEvent,
+    queryFn: () => getEvent(),
   });
   const columns: ColumnDef<User>[] = [
     {
@@ -85,7 +85,7 @@ export default function Event() {
           <DataTable
             hideColumns={hideColumns}
             columns={columns}
-            data={data.items}
+            data={data?.items}
           />
         )}
       </div>

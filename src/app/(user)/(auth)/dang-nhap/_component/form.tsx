@@ -46,7 +46,6 @@ export default function LoginForm() {
       }
       router.push("/");
       setIsLoading(false);
-      toast({ title: "Đăng nhập", description: "..." });
     } catch (error: any) {
       setIsLoading(false);
       toast({

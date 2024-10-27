@@ -1,8 +1,9 @@
 "use client";
-import UserNavBar from "@/components/navigation/user-navbar";
-import Banner from "./_component/banner";
-import Slider from "./_component/slider";
-import EventList from "./_component/event-list";
+import Banner from "../_component/banner";
+import Slider from "../_component/slider";
+import EventList from "../_component/event-list";
+import { useQuery } from "@tanstack/react-query";
+import { getEvent } from "@/action/event";
 
 // export default function Page() {
 //   const targetRef = useRef<HTMLDivElement | null>(null);
@@ -90,11 +91,16 @@ import EventList from "./_component/event-list";
 // }
 
 export default function Page() {
+  const { data } = useQuery({
+    queryKey: ["events"],
+    queryFn: () => getEvent(),
+  });
+
   return (
     <div className="flex flex-col gap-8">
       <Banner />
       <Slider />
-      <EventList title="Talkshow" />
+      <EventList data={data} title="Talkshow" />
     </div>
   );
 }

@@ -25,7 +25,7 @@ export default function Slider() {
           }),
         ]}
         opts={{
-          align: "center",
+          align: "start",
           loop: true,
         }}
       >
