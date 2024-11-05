@@ -13,3 +13,6 @@ export const passwordSchema = z
     passwordRegex,
     "Mật khẩu cần ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt"
   );
+export const dateSchema = z.date({
+  required_error: "Xin vui lòng nhập thông tin!",
+});
