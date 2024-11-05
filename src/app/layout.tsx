@@ -9,10 +9,9 @@ import { getServerSession } from "next-auth";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard",
-  description: "Admin Dashboard",
+  title: "Fvent",
+  description: "",
 };
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -21,12 +20,12 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   return (
     <html lang="en">
-      <body className={`${lexend.className} antialiased`}>
+      <body className={`${lexend.className} antialiased dark`}>
         {/* <NextAuthProvider> */}
         <JotaiProvider>
           <QueryProvider>
             <AuthProvider data={session?.user}>
-              <div className="min-h-screen bg-slate-100">{children}</div>
+              <div className="min-h-screen">{children}</div>
             </AuthProvider>
           </QueryProvider>
         </JotaiProvider>
