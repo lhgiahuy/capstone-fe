@@ -6,13 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Calendar,
-  LayoutDashboard,
-  Package2,
-  User,
-  BellRing,
-} from "lucide-react";
+import { Calendar, LayoutDashboard, Package2, BellRing } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -99,9 +93,9 @@ export default function Sidebar() {
             <TooltipTrigger asChild>
               <Link
                 href={item.link}
-                className="w-full flex justify-start items-center gap-4 px-2 hover:bg-accent group"
+                className="w-full flex justify-start items-center gap-4 px-2 hover:bg-primary hover:text-background rounded-md group"
               >
-                <div className="flex items-center justify-center w-full rounded-lg text-muted-foreground transition-colors group-hover:text-accent-foreground md:h-8 md:w-8">
+                <div className="flex items-center justify-center w-full rounded-lg transition-colors group-hover:text-background md:h-8 md:w-8">
                   {item.icon}
                 </div>
                 <p className="text-sm font-semibold truncate">{item.title}</p>

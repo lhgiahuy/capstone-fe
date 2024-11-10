@@ -21,7 +21,6 @@ export default function EventCard({
       <div className="flex h-[12rem] w-[32rem] items-center">
         <div className="bg-card h-full w-[12rem] p-8 flex flex-col gap-2 items-center justify-center rounded-lg">
           <h3 className="text-5xl text-primary">
-            {" "}
             {formatDate(data?.startTime, "d")}
           </h3>
           <p className="capitalize"> {formatDate(data?.startTime, "MMMM")}</p>
@@ -50,18 +49,22 @@ export default function EventCard({
   return (
     <Link
       href={`/su-kien/${data?.eventId}`}
-      className={cn("flex w-full flex-col h-64 gap-2", className)}
+      className={cn("flex w-full flex-col h-72 gap-4", className)}
     >
-      <div className="relative w-full min-w-[16rem] h-full rounded-lg overflow-hidden">
+      <div className="relative w-full min-w-[16rem] h-2/3 rounded-lg overflow-hidden">
         <Image
-          src="/images/auth-bg.jpg"
+          src={
+            data.thumbnailImg.startsWith("https")
+              ? data.thumbnailImg
+              : "/images/auth-bg.jpg"
+          }
           alt="event"
           fill
-          className="object-cover"
+          className="object-cover object-top"
         />
       </div>
-      <div className="flex flex-col uppercase">
-        <div>{data?.eventName}</div>
+      <div className="flex flex-col uppercase justify-between h-1/4">
+        <div className="line-clamp-2">{data?.eventName}</div>
         <div className="flex gap-2 items-center">
           <Calendar className="h-4 w-4 text-primary" />
           <div className="capitalize font-light text-sm">

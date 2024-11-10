@@ -34,3 +34,20 @@ export async function getTag() {
     console.error("Failed to fetch tags data", error);
   }
 }
+
+export async function getEventType() {
+  try {
+    const type = await userAxios.get("/event-types");
+    return type.data;
+  } catch (error) {
+    console.error("Failed to fetch event type data", error);
+  }
+}
+
+export async function createEvent(data: any) {
+  try {
+    await userAxios.post("/events", data);
+  } catch (error) {
+    console.error("Failed to create event", error);
+  }
+}

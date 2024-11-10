@@ -9,8 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,7 +27,7 @@ interface BreadcrumbsProps {
 }
 export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
   return (
-    <div className="dark:bg-slate-700 py-6 flex justify-between items-center">
+    <div className="bg-background py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
           {breadcrumb.map((item, index) => (
