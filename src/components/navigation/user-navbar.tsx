@@ -246,7 +246,7 @@ export default function UserNavBar() {
       ) : (
         <div className="bg-secondary-background">
           <div className="flex gap-4 container py-4 text-foreground">
-            {tag?.map((item: Tag) => (
+            {tag?.slice(0, 7).map((item: Tag) => (
               <Link
                 href="#"
                 key={item.tagId}

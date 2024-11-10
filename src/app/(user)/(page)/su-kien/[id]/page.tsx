@@ -14,7 +14,7 @@ import { formatDate } from "@/lib/date";
 import { useQuery } from "@tanstack/react-query";
 import { Clock, MapPinned } from "lucide-react";
 import Image from "next/image";
-
+import "../../../style/description.css";
 export default function EventDetail({ params }: { params: { id: string } }) {
   const { data } = useQuery<Event>({
     queryKey: ["event", params.id],
@@ -36,7 +36,11 @@ export default function EventDetail({ params }: { params: { id: string } }) {
       <div className="flex min-h-[28rem]">
         <div className="relative w-2/3">
           <Image
-            src="/images/event-bg.png"
+            src={
+              data.thumbnailImg.startsWith("https")
+                ? data.thumbnailImg
+                : "/images/event-bg-3.png"
+            }
             alt="event bg"
             fill
             className="object-cover"
@@ -65,9 +69,12 @@ export default function EventDetail({ params }: { params: { id: string } }) {
       </div>
       <div className="flex gap-8">
         <div className="bg-foreground text-background rounded-lg w-full min-h-screen p-4">
-          <p>{data.description}</p>
+          <div
+            dangerouslySetInnerHTML={{ __html: data.description }}
+            className="prose description"
+          ></div>
         </div>
-        <div className="bg-foreground text-background h-full p-4 rounded-lg w-[18rem] shrink-0 flex flex-col gap-4">
+        <div className="bg-foreground text-background h-full p-4 rounded-lg w-[16rem] shrink-0 flex flex-col gap-4">
           <h2 className="font-semibold text-sm">Tổ chức bởi</h2>
           <Separator></Separator>
           <div className="flex items-center">
@@ -83,7 +90,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <Button variant="link" className="text-background">
-                    Organizer Name
+                    {data.organizerName}
                   </Button>
                 </HoverCardTrigger>
                 <HoverCardContent

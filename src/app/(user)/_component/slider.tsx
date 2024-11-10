@@ -8,13 +8,15 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
+import { useQuery } from "@tanstack/react-query";
+import { getEvent } from "@/action/event";
+import { Event } from "@/interface/event";
 
-const images = [
-  "/images/event-bg.png",
-  "/images/event-bg.png",
-  "/images/event-bg.png",
-];
 export default function Slider() {
+  const { data } = useQuery({
+    queryKey: ["events"],
+    queryFn: () => getEvent(),
+  });
   return (
     <section className="flex flex-col gap-4">
       <div className="text-primary font-semibold text-4xl">Sự kiện nổi bật</div>
@@ -30,26 +32,17 @@ export default function Slider() {
         }}
       >
         <CarouselContent className="p-2">
-          {images.map((item, index) => (
+          {data?.items.map((item: Event) => (
             <CarouselItem
-              key={index}
+              key={item.eventId}
               className="w-full h-[20rem] relative md:basis-1/2 lg:basis-1/4"
             >
               <Image
-                src={item}
-                alt="images"
-                fill
-                className="object-cover p-2"
-              ></Image>
-            </CarouselItem>
-          ))}
-          {images.map((item, index) => (
-            <CarouselItem
-              key={index}
-              className="w-full h-[20rem] relative md:basis-1/2 lg:basis-1/4"
-            >
-              <Image
-                src={item}
+                src={
+                  item.thumbnailImg.startsWith("https")
+                    ? item.thumbnailImg
+                    : "/images/event-bg-2.png"
+                }
                 alt="images"
                 fill
                 className="object-cover p-2"

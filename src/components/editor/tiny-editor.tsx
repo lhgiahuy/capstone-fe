@@ -17,7 +17,7 @@ export default function TinyEditor(props: IAllProps) {
         init={{
           min_height: 500,
           plugins:
-            "preview importcss searchreplace powerpaste autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists charmap emoticons accordion",
+            "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists charmap emoticons accordion",
           editimage_cors_hosts: ["picsum.photos"],
           menubar: "file edit view insert format tools table help",
           toolbar:
@@ -35,6 +35,8 @@ export default function TinyEditor(props: IAllProps) {
           font_size_input_default_unit: "px",
           font_size_formats: "8px 10px 12px 14px 16px 18px 24px 36px 48px",
           ui_mode: "split",
+          skin: "oxide-dark",
+          content_css: "dark",
           ...props.init,
         }}
       />

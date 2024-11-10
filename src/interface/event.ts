@@ -11,4 +11,5 @@ export interface Event {
   eventTypeName: string;
   statusId: number;
   eventTags: string;
+  thumbnailImg: string;
 }
