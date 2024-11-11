@@ -93,14 +93,15 @@ import { getEvent } from "@/action/event";
 export default function Page() {
   const { data } = useQuery({
     queryKey: ["events"],
-    queryFn: () => getEvent(),
+    queryFn: () => getEvent({ PageNumber: 1, PageSize: 6 }),
   });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-16">
       <Banner />
       <Slider />
-      <EventList data={data} title="Talkshow" />
+      <EventList data={data} title="Sự kiện sắp tới" />
+      <EventList data={data} title="Sự kiện đã diễn ra" />
     </div>
   );
 }

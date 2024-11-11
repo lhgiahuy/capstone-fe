@@ -40,6 +40,7 @@ export default function LoginForm() {
         redirect: false,
       });
       if (!res?.ok) {
+        console.log(res);
         setIsLoading(false);
         throw new Error(res?.error || "Lỗi đăng nhập");
       }
