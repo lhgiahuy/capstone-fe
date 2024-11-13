@@ -1,12 +1,12 @@
-import NavBar from "../_component/moderator-navbar";
+import NavBar from "../../_component/moderator-navbar";
 import DetailEvent from "./_component/detail-event";
 
-export default function Event() {
+export default function Event({ params }: { params: { id: string } }) {
   return (
     <>
       <NavBar links={["Quản lý sự kiện - Nội dung sự kiện"]} />
       <div>
-        <DetailEvent />
+        <DetailEvent eventId={params.id} />
       </div>
     </>
   );

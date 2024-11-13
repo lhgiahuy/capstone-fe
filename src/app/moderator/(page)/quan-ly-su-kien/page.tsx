@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { getFirstLetterOfName } from "@/lib/utils";
 import { DataTable } from "@/components/table/data-table";
-import { User } from "@/interface/user";
+// import { User } from "@/interface/user";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,16 +20,33 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
 import { getEvent } from "@/action/event";
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import NavBar from "../_component/moderator-navbar";
+import { getFirstLetterOfName } from "@/lib/utils";
+import { Event } from "@/interface/event";
 
-export default function Event() {
+export default function EventDetail() {
+  const status = "Draft";
   const { data, isPending } = useQuery({
-    queryKey: ["events"],
-    queryFn: () => getEvent(),
+    queryKey: ["events", status],
+    queryFn: () => getEvent({ status: status }),
   });
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<Event>[] = [
+    {
+      accessorKey: "thumbnailImg",
+      header: "Ảnh đại diện",
+      cell: ({ row }) => (
+        <div className="w-full flex justify-center">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={row.original.thumbnailImg} alt="event avatar" />
+            <AvatarFallback>
+              {getFirstLetterOfName(row.original.eventName)}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      ),
+    },
     {
       accessorKey: "eventName",
       header: ({ column }) => {
@@ -80,13 +97,13 @@ export default function Event() {
       header: "Số người tham gia",
     },
     {
-      accessorKey: "statusId",
+      accessorKey: "status",
       header: "Trạng thái",
     },
 
     {
       id: "actions",
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -99,7 +116,11 @@ export default function Event() {
               <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link href="/moderator/duyet-su-kien">Xem thông tin</Link>
+                <Link
+                  href={`/moderator/quan-ly-su-kien/${row.original.eventId}`}
+                >
+                  Xem thông tin
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>Hủy sự kiện</DropdownMenuItem>
             </DropdownMenuContent>

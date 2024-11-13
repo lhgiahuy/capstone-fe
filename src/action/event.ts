@@ -7,6 +7,7 @@ interface getEventProps {
   orderBy?: string;
   eventType?: string;
   inMonth?: number;
+  status?: string;
 }
 export async function getEvent(props?: getEventProps) {
   try {
@@ -47,6 +48,20 @@ export async function getEventType() {
 export async function createEvent(data: any) {
   try {
     await userAxios.post("/events", data);
+  } catch (error) {
+    console.error("Failed to create event", error);
+  }
+}
+
+export async function approveEvent(
+  id: string,
+  aprroved: boolean,
+  processNote: string
+) {
+  try {
+    await userAxios.put(`/events/${id}/approve?isApproved=${aprroved}`, {
+      processNote: processNote,
+    });
   } catch (error) {
     console.error("Failed to create event", error);
   }

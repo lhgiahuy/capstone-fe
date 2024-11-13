@@ -12,4 +12,11 @@ export interface Event {
   statusId: number;
   eventTags: string;
   thumbnailImg: string;
+  status: string;
+  linkEvent: string;
+  passwordMeeting: string;
+}
+
+export interface DetailEventProps {
+  eventId: string;
 }
