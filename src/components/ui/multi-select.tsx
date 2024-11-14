@@ -22,7 +22,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { Tag } from "@/interface/tag";
+import { EventType } from "@/interface/event-type";
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -57,7 +57,7 @@ interface MultiSelectProps
    * An array of option objects to be displayed in the multi-select component.
    * Each option object has a label, value, and an optional icon.
    */
-  options: Tag[];
+  options: EventType[];
 
   /**
    * Callback function triggered when the selected values change.
@@ -170,7 +170,7 @@ export const MultiSelect = React.forwardRef<
       if (selectedValues.length === options.length) {
         handleClear();
       } else {
-        const allValues = options.map((option) => option.tagName);
+        const allValues = options.map((option) => option.eventTypeName);
         setSelectedValues(allValues);
         onValueChange(allValues);
       }
@@ -196,7 +196,9 @@ export const MultiSelect = React.forwardRef<
               <div className="flex justify-between items-center w-full">
                 <div className="flex items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
-                    const option = options.find((o) => o.tagName === value);
+                    const option = options.find(
+                      (o) => o.eventTypeName === value
+                    );
                     return (
                       <Badge
                         key={value}
@@ -207,7 +209,7 @@ export const MultiSelect = React.forwardRef<
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
-                        {option?.tagName}
+                        {option?.eventTypeName}
                         <XCircle
                           className="ml-2 h-4 w-4 cursor-pointer"
                           onClick={(event) => {
@@ -295,11 +297,13 @@ export const MultiSelect = React.forwardRef<
                   <span>(Chọn tất cả)</span>
                 </CommandItem>
                 {options.map((option) => {
-                  const isSelected = selectedValues.includes(option.tagName);
+                  const isSelected = selectedValues.includes(
+                    option.eventTypeName
+                  );
                   return (
                     <CommandItem
-                      key={option.tagId}
-                      onSelect={() => toggleOption(option.tagName)}
+                      key={option.eventTypeName}
+                      onSelect={() => toggleOption(option.eventTypeName)}
                       className="cursor-pointer"
                     >
                       <div
@@ -313,7 +317,7 @@ export const MultiSelect = React.forwardRef<
                         <CheckIcon className="h-4 w-4" />
                       </div>
 
-                      <span>{option.tagName}</span>
+                      <span>{option.eventTypeName}</span>
                     </CommandItem>
                   );
                 })}

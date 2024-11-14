@@ -8,6 +8,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
   data: User;
 }
+
 export default function AuthProvider({ children, data }: AuthProviderProps) {
   useHydrateAtoms([[userAtom, data] as any]);
   return <>{children}</>;

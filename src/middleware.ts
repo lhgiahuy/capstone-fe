@@ -6,7 +6,10 @@ export default withAuth(
     const url = req.nextUrl.clone();
     const { pathname } = req.nextUrl;
 
-    if (pathname !== "/admin" && req.nextauth.token?.roleName === "admin") {
+    if (
+      !pathname.startsWith("/admin") &&
+      req.nextauth.token?.roleName === "admin"
+    ) {
       url.pathname = "/admin";
       return NextResponse.redirect(url);
     }
@@ -30,4 +33,6 @@ export default withAuth(
 
 // Middleware to handle redirect for admins
 
-export const config = { matcher: ["/admin", "/"] };
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/images|favicon.ico|.*\\..*).*)"],
+};

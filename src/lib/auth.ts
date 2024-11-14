@@ -2,6 +2,9 @@ import { getMe, loginUser } from "@/action/user";
 import { TypeOfLoginForm } from "@/app/(user)/(auth)/dang-nhap/_lib/validation";
 import { getServerSession, NextAuthOptions, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { atomStore } from "./atom/store";
+import { userAtom } from "./atom/user";
+import { signOut } from "next-auth/react";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -49,8 +52,7 @@ export const authOptions = {
                 avatarUrl: data.avatarUrl,
                 email: data.email,
                 password: data.password,
-                firstName: data.firstName,
-                lastName: data.lastName,
+                verifyStatus: data.verifyStatus,
                 phoneNumber: data.phoneNumber,
                 cardUrl: data.cardUrl,
                 roleName: data.roleName,
@@ -79,9 +81,8 @@ export const authOptions = {
               username: data.username,
               avatarUrl: data.avatarUrl,
               email: data.email,
+              verifyStatus: data.verifyStatus,
               password: data.password,
-              firstName: data.firstName,
-              lastName: data.lastName,
               phoneNumber: data.phoneNumber,
               cardUrl: data.cardUrl,
               roleName: data.roleName,
@@ -111,4 +112,15 @@ export const authOptions = {
   },
 } satisfies NextAuthOptions;
 
+type SignOutOption<R> = {
+  redirectTo?: string;
+  redirect?: R;
+};
+
+export async function signOutUser<R extends boolean = true>(
+  options: SignOutOption<R> = {}
+) {
+  atomStore.set(userAtom, undefined);
+  await signOut(options);
+}
 export const getServerAuthSession = () => getServerSession(authOptions);

@@ -80,7 +80,7 @@ export default function Event() {
       accessorKey: "verified",
       header: "Xác nhận",
       cell: ({ row }) =>
-        row.original.verified ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
+        row.original.verifyStatus ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
     },
     {
       accessorKey: "roleName",

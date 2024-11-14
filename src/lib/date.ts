@@ -82,6 +82,7 @@ export const generateDate = (
 };
 
 export const months = [
+  "Tất cả",
   "Tháng 1",
   "Tháng 2",
   "Tháng 3",
