@@ -19,7 +19,6 @@ import { formSchema, TypeOfLoginForm } from "../_lib/validation";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,20 +30,17 @@ export default function LoginForm() {
     },
   });
   const { toast } = useToast();
-  const router = useRouter();
   const onSubmit: SubmitHandler<TypeOfLoginForm> = async (data) => {
     try {
       setIsLoading(true);
       const res = await signIn("credentials", {
         email: data.email,
         password: data.password,
-        redirect: false,
       });
       if (!res?.ok) {
         setIsLoading(false);
         throw new Error(res?.error || "Lỗi đăng nhập");
       }
-      router.push("/");
       setIsLoading(false);
     } catch (error: any) {
       setIsLoading(false);

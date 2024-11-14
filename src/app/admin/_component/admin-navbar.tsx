@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 // import logo from "../img/logo.png";
 
@@ -23,6 +25,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { signOutUser } from "@/lib/auth";
 interface BreadcrumbsProps {
   links: string[];
 }
@@ -67,8 +70,10 @@ export default function AdminNavBar({ links }: BreadcrumbsProps) {
           <DropdownMenuItem>
             <Link href="/event">Sự kiện</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/auth">Đăng xuất</Link>
+          <DropdownMenuItem
+            onClick={() => signOutUser({ redirectTo: "/admin/dang-nhap" })}
+          >
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

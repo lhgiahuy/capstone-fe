@@ -91,17 +91,21 @@ import { getEvent } from "@/action/event";
 // }
 
 export default function Page() {
-  const { data } = useQuery({
-    queryKey: ["events"],
-    queryFn: () => getEvent({ PageNumber: 1, PageSize: 6 }),
+  const LIMIT = 6;
+  const { data: upcomingList } = useQuery({
+    queryKey: ["events", LIMIT, "Upcoming"],
+    queryFn: () => getEvent({ PageSize: LIMIT, Status: "Upcoming" }),
   });
-
+  // const { data: completeList } = useQuery({
+  //   queryKey: ["events", LIMIT, "Complete"],
+  //   queryFn: () => getEvent({ PageSize: LIMIT, Status: "Complete" }),
+  // });
   return (
     <div className="flex flex-col gap-16">
       <Banner />
       <Slider />
-      <EventList data={data} title="Sự kiện sắp tới" />
-      <EventList data={data} title="Sự kiện đã diễn ra" />
+      <EventList data={upcomingList} title="Sự kiện sắp tới" />
+      {/* <EventList data={completeList} title="Sự kiện đã diễn ra" /> */}
     </div>
   );
 }

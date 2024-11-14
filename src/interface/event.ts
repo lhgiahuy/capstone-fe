@@ -8,8 +8,17 @@ export interface Event {
   maxAttendees: number;
   processNote: string;
   organizerName: string;
+  organizerId: string;
   eventTypeName: string;
   statusId: number;
-  eventTags: string;
+  eventTags: string[];
   thumbnailImg: string;
+  linkEvent: string;
+  form: [
+    {
+      name: string;
+      type: string;
+      options: string[];
+    }
+  ];
 }

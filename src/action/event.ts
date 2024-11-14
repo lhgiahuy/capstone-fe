@@ -1,12 +1,14 @@
 import { userAxios } from "@/lib/axios";
-interface getEventProps {
+export interface getEventProps {
   SearchKeyword?: string;
   PageSize?: number;
   PageNumber?: number;
   isDescending?: boolean;
   orderBy?: string;
-  eventType?: string;
-  inMonth?: number;
+  EventTypes?: string[];
+  InMonth?: number;
+  Status?: string;
+  EventTag?: string;
 }
 export async function getEvent(props?: getEventProps) {
   try {
@@ -45,9 +47,9 @@ export async function getEventType() {
 }
 
 export async function createEvent(data: any) {
-  try {
-    await userAxios.post("/events", data);
-  } catch (error) {
-    console.error("Failed to create event", error);
-  }
+  return await userAxios.post("/events", data);
+}
+
+export async function submitForm(data: any, eventId: string) {
+  return await userAxios.post(`/events/${eventId}/form-submit`, data);
 }

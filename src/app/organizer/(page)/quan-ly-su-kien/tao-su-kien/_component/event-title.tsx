@@ -31,30 +31,33 @@ import {
 import {
   CalendarIcon,
   LayoutList,
+  Loader2,
   MinusCircle,
   Trash,
   Upload,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImageInput from "@/components/ui/image-input";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
-import { getEventType } from "@/action/event";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createEvent, getEventType } from "@/action/event";
 import { EventType } from "@/interface/event-type";
+import { uploadImageToStorage } from "@/lib/firebase/upload-file";
 
 export default function EventTitle() {
   const { data: types } = useQuery({
     queryKey: ["event-types"],
     queryFn: getEventType,
   });
-  const formType = ["Plain Text", "Multiple Choice", "One Choice"];
-  //   const { mutate: createEventMutate } = useMutation({
-  //     mutationFn: (data: any) => createEvent(data),
-  //   });
+  const [isLoading, setIsLoading] = useState(false);
+  const formType = ["Plain Text", "Choice"];
+  const { mutate: createEventMutate } = useMutation({
+    mutationFn: (data: any) => createEvent(data),
+  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,52 +78,71 @@ export default function EventTitle() {
     },
   });
   const [imagePopover, setImagePopover] = useState(false);
-  //   async function onSubmit(values: z.infer<typeof formSchema>) {
-  //     const startDate =
-  //       values.event.dateType === "one-day"
-  //         ? values.event.date.toISOString()
-  //         : values.event.startDate.toISOString();
-  //     const endDate =
-  //       values.event.dateType === "one-day"
-  //         ? values.event.date.toISOString()
-  //         : values.event.endDate.toISOString();
-  //     try {
-  //       // const markup = { __html: values.content };
-  //       const url = await uploadImageToStorage(values);
-  //       createEventMutate({
-  //         eventName: values.event.title,
-  //         description: values.event.content,
-  //         startTime: startDate,
-  //         endTime: endDate,
-  //         eventTypeId: values.event.type,
-  //         location: values.event.location,
-  //         linkEvent:
-  //           values.event.locationType === "online" ? values.event.eventLink : "",
-  //         passwordMeeting:
-  //           values.event.locationType === "online"
-  //             ? values.event.passwordMeeting
-  //             : "",
-  //         posterImg: "string",
-  //         thumbnailImg: url,
-  //         eventTags: ["Test"],
-  //         processNote: "string",
-  //         organizerId: "92cda069-1b83-488e-4726-08dcded406b7",
-  //       });
-  //     } catch (error) {
-  //       console.error("Form submission error", error);
-  //       toast.error("Failed to submit the form. Please try again.");
-  //     }
-  //   }
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    try {
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md p-4">
-          <p>{JSON.stringify(data, null, 2)}</p>
-        </pre>
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    const startDate =
+      values.event.dateType === "one-day"
+        ? `${formatISO(values.event.date).split("T")[0]}T${
+            values.event.startTime
+          }`
+        : `${formatISO(values.event.startDate).split("T")[0]}T${
+            values.event.startTime
+          }`;
+    const endDate =
+      values.event.dateType === "one-day"
+        ? `${formatISO(values.event.date).split("T")[0]}T${
+            values.event.endTime
+          }`
+        : `${formatISO(values.event.endDate).split("T")[0]}T${
+            values.event.endTime
+          }`;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      toast.error("Thời gian không hợp lệ");
+      setIsLoading(false);
+    } else if (end <= start) {
+      toast.error("Thời gian không hợp lệ");
+      setIsLoading(false);
+    } else {
+      const url = await uploadImageToStorage({
+        saveLocation: `events/${values.event.title}`,
+        file: values.event.imageUrl,
+      });
+      createEventMutate(
+        {
+          eventName: values.event.title,
+          description: values.event.content,
+          startTime: startDate,
+          endTime: endDate,
+          eventTypeId: values.event.type,
+          location: values.event.location,
+          linkEvent:
+            values.event.locationType === "online"
+              ? values.event.eventLink
+              : "",
+          passwordMeeting:
+            values.event.locationType === "online"
+              ? values.event.passwordMeeting
+              : "",
+          posterImg: "string",
+          thumbnailImg: url,
+          eventTags: ["Test"],
+          createFormDetailsReq: values.createFormDetailsReq,
+          proposal: "string",
+        },
+        {
+          onSuccess: () => {
+            toast("Tạo event thành công"), setIsLoading(false);
+          },
+          onError: () => {
+            setIsLoading(false);
+
+            toast.error("Tạo event thất bại");
+          },
+        }
       );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
     }
   }
 
@@ -130,7 +152,7 @@ export default function EventTitle() {
   });
 
   const addForm = () => {
-    append({ name: "", type: "", option: [] });
+    append({ name: "", type: "", options: [] });
   };
 
   return (
@@ -729,7 +751,7 @@ export default function EventTitle() {
                                     </FormControl>
                                   )}
                                 ></FormField>
-                              ) : field.value === "Multiple Choice" ? (
+                              ) : field.value === "Choice" ? (
                                 <div className="flex flex-col gap-4">
                                   <FormField
                                     control={form.control}
@@ -790,7 +812,17 @@ export default function EventTitle() {
             </div>
           </div>
           <div className="flex w-full justify-center">
-            <Button type="submit" size="lg" className="px-16">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              size="lg"
+              className="px-16"
+            >
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <></>
+              )}
               Lưu
             </Button>
           </div>
@@ -811,16 +843,16 @@ function AnswersFieldArray({
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: `createFormDetailsReq.${parentIndex}.option`,
+    name: `createFormDetailsReq.${parentIndex}.options`,
   });
   const addOption = () => {
     const lastAnswer =
       form.getValues(
-        `createFormDetailsReq.${parentIndex}.option.${fields.length - 1}`
+        `createFormDetailsReq.${parentIndex}.options.${fields.length - 1}`
       ) || "";
-    if (lastAnswer.trim() === "") {
+    if (lastAnswer.trim() === "" && fields.length > 0) {
       // Set error on the answers field
-      toast("ABC");
+      toast("Vui lòng điền câu trả lời");
       return;
     }
     append("");
@@ -832,7 +864,7 @@ function AnswersFieldArray({
           <h5 className="text-sm">{`Câu trả lời ${answerIndex + 1}`}</h5>
           <div className="flex gap-4 w-full">
             <FormField
-              name={`createFormDetailsReq.${parentIndex}.option.${answerIndex}`}
+              name={`createFormDetailsReq.${parentIndex}.options.${answerIndex}`}
               control={control}
               render={({ field }) => (
                 <FormItem className="w-full">

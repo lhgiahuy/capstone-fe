@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Calendar, Music, Search } from "lucide-react";
+import { Bell, Calendar, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -10,8 +10,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useAtom } from "jotai";
-import { userAtom } from "@/lib/atom/user";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,9 +30,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Tag } from "@/interface/tag";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
+import { signOutUser } from "@/lib/auth";
+import { User } from "next-auth";
 
-export default function UserNavBar() {
-  const [user] = useAtom(userAtom);
+export default function UserNavBar({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -62,7 +61,6 @@ export default function UserNavBar() {
     }
     replace(`${pathname}?${params.toString()}`);
   }, 300);
-
   return (
     <nav className="bg-primary text-primary-foreground">
       <div className="container flex justify-between items-center py-4">
@@ -103,7 +101,6 @@ export default function UserNavBar() {
                   className="w-full rounded-lg bg-foreground border-0 md:w-[24rem] lg:w-[32rem]"
                   onFocus={() => setOpen(true)} // Open popover on input focus
                   onBlur={(e) => {
-                    // Optional: Close the popover if the focus shifts outside
                     if (!e.currentTarget.contains(e.relatedTarget)) {
                       setOpen(false);
                     }
@@ -113,52 +110,63 @@ export default function UserNavBar() {
                 />
               </PopoverTrigger>
               <PopoverContent
-                align="start"
+                align="center"
                 sideOffset={10}
                 className="flex flex-col gap-4 w-full justify-center"
               >
                 <div className="flex flex-col gap-4">
-                  <h3>Sự kiện bạn đang tìm...</h3>
+                  <h3>Kết quả tìm kiếm</h3>
                   {searchString ? (
                     <></>
                   ) : (
                     <div className="flex gap-8">
-                      {tag?.slice(0, 3).map((item: Tag, index: number) => (
-                        <Link
-                          href="#"
-                          key={item.tagId}
-                          className="flex flex-col items-center"
-                        >
-                          <div
-                            className={cn(
-                              "rounded-full w-28 h-28  flex items-center justify-center",
-                              `${
-                                index % 2 == 0
-                                  ? "bg-primary text-accent"
-                                  : "bg-secondary text-secondary-background"
-                              }`
-                            )}
+                      {tag
+                        ?.sort(() => Math.random() - 0.5) // Randomize order
+                        .slice(0, 5)
+                        .map((item: Tag, index: number) => (
+                          <Link
+                            onMouseDown={(e) => e.preventDefault()} // Prevent popover from closing on click
+                            href={`/su-kien?EventTag=${item.tagName}`}
+                            key={item.tagId}
+                            className="flex flex-col items-center"
                           >
-                            <Music className="h-16 w-16"></Music>
-                          </div>
-                          <Badge className="bg-foreground rounded-full mt-[-1rem] px-4 uppercase">
-                            {item.tagName}
-                          </Badge>
-                        </Link>
-                      ))}
-                      <div className="flex flex-col items-center">
+                            <div
+                              className={cn(
+                                "rounded-full w-28 h-28 flex items-center justify-center",
+                                `${
+                                  index % 2 === 0
+                                    ? "bg-primary text-accent"
+                                    : "bg-secondary text-secondary-background"
+                                }`
+                              )}
+                            >
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: item.svgContent,
+                                }}
+                                className="*:w-12 *:h-12"
+                              ></div>
+                            </div>
+                            <Badge className="bg-foreground rounded-full mt-[-1rem] py-1 uppercase w-[8rem] flex items-center justify-center text-center">
+                              {item.tagName}
+                            </Badge>
+                          </Link>
+                        ))}
+                      {/* <div className="flex flex-col items-center">
                         <div className="rounded-full w-28 h-28 bg-foreground text-background  flex items-center justify-center">
-                          <Music className="h-16 w-16"></Music>
+                          <p className="font-bold text-4xl">{`+${
+                            tag?.length - 3
+                          }`}</p>
                         </div>
                         <Badge className="bg-foreground border-background border-2 rounded-full mt-[-1rem] px-4 uppercase">
-                          {`+${tag?.length - 3} more`}
+                          {`tag`}
                         </Badge>
-                      </div>
+                      </div> */}
                     </div>
                   )}
                 </div>
                 {searchString ? <></> : <h3>Gợi ý dành riêng cho bạn</h3>}
-                <div className="flex max-w-[44rem] gap-4 flex-wrap">
+                <div className="flex max-w-[48rem] gap-4 flex-wrap">
                   {event?.items.map((item: Event) => (
                     <EventCard
                       key={item.eventId}
@@ -172,26 +180,17 @@ export default function UserNavBar() {
           )}
         </div>
         <div className="flex gap-4">
-          {/* <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href="#">
-                  <Calendar />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="bg-foreground">
-                <p>Xem lịch</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
           {user ? (
             <div className="flex items-center gap-4 hover:cursor-pointer">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
+                    <Link
+                      href="/su-kien-cua-toi"
+                      className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center"
+                    >
                       <Calendar className="w-5 h-5 text-background"></Calendar>
-                    </div>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent className="bg-foreground">
                     <p>Xem lịch</p>
@@ -212,22 +211,26 @@ export default function UserNavBar() {
               </TooltipProvider>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <div className="flex gap-4 items-center py-1.5 px-4 bg-foreground rounded-full">
-                    <div className="text-sm">
-                      Hi, {user?.firstName + " " + user?.lastName}
-                    </div>
+                  <div className="flex gap-4 items-center">
+                    <div className="text-sm">Hi, {user?.username}</div>
                     <Avatar className="w-8 h-8 hover:cursor-pointer">
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarImage
+                        src={user?.avatarUrl || "https://github.com/shadcn.png"}
+                      />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="max-w-s">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Billing</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Keyboard shortcuts</DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/thong-tin-ca-nhan">Thông tin cá nhân</Link>
+                    </DropdownMenuItem>
+                    {/* <DropdownMenuItem>Billing</DropdownMenuItem>
+                    <DropdownMenuItem>Settings</DropdownMenuItem> */}
+                    <DropdownMenuItem onClick={() => signOutUser()}>
+                      Đăng xuất
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -236,12 +239,12 @@ export default function UserNavBar() {
             <div className="flex gap-2 items-center text-sm">
               <Link href="/dang-nhap">Đăng nhập</Link>
               <Separator orientation="vertical" className="h-4" />
-              <Link href="#">Đăng ký</Link>
+              <Link href="/dang-ky">Đăng ký</Link>
             </div>
           )}
         </div>
       </div>
-      {pathname == "/su-kien" ? (
+      {/* {pathname == "/su-kien" ? (
         <></>
       ) : (
         <div className="bg-secondary-background">
@@ -255,6 +258,19 @@ export default function UserNavBar() {
                 {item.tagName}
               </Link>
             ))}
+          </div>
+        </div>
+      )} */}
+      {!(user?.verifyStatus === "Verified") && user && (
+        <div className="py-4 bg-secondary-background">
+          <div className="container text-secondary">
+            Tài khoản của bạn chưa được xác thực.{" "}
+            <span>
+              <Link href="/thong-tin-ca-nhan" className="text-primary">
+                Xác thực ngay{" "}
+              </Link>
+            </span>
+            để có thể tham gia những sự kiện hấp dẫn.
           </div>
         </div>
       )}
