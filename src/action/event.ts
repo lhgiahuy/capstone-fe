@@ -10,6 +10,7 @@ export interface getEventProps {
   Status?: string;
   EventTag?: string;
 }
+
 export async function getEvent(props?: getEventProps) {
   try {
     const event = await userAxios.get("/events", { params: props });
@@ -52,4 +53,18 @@ export async function createEvent(data: any) {
 
 export async function submitForm(data: any, eventId: string) {
   return await userAxios.post(`/events/${eventId}/form-submit`, data);
+}
+
+export async function approveEvent(
+  id: string,
+  aprroved: boolean,
+  processNote: string
+) {
+  try {
+    await userAxios.put(`/events/${id}/approve?isApproved=${aprroved}`, {
+      processNote: processNote,
+    });
+  } catch (error) {
+    console.error("Failed to create event", error);
+  }
 }

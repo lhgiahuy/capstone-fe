@@ -12,6 +12,22 @@ export async function getUser() {
   }
 }
 
+export async function approveVerifyUser(
+  id: string,
+  approved: boolean,
+  processNote: string
+) {
+  try {
+    const user = await userAxios.put(
+      `/users/${id}/approve?isApproved=${approved}`,
+      { processNote: processNote }
+    );
+    return user.data;
+  } catch (error) {
+    console.error("Failed to fetch user data", error);
+  }
+}
+
 export async function loginUser(data: TypeOfLoginForm) {
   return await userAxios.post("/auth/login", {
     email: data.email,

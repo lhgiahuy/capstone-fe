@@ -8,7 +8,7 @@ export default function RootLayout({
   return (
     <>
       <div className="flex">
-        <div className="hidden bg-white md:block min-h-screen">
+        <div className="hidden bg-slate-900 md:block min-h-screen">
           <Sidebar />
         </div>
         {/* <div className="p-5 w-full md:max-w-[1340px]">{children}</div> */}

@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import AdminNavBar from "../../_component/admin-navbar";
-import { getUser } from "@/action/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react"; // Import useState từ React
+import { approveVerifyUser, getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, getFirstLetterOfName } from "@/lib/utils";
@@ -20,14 +20,36 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
+import NavBar from "../_component/moderator-navbar";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
-export default function Event() {
+export default function ManagementUser() {
   const { data, isPending } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
   });
 
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [processNote, setProcessNote] = useState("");
+
+  const approveMutation = useMutation({
+    mutationFn: ({
+      userId,
+      approved,
+      note,
+    }: {
+      userId: string;
+      approved: boolean;
+      note: string;
+    }) => approveVerifyUser(userId, approved, note),
+    onSuccess: () => {
+      setIsSheetOpen(false);
+    },
+  });
+
   if (!data) return <></>;
+
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "username",
@@ -37,7 +59,7 @@ export default function Event() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Tên đăng nhập
+            Tên người dùng
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -61,14 +83,7 @@ export default function Event() {
       accessorKey: "email",
       header: "Email",
     },
-    {
-      accessorKey: "firstName",
-      header: "Tên",
-    },
-    {
-      accessorKey: "lastName",
-      header: "Họ",
-    },
+
     {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
@@ -82,7 +97,7 @@ export default function Event() {
       accessorKey: "verified",
       header: "Xác nhận",
       cell: ({ row }) =>
-        row.original.verifyStatus ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
+        row.original.verified ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
     },
     {
       accessorKey: "roleName",
@@ -148,6 +163,15 @@ export default function Event() {
                 Sao chép email người dùng
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedUser(user);
+                  setIsSheetOpen(true);
+                }}
+              >
+                Xác nhận người dùng
+              </DropdownMenuItem>
               <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
               <DropdownMenuItem>Xoá người dùng</DropdownMenuItem>
             </DropdownMenuContent>
@@ -157,10 +181,12 @@ export default function Event() {
       enableHiding: false, // disable hiding for this column
     },
   ];
+
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
+
   return (
     <>
-      <AdminNavBar links={["Quản lý người dùng"]} />
+      <NavBar links={["Quản lý người dùng"]} />
       <div className="">
         {isPending ? (
           <></>
@@ -171,6 +197,47 @@ export default function Event() {
             data={data.items}
           />
         )}
+        <Sheet open={isSheetOpen} onOpenChange={(open) => setIsSheetOpen(open)}>
+          <SheetContent>
+            <div className="space-y-4">
+              <textarea
+                className="w-full p-2 border rounded text-gray-600"
+                placeholder="Ghi lý do phê duyệt"
+                value={processNote}
+                onChange={(e) => setProcessNote(e.target.value)}
+              />
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (selectedUser) {
+                      approveMutation.mutate({
+                        userId: selectedUser.userId,
+                        approved: false,
+                        note: processNote,
+                      });
+                    }
+                  }}
+                >
+                  Từ chối
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (selectedUser) {
+                      approveMutation.mutate({
+                        userId: selectedUser.userId,
+                        approved: true,
+                        note: processNote,
+                      });
+                    }
+                  }}
+                >
+                  Đồng ý
+                </Button>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </>
   );
