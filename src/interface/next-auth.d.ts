@@ -6,13 +6,12 @@ declare module "next-auth" {
     username: string;
     avatarUrl: string;
     email: string;
-    firstName: string;
-    lastName: string;
     phoneNumber: string;
     cardUrl: string;
-    verified: boolean;
+    verifyStatus: string;
     roleName: string;
     createdAt: string;
+    processNote: string;
     updatedAt: string | null;
     isDeleted: boolean;
     deletedAt: string | null;

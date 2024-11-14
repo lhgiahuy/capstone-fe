@@ -15,15 +15,23 @@ import { useQuery } from "@tanstack/react-query";
 import { Clock, MapPinned } from "lucide-react";
 import Image from "next/image";
 import "../../../style/description.css";
+import { Badge } from "@/components/ui/badge";
+import { getUserById } from "@/action/user";
+import FormSheet from "./_component/form-sheet";
 export default function EventDetail({ params }: { params: { id: string } }) {
   const { data } = useQuery<Event>({
     queryKey: ["event", params.id],
     queryFn: () => getEventById(params.id),
   });
+  const { data: organizer } = useQuery({
+    queryKey: ["organizer", data?.organizerId],
+    queryFn: () => getUserById(data?.organizerId),
+  });
+
   if (!data) return <></>;
   return (
     <div className="flex flex-col gap-8">
-      <div className="absolute w-full h-[42rem] left-0 top-0 z-[-10] opacity-70">
+      <div className="absolute w-full h-[44rem] left-0 top-0 z-[-10] opacity-70">
         <div className="relative w-full h-full">
           <Image
             src="/images/event-bg-4.png"
@@ -33,8 +41,8 @@ export default function EventDetail({ params }: { params: { id: string } }) {
           ></Image>
         </div>
       </div>
-      <div className="flex min-h-[28rem]">
-        <div className="relative w-2/3">
+      <div className="flex h-[32rem]">
+        <div className="relative w-[48rem] h-full">
           <Image
             src={
               data.thumbnailImg.startsWith("https")
@@ -44,27 +52,54 @@ export default function EventDetail({ params }: { params: { id: string } }) {
             alt="event bg"
             fill
             className="object-cover"
-          ></Image>
+          />
         </div>
-        <div className="w-full p-16 bg-background flex flex-col gap-16 justify-between">
+        <div className="w-full p-12 bg-background flex flex-col gap-16 justify-between">
           <div className="flex flex-col gap-16">
-            <h1 className="text-primary uppercase text-2xl">
-              {data.eventName}
-            </h1>
+            <div className="flex flex-col gap-4">
+              <h1 className="text-primary uppercase text-2xl">
+                {data.eventName}
+              </h1>
+              <div className="w-full flex gap-4 flex-wrap">
+                {data.eventTags.slice(0, 6).map((item, index) => (
+                  <div key={index}>
+                    <Badge>{item}</Badge>
+                  </div>
+                ))}
+                {data.eventTags.length > 6 && (
+                  <Badge>{`+${data.eventTags.length - 6} TAG`}</Badge>
+                )}
+              </div>
+            </div>
             <div className="flex flex-col gap-8">
               <div className="flex gap-4">
                 <Clock className="text-primary" />
-                <p>{formatDate(data.startTime, "p, d MMMM, y")}</p>
+                <p>
+                  {formatDate(data.startTime, "p, d MMMM, y")} -{" "}
+                  {formatDate(data.endTime, "p, d MMMM, y")}
+                </p>
               </div>
               <div className="flex gap-4">
                 <MapPinned className="text-primary" />
-                <p>{data.location}</p>
+                {data.location ? (
+                  <p>{data.location}</p>
+                ) : (
+                  <p>{data.linkEvent}</p>
+                )}
               </div>
             </div>
           </div>
-          <Button size="lg" className="text-lg">
-            Theo dõi
-          </Button>
+          {data.form ? (
+            <FormSheet data={data}></FormSheet>
+          ) : (
+            <Button
+              size="lg"
+              variant="secondary"
+              className="text-lg text-secondary-background py-4"
+            >
+              Theo dõi
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex gap-8">
@@ -74,13 +109,13 @@ export default function EventDetail({ params }: { params: { id: string } }) {
             className="prose description"
           ></div>
         </div>
-        <div className="bg-foreground text-background h-full p-4 rounded-lg w-[16rem] shrink-0 flex flex-col gap-4">
+        <div className="bg-foreground text-background h-full p-4 min-w-[16rem] rounded-lg shrink-0 flex flex-col gap-4">
           <h2 className="font-semibold text-sm">Tổ chức bởi</h2>
           <Separator></Separator>
           <div className="flex items-center">
             <div className="rounded-full overflow-hidden relative p-4">
               <Image
-                src="/images/organizer-avt.png"
+                src={organizer?.avatarUrl || ""}
                 alt=""
                 fill
                 className="object-cover"
@@ -94,24 +129,24 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                   </Button>
                 </HoverCardTrigger>
                 <HoverCardContent
-                  className="w-80 bg-foreground text-background"
+                  className="w-full bg-foreground text-background"
                   align="start"
                 >
                   <div className="flex justify-between space-x-4">
                     <Avatar>
-                      <AvatarImage src="/images/organizer-avt.png" />
+                      <AvatarImage src={organizer?.avatarUrl} />
                       <AvatarFallback>VC</AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-semibold">Organizer Name</h4>
-                      <p className="text-sm">
-                        The React Framework – created and maintained by @vercel.
-                      </p>
-                      <div className="flex items-center pt-2">
+                      <h4 className="text-sm font-semibold">
+                        {organizer?.username}
+                      </h4>
+                      <p className="text-sm">{organizer?.email}</p>
+                      {/* <div className="flex items-center pt-2">
                         <span className="text-xs text-muted-foreground">
                           Joined December 2021
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </HoverCardContent>

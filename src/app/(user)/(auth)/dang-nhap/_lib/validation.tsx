@@ -1,8 +1,9 @@
+import { stringSchema } from "@/validation/common";
 import { z } from "zod";
 
 export const formSchema = z.object({
-  email: z.string().min(1),
-  password: z.string().min(1),
+  email: stringSchema,
+  password: stringSchema,
 });
 
 export type TypeOfLoginForm = z.infer<typeof formSchema>;
