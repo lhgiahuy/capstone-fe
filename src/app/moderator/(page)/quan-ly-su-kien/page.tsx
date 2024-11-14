@@ -30,7 +30,7 @@ export default function EventDetail() {
   const status = "Draft";
   const { data, isPending } = useQuery({
     queryKey: ["events", status],
-    queryFn: () => getEvent({ status: status }),
+    queryFn: () => getEvent({ Status: status }),
   });
   const columns: ColumnDef<Event>[] = [
     {

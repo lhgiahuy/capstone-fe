@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { DetailEventProps } from "@/interface/event";
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { approveEvent } from "@/action/event";
 
-export default function ButtonApproved({ eventId }: DetailEventProps) {
+export default function ButtonApproved({ eventId }: { eventId: string }) {
   const [processNote, setProcessNote] = useState(""); // Trạng thái lý do nhập vào
   const [showProcessNoteInput, setShowProcessNoteInput] = useState(false); // Hiển thị input lý do
 
