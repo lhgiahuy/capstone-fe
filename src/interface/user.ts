@@ -12,6 +12,7 @@ export interface User {
   updatedAt: string | null;
   isDeleted: boolean;
   deletedAt: string | null;
+  verified: string;
 }
 
 export interface LoginResponse {

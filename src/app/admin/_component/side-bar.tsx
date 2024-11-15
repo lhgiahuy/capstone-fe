@@ -12,6 +12,7 @@ import {
   Package2,
   User,
   BellRing,
+  Hash,
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -75,6 +76,13 @@ export default function Sidebar() {
       link: "/admin/thong-bao",
       icon: <BellRing className="h-5 w-5" />,
     },
+
+    {
+      title: "Thẻ sự kiện",
+      link: "/admin/quan-ly-the-su-kien",
+      icon: <Hash className="h-5 w-5" />,
+    },
+
     // {
     //   title: "Quản lý rút tiền",
     //   link: "/admin/quan-ly-rut-tien",

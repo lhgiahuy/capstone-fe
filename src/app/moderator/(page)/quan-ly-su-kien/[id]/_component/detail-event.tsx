@@ -27,6 +27,7 @@ import Image from "next/image";
 import { DetailEventProps, Event } from "@/interface/event";
 // import { Button } from "@/components/ui/button";
 import ButtonApproved from "@/app/moderator/(page)/_component/button-approved";
+import { formatDate } from "@/lib/date";
 // import "../../../style/description.css";
 
 // import { Upload } from "lucide-react";
@@ -108,11 +109,15 @@ export default function DetailEvent({ eventId }: DetailEventProps) {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Ngày bắt đầu</Label>
-                <div className="border p-2 rounded-sm">{data.startTime}</div>
+                <div className="border p-2 rounded-sm">
+                  {formatDate(data.startTime)}
+                </div>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Ngày kết thúc</Label>
-                <div className="border p-2 rounded-sm">{data.endTime}</div>
+                <div className="border p-2 rounded-sm">
+                  {formatDate(data.endTime)}
+                </div>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Số lượng người tham gia</Label>

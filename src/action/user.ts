@@ -3,9 +3,17 @@ import { TypeOfLoginForm } from "@/app/(user)/(auth)/dang-nhap/_lib/validation";
 import { userAxios } from "@/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
-export async function getUser() {
+export interface getUserProps {
+  // SearchKeyword?: string;
+  PageSize?: number;
+  PageNumber?: number;
+  isDescending?: boolean;
+  orderBy?: string;
+}
+
+export async function getUser(props?: getUserProps) {
   try {
-    const user = await userAxios.get("/users");
+    const user = await userAxios.get("/users", { params: props });
     return user.data;
   } catch (error) {
     console.error("Failed to fetch user data", error);

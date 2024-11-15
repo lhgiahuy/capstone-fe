@@ -26,7 +26,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { DataTablePagination } from "./pagination";
+// import { DataTablePagination } from "./pagination";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -150,9 +150,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <DataTablePagination table={table} />
-      </div>
+      </div> */}
     </>
   );
 }

@@ -26,7 +26,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 export default function ManagementUser() {
   const { data, isPending } = useQuery({
     queryKey: ["user"],
-    queryFn: getUser,
+    queryFn: () => getUser(),
   });
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
