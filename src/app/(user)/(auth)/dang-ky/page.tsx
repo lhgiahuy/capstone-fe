@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className="flex flex-col gap-8 w-full px-48 max-w-[55rem]">
-      <h1 className="text-4xl font-semibold">Đăng ký tài khoản student</h1>
+      <h1 className="text-4xl font-semibold">Đăng ký tài khoản</h1>
       <div className="flex gap-1 text-sm">
         <p>Đã có tài khoản?</p>
         <Link href="/dang-nhap" className="text-primary hover:text-primary/80">

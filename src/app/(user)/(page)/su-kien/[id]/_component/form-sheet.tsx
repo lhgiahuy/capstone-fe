@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,17 +28,22 @@ import { Event } from "@/interface/event";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function FormSheet({ data }: { data: Event }) {
+  const [open, setOpen] = useState(false); // State to manage Sheet visibility
+
   const form = useForm<TypeOfRegistrationForm>({
     resolver: zodResolver(formSchema),
     values: {
       data: data?.form.map((item) => ({ question: item.name, answer: "" })),
     },
   });
-  const onSubmit: SubmitHandler<any> = async (data) => {
-    toast(JSON.stringify(data.data, null, 2));
+
+  const onSubmit: SubmitHandler<any> = async () => {
+    toast("Đăng ký thành công");
+    setOpen(false); // Close Sheet on successful submit
   };
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       {/* {user?.verifyStatus === "Vertified" && (
       <SheetTrigger asChild>
         <Button size="lg" className="text-md py-8">
@@ -112,8 +118,14 @@ export default function FormSheet({ data }: { data: Event }) {
                                     key={index}
                                     className="flex items-center space-x-2"
                                   >
-                                    <RadioGroupItem value={item} id="r1" />
-                                    <Label htmlFor="r1" className="text-md">
+                                    <RadioGroupItem
+                                      value={item}
+                                      id={`r${index}`}
+                                    />
+                                    <Label
+                                      htmlFor={`r${index}`}
+                                      className="text-md"
+                                    >
                                       {item}
                                     </Label>
                                   </div>
@@ -134,7 +146,6 @@ export default function FormSheet({ data }: { data: Event }) {
             </Form>
           </div>
         </ScrollArea>
-
         <SheetFooter></SheetFooter>
       </SheetContent>
     </Sheet>

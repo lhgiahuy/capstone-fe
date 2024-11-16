@@ -11,7 +11,6 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
-
   providers: [
     Credentials({
       name: "Credentials",
@@ -40,7 +39,7 @@ export const authOptions = {
               if (!params.user?.token) {
                 throw new Error("Not token");
               }
-              const { data } = await getMe({
+              const data = await getMe({
                 headers: {
                   Authorization: `Bearer ${params.user.token}`,
                 },
@@ -69,7 +68,7 @@ export const authOptions = {
             if (!params.token?.token) {
               throw new Error("Not token");
             }
-            const { data } = await getMe({
+            const data = await getMe({
               headers: {
                 Authorization: `Bearer ${params.token?.token}`,
               },

@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/form";
 import { formSchema, TypeOfProfileForm } from "../_lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userAtom } from "@/lib/atom/user";
-import { useAtom } from "jotai";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +20,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function ProfileForm({ values }: any) {
-  const [user] = useAtom(userAtom);
   const router = useRouter();
   const [isLoading] = useState(false);
   const form = useForm<TypeOfProfileForm>({
@@ -134,7 +131,7 @@ export default function ProfileForm({ values }: any) {
               )}
 
               <div className="w-full flex justify-center gap-8 pt-8">
-                {user?.verifyStatus == "Unverified" && (
+                {values?.verifyStatus === "Unverified" && (
                   <Button
                     type="button"
                     size={"lg"}

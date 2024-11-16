@@ -70,7 +70,7 @@ export default function ValidationForm() {
             <FormItem>
               <FormControl>
                 <ImageInput
-                  subtitle="Up một tấm hình thẻ FPT để xác thực tài khoản"
+                  subtitle="Thẻ sinh viên, thẻ nhân viên FPT"
                   {...field}
                 />
               </FormControl>
