@@ -10,11 +10,14 @@ export interface Event {
   organizerName: string;
   organizerId: string;
   eventTypeName: string;
+  statusId: number;
   status: string;
   passwordMeeting: string;
   eventTags: string[];
   thumbnailImg: string;
   linkEvent: string;
+  passwordMeeting: string;
+
   form: [
     {
       name: string;
@@ -22,4 +25,8 @@ export interface Event {
       options: string[];
     }
   ];
+}
+
+export interface DetailEventProps {
+  eventId: string;
 }

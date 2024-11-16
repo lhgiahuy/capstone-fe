@@ -17,16 +17,53 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+} from "@/components/ui/pagination";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function Event() {
+export default function AdminManagementUser() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParamsPaging = useSearchParams();
+  const currentPage =
+    parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
+
   const { data, isPending } = useQuery({
-    queryKey: ["user"],
-    queryFn: getUser,
+    queryKey: ["user", currentPage],
+    queryFn: () => getUser({ PageNumber: currentPage }),
   });
-
+  const renderPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= data?.totalPages; i++) {
+      pages.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href={`${pathname}?${new URLSearchParams({
+              ...Object.fromEntries(searchParamsPaging),
+              PageNumber: i.toString(),
+            }).toString()}`}
+            isActive={i == currentPage}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    return pages;
+  };
   if (!data) return <></>;
   const columns: ColumnDef<User>[] = [
     {
@@ -61,14 +98,7 @@ export default function Event() {
       accessorKey: "email",
       header: "Email",
     },
-    {
-      accessorKey: "firstName",
-      header: "Tên",
-    },
-    {
-      accessorKey: "lastName",
-      header: "Họ",
-    },
+
     {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
@@ -172,6 +202,51 @@ export default function Event() {
           />
         )}
       </div>
+      <Pagination>
+        <PaginationContent className="items-center mt-3">
+          <PaginationItem>
+            <Button
+              onClick={() =>
+                router.push(
+                  `${pathname}?${new URLSearchParams({
+                    ...Object.fromEntries(searchParamsPaging),
+                    PageNumber: `${(
+                      parseInt(currentPage.toString()) - 1
+                    ).toString()}`,
+                  }).toString()}`
+                )
+              }
+              disabled={currentPage == 1}
+              size="icon"
+              variant="ghost"
+            >
+              <ChevronLeft />
+            </Button>
+          </PaginationItem>
+          {renderPageNumbers()}
+          <PaginationItem>
+            <Button
+              onClick={() =>
+                router.push(
+                  `${pathname}?${new URLSearchParams({
+                    ...Object.fromEntries(searchParamsPaging),
+                    PageNumber: `${(
+                      parseInt(currentPage.toString()) + 1
+                    ).toString()}`,
+                  }).toString()}`
+                )
+              }
+              disabled={currentPage == data?.totalPages}
+              size="icon"
+              variant="ghost"
+            >
+              <div className="flex gap-2 items-center">
+                <ChevronRight />
+              </div>
+            </Button>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </>
   );
 }

@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 // import { getFirstLetterOfName } from "@/lib/utils";
 import { DataTable } from "@/components/table/data-table";
 // import { User } from "@/interface/user";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,12 +26,13 @@ import Link from "next/link";
 import NavBar from "../_component/moderator-navbar";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { Event } from "@/interface/event";
+import { formatDate } from "@/lib/date";
 
 export default function EventDetail() {
-  const status = "Draft";
+  const [statusFilter, setStatusFilter] = useState<string>("draft");
   const { data, isPending } = useQuery({
-    queryKey: ["events", status],
-    queryFn: () => getEvent({ Status: status }),
+    queryKey: ["events", statusFilter],
+    queryFn: () => getEvent({ Status: statusFilter }),
   });
   const columns: ColumnDef<Event>[] = [
     {
@@ -61,44 +63,63 @@ export default function EventDetail() {
         );
       },
     },
-    // {
-    //   accessorKey: "avatarUrl",
-    //   header: "Ảnh đại diện",
-    //   cell: ({ row }) => (
-    //     <div className="w-full flex justify-center">
-    //       <Avatar className="w-8 h-8">
-    //         <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
-    //         <AvatarFallback>
-    //           {getFirstLetterOfName(row.original.username)}
-    //         </AvatarFallback>
-    //       </Avatar>
-    //     </div>
-    //   ),
-    // },
 
-    {
-      accessorKey: "description",
-      header: "Mô tả",
-    },
     {
       accessorKey: "organizerName",
       header: "Người tổ chức",
     },
+
     {
       accessorKey: "startTime",
       header: "Ngày bắt đầu",
+      cell: ({ row }) => {
+        return <div>{formatDate(row.original.startTime)}</div>;
+      },
     },
     {
       accessorKey: "endTime",
       header: "Ngày kết thúc",
+      cell: ({ row }) => {
+        return <div>{formatDate(row.original.startTime)}</div>;
+      },
     },
+
     {
       accessorKey: "maxAttendees",
       header: "Số người tham gia",
+      cell: ({ row }) => {
+        return <div>{row.original.maxAttendees || "chưa có dữ liệu"}</div>;
+      },
     },
     {
       accessorKey: "status",
-      header: "Trạng thái",
+      header: () => {
+        return (
+          <div className="flex items-center justify-center">
+            <div>Trạng thái</div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8">
+                  <ArrowUpDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Chọn trạng thái</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => setStatusFilter("upcoming")}>
+                  Sắp tới
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
+                  Bản nháp
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("completed")}>
+                  Hoàn thành
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
     },
 
     {
@@ -130,7 +151,7 @@ export default function EventDetail() {
       enableHiding: false, // disable hiding for this column
     },
   ];
-  const hideColumns = ["description", "isDeleted", "deletedAt"];
+  const hideColumns = ["isDeleted", "deletedAt"];
   return (
     <>
       <NavBar links={["Quản lý sự kiện"]} />

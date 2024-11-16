@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/table/data-table";
-import { User } from "@/interface/user";
+// import { User } from "@/interface/user";
 
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
@@ -13,13 +13,14 @@ import { ArrowUpDown } from "lucide-react";
 // import { parseISO } from "date-fns";
 import { getEvent } from "@/action/event";
 import AdminNavBar from "../../_component/admin-navbar";
+// import { formatDate } from "@/lib/date";
 
 export default function Event() {
   const { data, isPending } = useQuery({
     queryKey: ["events"],
     queryFn: () => getEvent(),
   });
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "eventName",
       header: ({ column }) => {
@@ -57,14 +58,30 @@ export default function Event() {
       accessorKey: "organizerName",
       header: "Người tổ chức",
     },
-    {
-      accessorKey: "startTime",
-      header: "Ngày bắt đầu",
-    },
-    {
-      accessorKey: "endTime",
-      header: "Ngày kết thúc",
-    },
+    // {
+    //   accessorKey: "startTime",
+    //   header: "Ngày bắt đầu",
+    // },
+    // {
+    //   accessorKey: "endTime",
+    //   header: "Ngày kết thúc",
+    // },
+    // {
+    //   accessorKey: "startTime",
+    //   header: "Ngày tạo",
+    //   cell: ({ row }) => {
+    //     const formattedDate = formatDate(row.original.startTime, "d MMMM, y");
+    //     return <div>{formattedDate}</div>;
+    //   },
+    // },
+    // {
+    //   accessorKey: "endTime",
+    //   header: "Ngày tạo",
+    //   cell: ({ row }) => {
+    //     const formattedDate = formatDate(row.original.endTime, "d MMMM, y");
+    //     return <div>{formattedDate}</div>;
+    //   },
+    // },
     {
       accessorKey: "maxAttendees",
       header: "Số người tham gia",
