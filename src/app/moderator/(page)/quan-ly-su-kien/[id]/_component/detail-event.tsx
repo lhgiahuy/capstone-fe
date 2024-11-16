@@ -24,14 +24,14 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getEventById } from "@/action/event";
 import Image from "next/image";
-import { DetailEventProps, Event } from "@/interface/event";
+import { Event } from "@/interface/event";
 // import { Button } from "@/components/ui/button";
 import ButtonApproved from "@/app/moderator/(page)/_component/button-approved";
 // import "../../../style/description.css";
 
 // import { Upload } from "lucide-react";
 
-export default function DetailEvent({ eventId }: DetailEventProps) {
+export default function DetailEvent({ eventId }: { eventId: string }) {
   const { data } = useQuery<Event>({
     queryKey: ["events"],
     queryFn: () => getEventById(eventId),

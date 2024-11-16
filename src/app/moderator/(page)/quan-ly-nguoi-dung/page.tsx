@@ -50,7 +50,7 @@ export default function ManagementUser() {
 
   if (!data) return <></>;
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: "username",
       header: ({ column }) => {

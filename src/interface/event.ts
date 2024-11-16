@@ -10,7 +10,8 @@ export interface Event {
   organizerName: string;
   organizerId: string;
   eventTypeName: string;
-  statusId: number;
+  status: string;
+  passwordMeeting: string;
   eventTags: string[];
   thumbnailImg: string;
   linkEvent: string;

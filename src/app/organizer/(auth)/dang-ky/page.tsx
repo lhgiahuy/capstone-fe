@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 export default function Page() {
   return (
-    <div className="flex flex-col gap-8 w-full px-48 max-w-[55rem]">
+    <div className="flex flex-col gap-8 w-full px-48 max-w-[64rem]">
       <h1 className="text-4xl font-semibold">Đăng ký tài khoản organizer</h1>
       <div className="flex gap-1 text-sm">
         <p>Đã có tài khoản?</p>

@@ -47,7 +47,7 @@ export async function signUpOrganizer(data: TypeOfSignUpForm) {
 }
 
 export async function getMe(config: AxiosRequestConfig = {}) {
-  return await userAxios.get("/users/me", { ...config });
+  return (await userAxios.get("/users/me", { ...config })).data;
 }
 
 export async function updateInfo(data: any) {
