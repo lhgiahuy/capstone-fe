@@ -6,5 +6,6 @@ import ProfileForm from "./_component/form";
 
 export default function Page() {
   const { data } = useQuery({ queryKey: ["Me"], queryFn: getMe });
-  return <ProfileForm values={data?.data} />;
+  if (!data) return <></>;
+  return <ProfileForm values={data} />;
 }

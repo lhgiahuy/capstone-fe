@@ -31,9 +31,10 @@ import { Tag } from "@/interface/tag";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { signOutUser } from "@/lib/auth";
-import { User } from "next-auth";
+import { getMe } from "@/action/user";
 
-export default function UserNavBar({ user }: { user: User }) {
+export default function UserNavBar() {
+  const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
   const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
