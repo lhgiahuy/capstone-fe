@@ -75,3 +75,17 @@ export async function getUserById(id?: string) {
     console.error("Failed to fetch user data", error);
   }
 }
+
+export async function getRegisteredEvent(
+  completed?: boolean,
+  InMonth?: number
+) {
+  try {
+    const event = await userAxios.get(
+      `/users/participant?inMonth=${InMonth}&isCompleted=${completed}`
+    );
+    return event.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}

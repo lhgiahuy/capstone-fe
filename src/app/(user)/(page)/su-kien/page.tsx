@@ -17,7 +17,6 @@ export default function Event() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-
   const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
@@ -26,7 +25,7 @@ export default function Event() {
     parseInt((searchParams.get("InMonth") || "").replace("Tháng ", ""), 10) ||
     undefined;
   const types = searchParams
-    .getAll("type")
+    .getAll("EventTypes")
     .flatMap((item) => item.split(","))
     .filter((item) => item !== "");
   const tag = searchParams.get("EventTag")?.toString();

@@ -7,7 +7,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 
-const images = ["/images/event-bg-1.png", "/images/auth-bg.jpg"];
+const images = ["/images/event-thumbnail-1.jpg", "/images/auth-bg.jpg"];
 export default function Banner() {
   return (
     <section>
@@ -25,7 +25,7 @@ export default function Banner() {
       >
         <CarouselContent>
           {images.map((item, index) => (
-            <CarouselItem key={index} className="w-full h-[20rem] relative">
+            <CarouselItem key={index} className="w-full h-[24rem] relative">
               <Image
                 src={item}
                 alt="images"

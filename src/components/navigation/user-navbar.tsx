@@ -20,26 +20,34 @@ import {
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventCard from "@/app/(user)/_component/event-card";
 import { useQuery } from "@tanstack/react-query";
 import { getEvent, getTag } from "@/action/event";
 import { Event } from "@/interface/event";
-import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Tag } from "@/interface/tag";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { signOutUser } from "@/lib/auth";
 import { getMe } from "@/action/user";
+import useDebounce from "@/hooks/use-debounce";
+import useSearchParamsHandler from "@/hooks/use-add-search-param";
 
 export default function UserNavBar() {
   const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
   const [open, setOpen] = useState(false);
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace, push } = useRouter();
+  const { push } = useRouter();
   const searchString = searchParams.get("tu-khoa")?.toString() || "";
+  const [searchValue, setSearchValue] = useState(searchString);
+  const debouncedSearchValue = useDebounce(searchValue, 300); // 300ms delay
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
   const LIMIT = 4;
   const { data: event } = useQuery({
     queryKey: ["events", searchString, LIMIT],
@@ -53,15 +61,19 @@ export default function UserNavBar() {
     queryKey: ["tags"],
     queryFn: getTag,
   });
-  const handleSearch = useDebouncedCallback((searchString: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (searchString) {
-      params.set("tu-khoa", searchString);
+  const [addParam, clearParam] = useSearchParamsHandler();
+  // const handleSearch = useDebouncedCallback((searchString: string) => {
+  //   addParam({ "tu-khoa": searchString });
+  // }, 300);
+  useEffect(() => {
+    if (debouncedSearchValue) {
+      // Add or update the search parameter if there is a value
+      addParam({ "tu-khoa": debouncedSearchValue });
     } else {
-      params.delete("tu-khoa");
+      // Clear the search parameter if the value is empty
+      clearParam("tu-khoa");
     }
-    replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  }, [debouncedSearchValue, addParam, clearParam]);
   return (
     <nav className="bg-primary text-primary-foreground">
       <div className="container flex justify-between items-center py-4">
@@ -85,13 +97,12 @@ export default function UserNavBar() {
               className="w-full rounded-lg bg-foreground border-0 md:w-[24rem] lg:w-[32rem]"
               onFocus={() => setOpen(true)} // Open popover on input focus
               onBlur={(e) => {
-                // Optional: Close the popover if the focus shifts outside
                 if (!e.currentTarget.contains(e.relatedTarget)) {
                   setOpen(false);
                 }
               }}
-              onChange={(e) => handleSearch(e.target.value)}
-              defaultValue={searchParams.get("tu-khoa")?.toString()}
+              onChange={(e) => handleSearch(e)}
+              value={searchValue}
             />
           ) : (
             <Popover open={open} onOpenChange={setOpen}>
@@ -106,8 +117,8 @@ export default function UserNavBar() {
                       setOpen(false);
                     }
                   }}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  defaultValue={searchParams.get("tu-khoa")?.toString()}
+                  onChange={(e) => handleSearch(e)}
+                  value={searchValue}
                 />
               </PopoverTrigger>
               <PopoverContent
