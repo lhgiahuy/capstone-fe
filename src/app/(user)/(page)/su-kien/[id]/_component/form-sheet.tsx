@@ -26,43 +26,61 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Event } from "@/interface/event";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getMe } from "@/action/user";
+import { submitForm } from "@/action/event";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
-
+  const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
   const form = useForm<TypeOfRegistrationForm>({
     resolver: zodResolver(formSchema),
     values: {
       data: data?.form.map((item) => ({ question: item.name, answer: "" })),
     },
   });
-
-  const onSubmit: SubmitHandler<any> = async () => {
-    toast("Đăng ký thành công");
+  const { mutate: submitFormMutation } = useMutation({
+    mutationFn: (formData) => submitForm(formData, data.eventId),
+  });
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    submitFormMutation(data, {
+      onSuccess: () => toast("Đăng ký thành công"),
+      onError: () => toast.error("Đăng ký thất bại!"),
+    });
     setOpen(false); // Close Sheet on successful submit
   };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* {user?.verifyStatus === "Vertified" && (
-      <SheetTrigger asChild>
+      {user?.verifyStatus === "Verified" && data.status !== "Completed" ? (
+        <SheetTrigger asChild>
+          <Button
+            disabled={data.isRegistered}
+            size="lg"
+            className="text-md py-8"
+          >
+            {data.isRegistered ? "Đã đăng ký" : "Đăng ký"}
+          </Button>
+        </SheetTrigger>
+      ) : data.status === "Completed" ? (
+        <Button size="lg" variant="destructive" className="text-lg py-8">
+          Đã kết thúc
+        </Button>
+      ) : (
+        <Button
+          size="lg"
+          className="text-md py-8"
+          onClick={() => toast("Vui lòng xác thực tài khoản để đăng ký")}
+        >
+          Đăng ký
+        </Button>
+      )}
+
+      {/* <SheetTrigger asChild>
         <Button size="lg" className="text-md py-8">
           Đăng ký
         </Button>
-      </SheetTrigger>
-    )}
-    <Button
-      size="lg"
-      className="text-md py-8"
-      onClick={() => toast("Vui lòng xác thực tài khoản để đăng ký")}
-    >
-      Đăng ký
-    </Button> */}
-      <SheetTrigger asChild>
-        <Button size="lg" className="text-md py-8">
-          Đăng ký
-        </Button>
-      </SheetTrigger>
+      </SheetTrigger> */}
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Form đăng ký sự kiện</SheetTitle>
@@ -76,7 +94,7 @@ export default function FormSheet({ data }: { data: Event }) {
               >
                 {data.form.map((item, index) => (
                   <div className="flex flex-col gap-4" key={index}>
-                    <h2 className="text-xl">{`Câu hỏi ${index + 1}: `}</h2>
+                    {/* <h2 className="text-xl">{`Câu hỏi ${index + 1}: `}</h2> */}
                     <FormField
                       control={form.control}
                       name={`data.${index}.question`}

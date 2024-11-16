@@ -9,13 +9,13 @@ import {
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 import { useQuery } from "@tanstack/react-query";
-import { getEvent } from "@/action/event";
-import { Event } from "@/interface/event";
+import { getBanners } from "@/action/event";
+import { Banner } from "@/interface/banner";
 
 export default function Slider() {
   const { data } = useQuery({
-    queryKey: ["events"],
-    queryFn: () => getEvent(),
+    queryKey: ["banner"],
+    queryFn: getBanners,
   });
   return (
     <section className="flex flex-col gap-4">
@@ -32,15 +32,15 @@ export default function Slider() {
         }}
       >
         <CarouselContent className="p-2">
-          {data?.items.map((item: Event) => (
+          {data?.map((item: Banner) => (
             <CarouselItem
               key={item.eventId}
               className="w-full h-[20rem] relative md:basis-1/2 lg:basis-1/4"
             >
               <Image
                 src={
-                  item.thumbnailImg.startsWith("https")
-                    ? item.thumbnailImg
+                  item.posterImg.startsWith("https")
+                    ? item.posterImg
                     : "/images/event-bg-2.png"
                 }
                 alt="images"

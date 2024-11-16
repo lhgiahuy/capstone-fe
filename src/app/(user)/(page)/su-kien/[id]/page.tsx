@@ -27,7 +27,6 @@ export default function EventDetail({ params }: { params: { id: string } }) {
     queryKey: ["organizer", data?.organizerId],
     queryFn: () => getUserById(data?.organizerId),
   });
-
   if (!data) return <></>;
   return (
     <div className="flex flex-col gap-8">
@@ -91,6 +90,10 @@ export default function EventDetail({ params }: { params: { id: string } }) {
           </div>
           {data.form ? (
             <FormSheet data={data}></FormSheet>
+          ) : data.status === "Completed" ? (
+            <Button size="lg" variant="destructive" className="text-lg py-8">
+              Đã kết thúc
+            </Button>
           ) : (
             <Button
               size="lg"

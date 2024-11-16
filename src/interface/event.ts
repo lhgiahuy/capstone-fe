@@ -16,8 +16,7 @@ export interface Event {
   eventTags: string[];
   thumbnailImg: string;
   linkEvent: string;
-  passwordMeeting: string;
-
+  isRegistered: boolean;
   form: [
     {
       name: string;

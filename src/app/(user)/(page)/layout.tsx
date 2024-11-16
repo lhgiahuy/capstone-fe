@@ -8,7 +8,7 @@ export default async function UserLayout({
 }>) {
   // const session = await getServerSession(authOptions);
   return (
-    <div className="flex flex-col gap-16">
+    <div className="flex flex-col gap-12">
       <UserNavBar />
       <div className="container min-h-screen">{children}</div>
       <UserFooter />

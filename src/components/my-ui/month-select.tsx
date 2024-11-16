@@ -8,15 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { months } from "@/lib/date";
+import { months, monthsWithAll } from "@/lib/date";
 
 interface MonthSelectProps {
   value: string | undefined; // The selected month value
-  onValueChange: (value: string) => void; // Callback for value change
+  onValueChange: (value: string) => void;
+  all?: boolean;
 }
 export default function MonthSelect({
   value,
   onValueChange,
+  all,
 }: MonthSelectProps) {
   return (
     <Select value={value} onValueChange={onValueChange}>
@@ -25,11 +27,17 @@ export default function MonthSelect({
       </SelectTrigger>
       <SelectContent align="end">
         <SelectGroup>
-          {months.map((item, index) => (
-            <SelectItem key={index} value={item}>
-              {item}
-            </SelectItem>
-          ))}
+          {all
+            ? monthsWithAll.map((item, index) => (
+                <SelectItem key={index} value={item}>
+                  {item}
+                </SelectItem>
+              ))
+            : months.map((item, index) => (
+                <SelectItem key={index} value={item}>
+                  {item}
+                </SelectItem>
+              ))}
         </SelectGroup>
       </SelectContent>
     </Select>

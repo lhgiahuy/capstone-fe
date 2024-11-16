@@ -96,16 +96,16 @@ export default function Page() {
     queryKey: ["events", LIMIT, "Upcoming"],
     queryFn: () => getEvent({ PageSize: LIMIT, Status: "Upcoming" }),
   });
-  // const { data: completeList } = useQuery({
-  //   queryKey: ["events", LIMIT, "Complete"],
-  //   queryFn: () => getEvent({ PageSize: LIMIT, Status: "Complete" }),
-  // });
+  const { data: completeList } = useQuery({
+    queryKey: ["events", LIMIT, "Complete"],
+    queryFn: () => getEvent({ PageSize: LIMIT, Status: "Completed" }),
+  });
   return (
     <div className="flex flex-col gap-16">
       <Banner />
       <Slider />
       <EventList data={upcomingList} title="Sự kiện sắp tới" />
-      {/* <EventList data={completeList} title="Sự kiện đã diễn ra" /> */}
+      <EventList data={completeList} title="Sự kiện đã diễn ra" />
     </div>
   );
 }
