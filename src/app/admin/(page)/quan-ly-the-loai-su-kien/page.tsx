@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  //  useQueryClient
+} from "@tanstack/react-query";
 
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -10,9 +15,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 import AdminNavBar from "../../_component/admin-navbar";
-import { deleteTag, getTag } from "@/action/tag";
-import { Tag } from "@/interface/tag";
-import { formatDate } from "@/lib/date";
+
+// import { formatDate } from "@/lib/date";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,35 +25,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateTag from "./_component/create-tag";
-import DialogDelete from "./_component/dialog-delete";
+import { deleteEventType, getEventType } from "@/action/event";
+import { EventType } from "@/interface/event-type";
+import CreateEventType from "./_component/create-event-type";
+import DialogDeleteType from "./_component/dialog-delete-type";
 import { useState } from "react";
+import DialogUpdateType from "./_component/dialog-update-type";
 
-export default function EventTag() {
+export default function EventTypes() {
   const queryClient = useQueryClient();
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
-
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
+  const [selectedTypeName, setSelectedTypeName] = useState<string>("");
   const { data, isPending } = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => getTag(),
+    queryKey: ["types"],
+    queryFn: () => getEventType(),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (tagId: string) => deleteTag(tagId),
+  const deleteType = useMutation({
+    mutationFn: (eventTypeId: string) => deleteEventType(eventTypeId),
     onSuccess: () => {
       alert("Xóa thẻ thành công!");
-      queryClient.invalidateQueries({ queryKey: ["tags"] });
+      queryClient.invalidateQueries({ queryKey: ["types"] });
     },
     onError: (error) => {
       console.error("Failed to delete tag:", error);
     },
   });
 
-  const columns: ColumnDef<Tag>[] = [
+  const columns: ColumnDef<EventType>[] = [
     {
-      accessorKey: "tagName",
+      accessorKey: "eventTypeName",
       header: ({ column }) => {
         return (
           <Button
@@ -64,30 +72,9 @@ export default function EventTag() {
     },
 
     {
-      accessorKey: "svgContent",
-      header: "Ảnh icon",
-      cell: ({ row }) => (
-        <div className="flex justify-center items-center">
-          <div
-            dangerouslySetInnerHTML={{ __html: row.original.svgContent }}
-            className="prose"
-          ></div>
-        </div>
-      ),
-    },
-
-    {
-      accessorKey: "createdAt",
-      header: "Ngày tạo",
-      cell: ({ row }) => {
-        const formattedDate = formatDate(row.original.createdAt, "d MMMM, y");
-        return <div>{formattedDate}</div>;
-      },
-    },
-    {
       id: "actions",
       cell: ({ row }) => {
-        const tag = row.original;
+        const type = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -99,18 +86,29 @@ export default function EventTag() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(tag.tagName)}
+                onClick={() =>
+                  navigator.clipboard.writeText(type.eventTypeName)
+                }
               >
                 Sao chép tên thẻ
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  setSelectedTagId(tag.tagId);
+                  setSelectedTypeId(type.eventTypeId);
                   setOpenDialog(true);
                 }}
               >
-                Xoá thẻ
+                Xoá thể loại
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedTypeId(type.eventTypeId);
+                  setSelectedTypeName(type.eventTypeName);
+                  setOpenUpdateDialog(true);
+                }}
+              >
+                Cập nhật thể loại
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -122,9 +120,9 @@ export default function EventTag() {
   const hideColumns = ["description", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Quản lý thẻ sự kiện"]} />
+      <AdminNavBar links={["Quản lý thể loại sự kiện"]} />
       <div className="mb-4 flex  items-center">
-        <CreateTag />
+        <CreateEventType />
       </div>
       <div className="">
         {isPending ? (
@@ -133,14 +131,20 @@ export default function EventTag() {
           <DataTable hideColumns={hideColumns} columns={columns} data={data} />
         )}
       </div>
-      <DialogDelete
+      <DialogDeleteType
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         onDelete={() => {
-          if (selectedTagId) {
-            deleteMutation.mutate(selectedTagId);
+          if (selectedTypeId) {
+            deleteType.mutate(selectedTypeId);
           }
         }}
+      />
+      <DialogUpdateType
+        open={openUpdateDialog}
+        onClose={() => setOpenUpdateDialog(false)}
+        eventTypeId={selectedTypeId}
+        currentName={selectedTypeName}
       />
     </>
   );

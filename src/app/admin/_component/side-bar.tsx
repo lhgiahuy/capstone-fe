@@ -13,6 +13,7 @@ import {
   User,
   BellRing,
   Hash,
+  TicketCheck,
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -83,11 +84,11 @@ export default function Sidebar() {
       icon: <Hash className="h-5 w-5" />,
     },
 
-    // {
-    //   title: "Quản lý rút tiền",
-    //   link: "/admin/quan-ly-rut-tien",
-    //   icon: <HandCoins className="h-5 w-5" />,
-    // },
+    {
+      title: "Quản lý thể loại sự kiện",
+      link: "/admin/quan-ly-the-loai-su-kien",
+      icon: <TicketCheck className="h-5 w-5" />,
+    },
     // {
     //   title: "Giao dịch",
     //   link: "/admin/giao-dich",

@@ -56,24 +56,6 @@ export async function getEventById(id: string) {
   }
 }
 
-export async function getTag() {
-  try {
-    const tag = await userAxios.get("/tags");
-    return tag.data;
-  } catch (error) {
-    console.error("Failed to fetch tags data", error);
-  }
-}
-
-export async function getEventType() {
-  try {
-    const type = await userAxios.get("/event-types");
-    return type.data;
-  } catch (error) {
-    console.error("Failed to fetch event type data", error);
-  }
-}
-
 export async function createEvent(data: any) {
   return await userAxios.post("/events", data);
 }
@@ -102,5 +84,53 @@ export async function getBanners() {
     return banner.data;
   } catch (error) {
     console.error("Failed to get banner", error);
+  }
+}
+
+export async function getTag() {
+  try {
+    const tag = await userAxios.get("/tags");
+    return tag.data;
+  } catch (error) {
+    console.error("Failed to fetch tags data", error);
+  }
+}
+
+export async function getEventType() {
+  try {
+    const type = await userAxios.get("/event-types");
+    return type.data;
+  } catch (error) {
+    console.error("Failed to fetch event type data", error);
+  }
+}
+export async function createEventType(eventTypeName: string) {
+  try {
+    const type = await userAxios.post("/event-types", { eventTypeName });
+    return type.data;
+  } catch (error) {
+    console.error("Failed to create event type data", error);
+  }
+}
+
+export async function deleteEventType(eventTypeId: string) {
+  try {
+    const type = await userAxios.delete(`/event-types/${eventTypeId}`);
+    return type.data;
+  } catch (error) {
+    console.error("Failed to delete event type data", error);
+  }
+}
+export async function updateEventType(
+  eventTypeId: string,
+  eventTypeName: string
+) {
+  try {
+    const type = await userAxios.put(`/event-types/${eventTypeId}`, {
+      eventTypeName,
+    });
+    return type.data;
+  } catch (error) {
+    console.error("Failed to update event type data", error);
   }
 }
