@@ -29,7 +29,7 @@ import { Event } from "@/interface/event";
 import { formatDate } from "@/lib/date";
 
 export default function EventDetail() {
-  const [statusFilter, setStatusFilter] = useState<string>("draft");
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const { data, isPending } = useQuery({
     queryKey: ["events", statusFilter],
     queryFn: () => getEvent({ Status: statusFilter }),

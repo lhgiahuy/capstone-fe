@@ -11,6 +11,10 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/dang-nhap",
+    error: "/error",
+  },
   providers: [
     Credentials({
       name: "Credentials",

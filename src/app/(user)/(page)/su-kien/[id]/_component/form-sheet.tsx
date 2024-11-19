@@ -26,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Event } from "@/interface/event";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMe } from "@/action/user";
 import { submitForm } from "@/action/event";
 
@@ -39,17 +39,22 @@ export default function FormSheet({ data }: { data: Event }) {
       data: data?.form.map((item) => ({ question: item.name, answer: "" })),
     },
   });
+  const queryClient = useQueryClient();
+
   const { mutate: submitFormMutation } = useMutation({
     mutationFn: (formData) => submitForm(formData, data.eventId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["event", data.eventId] }),
   });
   const onSubmit: SubmitHandler<any> = async (data) => {
     submitFormMutation(data, {
-      onSuccess: () => toast("Đăng ký thành công"),
+      onSuccess: () => {
+        toast("Đăng ký thành công");
+      },
       onError: () => toast.error("Đăng ký thất bại!"),
     });
-    setOpen(false); // Close Sheet on successful submit
+    setOpen(false);
   };
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       {user?.verifyStatus === "Verified" && data.status !== "Completed" ? (
