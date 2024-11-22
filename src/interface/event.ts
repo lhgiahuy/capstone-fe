@@ -15,8 +15,10 @@ export interface Event {
   passwordMeeting: string;
   eventTags: string[];
   thumbnailImg: string;
+  posterImg: string;
   linkEvent: string;
   isRegistered: boolean;
+  proposal: string;
   form: [
     {
       name: string;

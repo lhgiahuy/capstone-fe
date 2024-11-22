@@ -16,8 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,12 +24,14 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { signOutUser } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 interface BreadcrumbsProps {
   links: string[];
 }
 export default function AdminNavBar({ links }: BreadcrumbsProps) {
+  const router = useRouter();
   return (
-    <div className="bg-background py-6 flex justify-between items-center">
+    <div className="py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
           {links.map((item, index) => (
@@ -46,14 +46,14 @@ export default function AdminNavBar({ links }: BreadcrumbsProps) {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="relative ml-auto pr-4 flex-1 md:grow-0">
+      {/* <div className="relative ml-auto pr-4 flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Tìm kiếm..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
-      </div>
+      </div> */}
       <DropdownMenu>
         <DropdownMenuTrigger className="focus:outline-none">
           <Avatar className="w-8 h-8">
@@ -71,7 +71,10 @@ export default function AdminNavBar({ links }: BreadcrumbsProps) {
             <Link href="/event">Sự kiện</Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => signOutUser({ redirectTo: "/admin/dang-nhap" })}
+            onClick={() => {
+              signOutUser({ redirect: false });
+              router.push("/admin/dang-nhap");
+            }}
           >
             Đăng xuất
           </DropdownMenuItem>

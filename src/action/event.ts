@@ -11,18 +11,6 @@ export interface getEventProps {
   EventTag?: string;
 }
 
-export interface getEventProps {
-  SearchKeyword?: string;
-  PageSize?: number;
-  PageNumber?: number;
-  isDescending?: boolean;
-  orderBy?: string;
-  EventTypes?: string[];
-  InMonth?: number;
-  Status?: string;
-  EventTag?: string;
-}
-
 export async function getEvent(props?: getEventProps) {
   try {
     const params = new URLSearchParams();
@@ -132,5 +120,61 @@ export async function updateEventType(
     return type.data;
   } catch (error) {
     console.error("Failed to update event type data", error);
+  }
+}
+
+export async function getEventByOrganizer({
+  organizerId,
+  status,
+}: {
+  organizerId: string | undefined;
+  status?: string;
+}) {
+  try {
+    const event = await userAxios.get(
+      `/events/organizer?OrganizerId=${organizerId}&Status=${status}`
+    );
+    return event.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function deleteEvent(id: string) {
+  return await userAxios.delete(`/events/${id}`);
+}
+
+export async function getAllEvent(props?: getEventProps) {
+  try {
+    const event = await userAxios.get(`/events/getAllEvents`, {
+      params: props,
+    });
+    return event.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function submitEvent(eventId: string) {
+  return await userAxios.put(`/events/${eventId}/submit`);
+}
+
+export async function getParticipant(eventId: string) {
+  try {
+    const participants = await userAxios.get(`/events/${eventId}/participants`);
+    return participants.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function getSubmittedFormData(eventId: string, userId: string) {
+  try {
+    const formData = await userAxios.get(
+      `/events/${eventId}/get-user-formSubmit?userId=${userId}`
+    );
+    return formData.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
   }
 }

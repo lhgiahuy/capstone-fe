@@ -18,9 +18,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
-      <body className={`${lexend.className} antialiased dark`}>
+      <body className={`${lexend.className} antialiased dark bg-background`}>
         {/* <NextAuthProvider> */}
         <JotaiProvider>
           <QueryProvider>

@@ -13,6 +13,7 @@ export interface User {
   isDeleted: boolean;
   deletedAt: string | null;
   verified: string;
+  isCheckin: string;
 }
 
 export interface LoginResponse {

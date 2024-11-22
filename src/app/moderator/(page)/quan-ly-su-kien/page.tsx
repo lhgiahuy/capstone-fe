@@ -13,42 +13,28 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
-import { getEvent } from "@/action/event";
+import { getAllEvent } from "@/action/event";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import NavBar from "../_component/moderator-navbar";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { Event } from "@/interface/event";
 import { formatDate } from "@/lib/date";
+import { useRouter } from "next/navigation";
 
 export default function EventDetail() {
-  const [statusFilter, setStatusFilter] = useState<string>("draft");
+  const [statusFilter, setStatusFilter] = useState<string>("underReview");
   const { data, isPending } = useQuery({
     queryKey: ["events", statusFilter],
-    queryFn: () => getEvent({ Status: statusFilter }),
+    queryFn: () => getAllEvent({ Status: statusFilter }),
   });
+  const router = useRouter();
   const columns: ColumnDef<Event>[] = [
-    {
-      accessorKey: "thumbnailImg",
-      header: "Ảnh đại diện",
-      cell: ({ row }) => (
-        <div className="w-full flex justify-center">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={row.original.thumbnailImg} alt="event avatar" />
-            <AvatarFallback>
-              {getFirstLetterOfName(row.original.eventName)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      ),
-    },
     {
       accessorKey: "eventName",
       header: ({ column }) => {
@@ -62,6 +48,17 @@ export default function EventDetail() {
           </Button>
         );
       },
+      cell: ({ row }) => (
+        <div className="w-64 flex gap-4 items-center">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={row.original.thumbnailImg} alt="user avatar" />
+            <AvatarFallback>
+              {getFirstLetterOfName(row.original.eventName)}
+            </AvatarFallback>
+          </Avatar>
+          <p className="line-clamp-2">{row.original.eventName}</p>
+        </div>
+      ),
     },
 
     {
@@ -91,11 +88,12 @@ export default function EventDetail() {
         return <div>{row.original.maxAttendees || "chưa có dữ liệu"}</div>;
       },
     },
+
     {
       accessorKey: "status",
       header: () => {
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center">
             <div>Trạng thái</div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -106,11 +104,16 @@ export default function EventDetail() {
 
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Chọn trạng thái</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => setStatusFilter("")}>
+                  Tất cả
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setStatusFilter("upcoming")}>
                   Sắp tới
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
-                  Bản nháp
+                <DropdownMenuItem
+                  onClick={() => setStatusFilter("underReview")}
+                >
+                  Chờ xác thực
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setStatusFilter("completed")}>
                   Hoàn thành
@@ -126,26 +129,18 @@ export default function EventDetail() {
       id: "actions",
       cell: ({ row }) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link
-                  href={`/moderator/quan-ly-su-kien/${row.original.eventId}`}
-                >
-                  Xem thông tin
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>Hủy sự kiện</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="w-[6rem] flex justify-center">
+            <Button
+              variant={"link"}
+              onClick={() =>
+                router.push(
+                  `/moderator/quan-ly-su-kien/${row.original.eventId}`
+                )
+              }
+            >
+              Xem thông tin
+            </Button>
+          </div>
         );
       },
       enableHiding: false, // disable hiding for this column
@@ -154,7 +149,11 @@ export default function EventDetail() {
   const hideColumns = ["isDeleted", "deletedAt"];
   return (
     <>
-      <NavBar links={["Quản lý sự kiện"]} />
+      <NavBar
+        breadcrumb={[
+          { title: "Quản lý sự kiện", link: "/moderator/quan-ly-su-kien" },
+        ]}
+      />{" "}
       <div className="">
         {isPending ? (
           <></>

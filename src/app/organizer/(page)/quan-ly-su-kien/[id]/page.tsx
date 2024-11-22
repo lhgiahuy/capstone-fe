@@ -1,23 +1,23 @@
 import { Metadata } from "next";
 import NavBar from "../../_component/navbar";
-import CreateForm from "./_component/create-form";
+import UpdateForm from "./_component/update-form";
 export const metadata: Metadata = {
   title: "Tạo sự kiện",
   description: "...",
 };
-export default function CreateEvent() {
+export default function Page({ params }: { params: { id: string } }) {
   return (
     <>
       <NavBar
         breadcrumb={[
           { title: "Quản lý sự kiện", link: "/organizer/quan-ly-su-kien" },
           {
-            title: "Tạo sự kiện",
-            link: "/organizer/quan-ly-su-kien/tao-su-kien",
+            title: "Chi tiết sự kiện",
+            link: "#",
           },
         ]}
       />
-      <CreateForm />
+      <UpdateForm id={params.id} />
     </>
   );
 }

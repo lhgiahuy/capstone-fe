@@ -19,23 +19,31 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data?: TData[];
   hideColumns: string[];
+  loading?: boolean; // New prop for loading state
 }
 
-export function DataTable<TData, TValue>({
+export function SkeletonTable<TData, TValue>({
   columns,
-  data,
   hideColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
-    data,
+    data: [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -47,6 +55,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
     },
   });
+
   useEffect(() => {
     table
       .getAllColumns()
@@ -56,10 +65,9 @@ export function DataTable<TData, TValue>({
       });
   }, []);
 
-  if (!table) return <></>;
   return (
     <>
-      {/* <div className="flex items-center pb-4">
+      <div className="flex items-center pb-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -86,7 +94,7 @@ export function DataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div> */}
+      </div>
       <div className="rounded-md border w-full">
         <Table>
           <TableHeader>
@@ -108,43 +116,21 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table?.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.id === "email" ? "" : "capitalize"
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+            {
+              // Render skeleton rows when loading
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  {columns.map((_, colIndex) => (
+                    <TableCell key={colIndex}>
+                      <Skeleton className="h-16"></Skeleton>
                     </TableCell>
                   ))}
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Không có kết quả.
-                </TableCell>
-              </TableRow>
-            )}
+            }
           </TableBody>
         </Table>
       </div>
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
-        <DataTablePagination table={table} />
-      </div> */}
     </>
   );
 }

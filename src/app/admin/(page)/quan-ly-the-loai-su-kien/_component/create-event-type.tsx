@@ -12,6 +12,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createEventType } from "@/action/event";
+import { Input } from "@/components/ui/input";
 
 export default function CreateEventType() {
   const [open, setOpen] = useState(false);
@@ -54,7 +55,7 @@ export default function CreateEventType() {
             <DialogTitle>Thêm thể loại mới</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <input
+            <Input
               type="text"
               placeholder="Nhập tên loại sự kiện"
               className="w-full p-2 border rounded text-gray-600"
@@ -63,7 +64,7 @@ export default function CreateEventType() {
             />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)}>
               Hủy
             </Button>
             <Button
@@ -71,7 +72,7 @@ export default function CreateEventType() {
                 handleCreate(), setOpen(false);
               }}
             >
-              Thêm vào
+              Thêm
             </Button>
           </DialogFooter>
         </DialogContent>

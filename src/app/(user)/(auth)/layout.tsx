@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import Image from "next/image";
 
 export default function RootLayout({
@@ -26,6 +27,7 @@ export default function RootLayout({
         <div className="grow shrink-0 flex justify-center items-center">
           {children}
         </div>
+        <Toaster />
       </div>
     </>
   );

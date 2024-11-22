@@ -32,6 +32,8 @@ import {
   PaginationLink,
 } from "@/components/ui/pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { SkeletonTable } from "../../_component/skeleton-table";
 
 export default function AdminManagementUser() {
   const searchParams = useSearchParams();
@@ -40,7 +42,6 @@ export default function AdminManagementUser() {
   const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
-
   const { data, isPending } = useQuery({
     queryKey: ["user", currentPage],
     queryFn: () => getUser({ PageNumber: currentPage }),
@@ -64,7 +65,7 @@ export default function AdminManagementUser() {
     }
     return pages;
   };
-  if (!data) return <></>;
+  // if (!data) return <></>;
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "username",
@@ -74,23 +75,20 @@ export default function AdminManagementUser() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Tên đăng nhập
+            Tên người dùng
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
-    },
-    {
-      accessorKey: "avatarUrl",
-      header: "Ảnh đại diện",
       cell: ({ row }) => (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex gap-4 items-center">
           <Avatar className="w-8 h-8">
             <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
             <AvatarFallback>
               {getFirstLetterOfName(row.original.username)}
             </AvatarFallback>
           </Avatar>
+          <p>{row.original.username}</p>
         </div>
       ),
     },
@@ -102,17 +100,33 @@ export default function AdminManagementUser() {
     {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
+      cell: ({ row }) =>
+        row.original.phoneNumber ? <p>{row.original.phoneNumber}</p> : "N/A",
     },
     {
       accessorKey: "cardUrl",
       header: "Thẻ sinh viên",
-      cell: ({ row }) => <a href={row.original.cardUrl}>View Card</a>, // Example to render link
+      cell: ({ row }) =>
+        row.original.cardUrl ? (
+          <Link
+            href={row.original.cardUrl}
+            className="text-primary hover:text-primary/80"
+          >
+            Xem thẻ
+          </Link>
+        ) : (
+          <p>Chưa có thẻ</p>
+        ),
     },
     {
       accessorKey: "verified",
       header: "Xác nhận",
       cell: ({ row }) =>
-        row.original.verifyStatus ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
+        row.original.verified == "2"
+          ? "Đã xác thực"
+          : row.original.verified == "1"
+          ? "Đang xác thực"
+          : "Chưa xác thực",
     },
     {
       accessorKey: "roleName",
@@ -191,23 +205,24 @@ export default function AdminManagementUser() {
   return (
     <>
       <AdminNavBar links={["Quản lý người dùng"]} />
-      <div className="">
-        {isPending ? (
-          <></>
-        ) : (
-          <DataTable
-            hideColumns={hideColumns}
-            columns={columns}
-            data={data.items}
-          />
-        )}
-      </div>
+      {isPending ? (
+        <SkeletonTable
+          hideColumns={hideColumns}
+          columns={columns}
+        ></SkeletonTable>
+      ) : (
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data.items}
+        />
+      )}
       <Pagination>
         <PaginationContent className="items-center mt-3">
           <PaginationItem>
             <Button
               onClick={() =>
-                router.push(
+                router.replace(
                   `${pathname}?${new URLSearchParams({
                     ...Object.fromEntries(searchParamsPaging),
                     PageNumber: `${(

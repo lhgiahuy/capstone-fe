@@ -10,7 +10,6 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -35,11 +34,13 @@ export default function LoginForm() {
       const res = await signIn("credentials", {
         email: data.email,
         password: data.password,
+        redirect: false,
       });
       if (!res?.ok) {
         setIsLoading(false);
         throw new Error(res?.error || "Lỗi đăng nhập");
       }
+      window.location.href = "/admin";
       setIsLoading(false);
       toast({ title: "Đăng nhập", description: "..." });
     } catch (error: any) {
@@ -78,15 +79,15 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Checkbox />
             <div className="text-sm text-gray-500">Ghi nhớ đăng nhập</div>
           </div>
-          {/* <Link href="/" className="font-semibold">
+          <Link href="/" className="font-semibold">
             Quên mật khẩu?
-          </Link> */}
-        </div>
+          </Link>
+        </div> */}
         <Button
           type="submit"
           size={"lg"}
