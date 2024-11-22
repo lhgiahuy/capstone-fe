@@ -66,7 +66,7 @@ export default function EventTag() {
           <p>{row.original.tagName}</p>
           <div
             dangerouslySetInnerHTML={{ __html: row.original.svgContent }}
-            className="prose"
+            className="[&_span]:inline-block [&_img]:inline-block [&_a]:text-primary [&_a]:underline [&_a]:transition[&_a]:duration-300 [&_a:hover]:text-primary/60"
           ></div>
         </div>
       ),

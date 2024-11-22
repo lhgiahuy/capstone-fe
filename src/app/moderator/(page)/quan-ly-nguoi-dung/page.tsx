@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react"; // Import useState từ React
 import { approveVerifyUser, getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
@@ -51,6 +51,7 @@ export default function ManagementUser() {
     queryKey: ["user", currentPage, statusFilter],
     queryFn: () => getUser({ PageNumber: currentPage, roleName: statusFilter }),
   });
+  const query = useQueryClient();
   const approveMutation = useMutation({
     mutationFn: ({
       userId,
@@ -63,6 +64,7 @@ export default function ManagementUser() {
     }) => approveVerifyUser(userId, approved, note),
     onSuccess: () => {
       setIsSheetOpen(false);
+      query.invalidateQueries({ queryKey: ["user"] });
     },
   });
   const renderPageNumbers = () => {
@@ -128,9 +130,17 @@ export default function ManagementUser() {
     },
     {
       accessorKey: "verified",
-      header: "Xác nhận",
-      cell: ({ row }) =>
-        row.original.verified ? "Đã xác nhận" : "Chưa xác nhận", // Show Yes/No for boolean
+      header: "Xác thực",
+      cell: ({ row }) => (
+        <Badge
+          className={`${
+            row.original.verified === 2
+              ? "bg-green-400"
+              : "bg-red-800 text-foreground"
+          }`}
+        >{`${row.original.verified === 2 ? "Đã xác thực" : "Chưa xác thực"}
+`}</Badge>
+      ),
     },
     {
       accessorKey: "roleName",
@@ -162,10 +172,10 @@ export default function ManagementUser() {
         <Badge
           className={cn(
             row.original.roleName === "admin"
-              ? "bg-red-400 hover:bg-red-400"
+              ? "bg-blue-400 hover:bg-blue-400"
               : row.original.roleName === "manager"
               ? "bg-orange-400 hover:bg-orange-400"
-              : "bg-green-400 hover:bg-green-400",
+              : "bg-primary",
             "capitalize"
           )}
         >
@@ -226,10 +236,8 @@ export default function ManagementUser() {
                   setIsSheetOpen(true);
                 }}
               >
-                Xác nhận người dùng
+                Xác thực người dùng
               </DropdownMenuItem>
-              <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
-              <DropdownMenuItem>Xoá người dùng</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );

@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <div className="absolute left-1/2 top-1/2 mb-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center">
-        <span className="bg-gradient-to-b from-primary to-primary/50 bg-clip-text text-[5rem] font-extrabold leading-1 text-transparent">
+        <span className="bg-gradient-to-b from-primary to-primary/50 bg-clip-text text-[4rem] font-extrabold leading-1 text-transparent">
           Đăng ký tài khoản thành công
         </span>
         <h2 className="my-4 text-2xl font-bold">

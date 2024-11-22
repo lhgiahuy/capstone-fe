@@ -126,10 +126,10 @@ export default function EventDetail({ params }: { params: { id: string } }) {
             )}
           </div>
         </div>
-        <div className="w-full bg-background flex flex-col gap-16 justify-between">
+        <div className="w-full max-w-[38rem] bg-background flex flex-col gap-16 justify-between">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <h1 className="text-primary uppercase text-3xl line-clamp-2">
+              <h1 className="text-primary uppercase text-3xl">
                 {data.eventName}
               </h1>
               <div className="w-full flex gap-4 flex-wrap">
@@ -168,7 +168,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                 <div className="text-foreground rounded-lg w-full">
                   <div
                     dangerouslySetInnerHTML={{ __html: data.description }}
-                    className="prose [&_img]:inline-block [&_a]:text-primary [&_a]:underline [&_a]:transition[&_a]:duration-300 [&_a:hover]:text-primary/60"
+                    className="[&_span]:inline-block [&_img]:inline-block [&_a]:text-primary [&_a]:underline [&_a]:transition[&_a]:duration-300 [&_a:hover]:text-primary/60"
                   ></div>
                 </div>
               </div>

@@ -11,6 +11,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { useQuery } from "@tanstack/react-query";
 import { getBanners } from "@/action/event";
 import { Banner } from "@/interface/banner";
+import Link from "next/link";
 
 export default function Slider() {
   const { data } = useQuery({
@@ -37,16 +38,18 @@ export default function Slider() {
               key={item.eventId}
               className="w-full h-[20rem] relative md:basis-1/2 lg:basis-1/4"
             >
-              <Image
-                src={
-                  item.posterImg.startsWith("https")
-                    ? item.posterImg
-                    : "/images/event-bg-2.png"
-                }
-                alt="images"
-                fill
-                className="object-cover p-2"
-              ></Image>
+              <Link href={`/su-kien/${item.eventId}`}>
+                <Image
+                  src={
+                    item.posterImg.startsWith("https")
+                      ? item.posterImg
+                      : "/images/event-bg-2.png"
+                  }
+                  alt="images"
+                  fill
+                  className="object-cover p-2"
+                ></Image>
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>
