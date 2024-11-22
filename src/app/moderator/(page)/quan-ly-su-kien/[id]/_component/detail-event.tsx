@@ -2,25 +2,10 @@
 
 import * as React from "react";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  // CardHeader,
-  // CardTitle,
-} from "@/components/ui/card";
 // import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { File } from "lucide-react";
+import { Clock, MapPinned } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 // import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { getEventById } from "@/action/event";
 import Image from "next/image";
@@ -28,6 +13,16 @@ import { Event } from "@/interface/event";
 // import { Button } from "@/components/ui/button";
 import ButtonApproved from "@/app/moderator/(page)/_component/button-approved";
 import { formatDate } from "@/lib/date";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserById } from "@/action/user";
 // import "../../../style/description.css";
 
 // import { Upload } from "lucide-react";
@@ -37,130 +32,126 @@ export default function DetailEvent({ eventId }: { eventId: string }) {
     queryKey: ["events"],
     queryFn: () => getEventById(eventId),
   });
-
+  const { data: organizer } = useQuery({
+    queryKey: ["organizer", data?.organizerId],
+    queryFn: () => getUserById(data?.organizerId),
+  });
   if (!data) return <></>;
   if (!data?.eventTags) return <></>;
 
   return (
-    <div className="flex justify-center">
-      {/* Thẻ chứa  nội dung của Event */}
-      <Card className="w-[100%]">
-        {/* <CardHeader>
-          <CardTitle>Nội dung sự kiện</CardTitle>
-        </CardHeader> */}
-        <CardContent>
-          <form>
-            <div className="grid w-full items-center gap-4 mt-3">
-              <div className="grid gap-2 justify-center">
+    <div className="flex flex-col gap-8 container mb-16">
+      <div className="flex gap-16">
+        <div className="flex flex-col w-[32rem] gap-8">
+          <div className="relative rounded-lg overflow-hidden">
+            <Image
+              src={
+                data.posterImg.startsWith("https")
+                  ? data.posterImg
+                  : "/images/event-bg-3.png"
+              }
+              alt="event bg"
+              width={400}
+              height={300}
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <h3>Tổ chức bởi</h3>
+            <Separator />
+            <div className="flex items-center py-2">
+              <div className="rounded-full overflow-hidden relative p-4">
                 <Image
-                  alt="Product image"
-                  className="aspect-square  rounded-[26px] object-cover justify-center"
-                  height="80"
-                  src="/images/auth-bg.jpg"
-                  width="250"
-                />
+                  src={organizer?.avatarUrl || ""}
+                  alt=""
+                  fill
+                  className="object-cover"
+                ></Image>
               </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Tên</Label>
-                <div className="border p-2 rounded-sm">{data.eventName}</div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Thể loại</Label>
-                <div className="border p-2 rounded-sm">
-                  {data.eventTypeName}
-                </div>
-                <div className="flex-row mt-3 items-center justify-center">
-                  <Label htmlFor="name">Gắn Thẻ</Label>
-                  {Array.isArray(data?.eventTags) ? (
-                    data.eventTags.map((tag: string, index: number) => (
-                      <div
-                        key={index}
-                        className="text-white text-[14px] bg-[#797777d6] mx-1 px-2 rounded w-[200px]"
-                      >
-                        {tag}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-gray-500">Không có thẻ sự kiện</div>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Người tổ chức</Label>
-                <div className="border p-2 rounded-sm">
-                  {data?.organizerName}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Địa điểm</Label>
-                <div className="border p-2 rounded-sm">{data.location}</div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Link meeting sự kiện</Label>
-                <div className="border p-2 rounded-sm">
-                  {data.linkEvent || "Chưa có link sự kiện"}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Mật khẩu meeting của sự kiện</Label>
-                <div className="border p-2 rounded-sm">
-                  {data.passwordMeeting || "Chưa có mật khẩu meeting"}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Ngày bắt đầu</Label>
-                <div className="border p-2 rounded-sm">
-                  {formatDate(data.startTime)}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Ngày kết thúc</Label>
-                <div className="border p-2 rounded-sm">
-                  {formatDate(data.endTime)}
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Số lượng người tham gia</Label>
-                <div className="border p-2 rounded-sm">{data.maxAttendees}</div>
-              </div>
-              <div className="grid auto-rows-max items-start gap-4 lg:gap-8 ">
-                <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="status">Trạng thái</Label>
-                    <Select>
-                      <SelectTrigger id="status" aria-label="Select status">
-                        <SelectValue placeholder={data.status} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="true">Phê duyệt</SelectItem>
-                        <SelectItem value="false">Từ chối</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button variant="link" className="text-foreground">
+                    {data.organizerName}
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  className="w-full bg-background text-foreground"
+                  align="start"
+                >
+                  <div className="flex justify-between space-x-4">
+                    <Avatar>
+                      <AvatarImage src={organizer?.avatarUrl} />
+                      <AvatarFallback>VC</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">
+                        {organizer?.username}
+                      </h4>
+                      <p className="text-sm">{organizer?.email}</p>
+                      {/* <div className="flex items-center pt-2">
+                        <span className="text-xs text-muted-foreground">
+                          Joined December 2021
+                        </span>
+                      </div> */}
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="description">Mô tả :</Label>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+          </div>
+        </div>
 
-                <div
-                  dangerouslySetInnerHTML={{ __html: data.description }}
-                  className="prose description"
-                ></div>
+        <div className="w-full bg-background flex flex-col gap-16 justify-between">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h1 className="text-primary uppercase text-3xl line-clamp-2">
+                {data.eventName}
+              </h1>
+              <div className="w-full flex gap-4 flex-wrap">
+                {data.eventTags.slice(0, 6).map((item, index) => (
+                  <div key={index}>
+                    <Badge>{item}</Badge>
+                  </div>
+                ))}
+                {data.eventTags.length > 6 && (
+                  <Badge>{`+${data.eventTags.length - 6} TAG`}</Badge>
+                )}
               </div>
             </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col ">
-          <Label htmlFor="file">File nội dung chi tiết về sự kiện :</Label>
-          <div>
-            <File />
+            <div className="flex flex-col gap-8">
+              <div className="flex gap-4">
+                <Clock className="text-primary" />
+                <p>
+                  {formatDate(data.startTime, "p, d MMMM, y")} -{" "}
+                  {formatDate(data.endTime, "p, d MMMM, y")}
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <MapPinned className="text-primary" />
+                {data.location ? (
+                  <p>{data.location}</p>
+                ) : (
+                  <p>{data.linkEvent}</p>
+                )}
+              </div>
+              <div className="flex gap-4 w-full">
+                <ButtonApproved eventId={eventId} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-muted-foreground">Chi tiết sự kiện</h3>
+                <Separator></Separator>
+                <div className="text-foreground rounded-lg w-full min-h-screen">
+                  <div
+                    dangerouslySetInnerHTML={{ __html: data.description }}
+                    className="prose description"
+                  ></div>
+                </div>
+              </div>
+            </div>
           </div>
-          {/* <Button className="justify-center items-center mt-6">
-            Phê duyệt xự kiện
-          </Button> */}
-          <ButtonApproved eventId={eventId} />
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
+      <div className="flex gap-8"></div>
     </div>
   );
 }

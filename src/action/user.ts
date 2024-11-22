@@ -9,6 +9,7 @@ export interface getUserProps {
   PageNumber?: number;
   isDescending?: boolean;
   orderBy?: string;
+  roleName?: string;
 }
 
 export async function getUser(props?: getUserProps) {

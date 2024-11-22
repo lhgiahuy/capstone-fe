@@ -145,11 +145,6 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                         {organizer?.username}
                       </h4>
                       <p className="text-sm">{organizer?.email}</p>
-                      {/* <div className="flex items-center pt-2">
-                        <span className="text-xs text-muted-foreground">
-                          Joined December 2021
-                        </span>
-                      </div> */}
                     </div>
                   </div>
                 </HoverCardContent>

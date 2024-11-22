@@ -77,7 +77,7 @@ export default function EventList({
                 defaultValue={types}
                 placeholder="Bộ lọc"
                 animation={2}
-                maxCount={3}
+                maxCount={10}
                 className="bg-primary text-background"
               />
             </div>

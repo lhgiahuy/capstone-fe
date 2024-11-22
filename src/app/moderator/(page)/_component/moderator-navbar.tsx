@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 // import logo from "../img/logo.png";
 
@@ -14,8 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,34 +23,41 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-interface BreadcrumbsProps {
-  links: string[];
+import { signOutUser } from "@/lib/auth";
+
+interface Breadcrumb {
+  link: string;
+  title: string;
 }
-export default function NavBar({ links }: BreadcrumbsProps) {
+
+interface BreadcrumbsProps {
+  breadcrumb: Breadcrumb[];
+}
+export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
   return (
-    <div className="bg-background py-6 flex justify-between items-center">
+    <div className="py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
-          {links.map((item, index) => (
+          {breadcrumb.map((item, index) => (
             <span key={index} className="flex items-center">
-              <BreadcrumbItem>
+              <BreadcrumbItem className="hover:text-accent-foreground">
                 <BreadcrumbLink asChild>
-                  <Link href="#">{item}</Link>
+                  <Link href={item.link}>{item.title}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {index < links.length - 1 && <BreadcrumbSeparator />}
+              {index < breadcrumb.length - 1 && <BreadcrumbSeparator />}
             </span>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="relative ml-auto pr-4 flex-1 md:grow-0">
+      {/* <div className="relative ml-auto pr-4 flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Tìm kiếm..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
-      </div>
+      </div> */}
       <DropdownMenu>
         <DropdownMenuTrigger className="focus:outline-none">
           <Avatar className="w-8 h-8">
@@ -67,8 +74,12 @@ export default function NavBar({ links }: BreadcrumbsProps) {
           <DropdownMenuItem>
             <Link href="/event">Sự kiện</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/auth">Đăng xuất</Link>
+          <DropdownMenuItem
+            onClick={() => {
+              signOutUser();
+            }}
+          >
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

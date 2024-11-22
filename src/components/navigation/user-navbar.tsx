@@ -35,19 +35,21 @@ import useDebounce from "@/hooks/use-debounce";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
 
 export default function UserNavBar() {
-  const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
+  const { data: user } = useQuery({
+    queryKey: ["Me"],
+    queryFn: getMe,
+  });
   const [open, setOpen] = useState(false);
-
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { push } = useRouter();
   const searchString = searchParams.get("tu-khoa")?.toString() || "";
   const [searchValue, setSearchValue] = useState(searchString);
-  const debouncedSearchValue = useDebounce(searchValue, 300); // 300ms delay
-
+  const debouncedSearchValue = useDebounce(searchValue, 300);
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
   };
+  const router = useRouter();
   const LIMIT = 4;
   const { data: event } = useQuery({
     queryKey: ["events", searchString, LIMIT],
@@ -194,21 +196,26 @@ export default function UserNavBar() {
         <div className="flex gap-4">
           {user ? (
             <div className="flex items-center gap-4 hover:cursor-pointer">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href="/su-kien-cua-toi"
-                      className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center"
-                    >
-                      <Calendar className="w-5 h-5 text-background"></Calendar>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-foreground">
-                    <p>Xem lịch</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              {user.roleName === "organizer" ? (
+                <></>
+              ) : (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href="/su-kien-cua-toi"
+                        className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center"
+                      >
+                        <Calendar className="w-5 h-5 text-background"></Calendar>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-foreground">
+                      <p>Xem lịch</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -236,6 +243,11 @@ export default function UserNavBar() {
                 <DropdownMenuContent align="end" className="max-w-s">
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
+                      <Link href="/organizer/quan-ly-su-kien">
+                        Quản lý sự kiện
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
                       <Link href="/thong-tin-ca-nhan">Thông tin cá nhân</Link>
                     </DropdownMenuItem>
                     {/* <DropdownMenuItem>Billing</DropdownMenuItem>
@@ -249,6 +261,14 @@ export default function UserNavBar() {
             </div>
           ) : (
             <div className="flex gap-2 items-center text-sm">
+              <Button
+                variant={"secondary"}
+                onClick={() => {
+                  router.push("/organizer/dang-ky");
+                }}
+              >
+                Tạo sự kiện ngay
+              </Button>
               <Link href="/dang-nhap">Đăng nhập</Link>
               <Separator orientation="vertical" className="h-4" />
               <Link href="/dang-ky">Đăng ký</Link>

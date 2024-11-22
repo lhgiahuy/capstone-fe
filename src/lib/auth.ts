@@ -11,6 +11,11 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/dang-nhap",
+    signOut: "/",
+    error: "/",
+  },
   providers: [
     Credentials({
       name: "Credentials",
@@ -105,7 +110,7 @@ export const authOptions = {
     redirect: ({ baseUrl }) => {
       return baseUrl;
     },
-    signIn: () => {
+    signIn: async () => {
       return true;
     },
   },

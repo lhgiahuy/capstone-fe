@@ -12,7 +12,7 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children, data }: AuthProviderProps) {
-  if (data) {
+  if (data && typeof window !== "undefined") {
     const expiredAt = jwtDecode(data?.token).exp;
     if (expiredAt) {
       const now = new Date();
