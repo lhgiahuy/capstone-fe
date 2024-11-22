@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Calendar, Search } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -216,7 +216,7 @@ export default function UserNavBar() {
                 </TooltipProvider>
               )}
 
-              <TooltipProvider>
+              {/* <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
@@ -227,7 +227,7 @@ export default function UserNavBar() {
                     <p>Xem thông báo</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
+              </TooltipProvider> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex gap-4 items-center">
@@ -242,11 +242,14 @@ export default function UserNavBar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="max-w-s">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Link href="/organizer/quan-ly-su-kien">
-                        Quản lý sự kiện
-                      </Link>
-                    </DropdownMenuItem>
+                    {user?.roleName === "organizer" && (
+                      <DropdownMenuItem>
+                        <Link href="/organizer/quan-ly-su-kien">
+                          Quản lý sự kiện
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
                     <DropdownMenuItem>
                       <Link href="/thong-tin-ca-nhan">Thông tin cá nhân</Link>
                     </DropdownMenuItem>

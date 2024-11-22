@@ -5,7 +5,6 @@ export default withAuth(
   function middleware(req) {
     const url = req.nextUrl.clone();
     const { pathname } = req.nextUrl;
-    console.log(pathname);
     if (
       !pathname.startsWith("/admin") &&
       req.nextauth.token?.roleName === "admin"

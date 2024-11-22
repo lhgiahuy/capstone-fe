@@ -76,7 +76,8 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              signOutUser();
+              signOutUser({ redirect: false });
+              window.location.href = "/admin/dang-nhap";
             }}
           >
             Đăng xuất

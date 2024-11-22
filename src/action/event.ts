@@ -178,3 +178,33 @@ export async function getSubmittedFormData(eventId: string, userId: string) {
     console.error("Failed to fetch event data", error);
   }
 }
+
+export async function registerEvent(eventId: string) {
+  return await userAxios.post(`/events/${eventId}/register`);
+}
+
+export async function unRegisterEvent(eventId: string) {
+  return await userAxios.delete(`/events/${eventId}/unregister`);
+}
+
+export async function getAverageRating(eventId: string) {
+  try {
+    const rating = await userAxios.get(`/events/${eventId}/average-rating`);
+    return rating.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function reviewEvent(eventId: string, data: any) {
+  return await userAxios.post(`/events/${eventId}/reviews`, data);
+}
+
+export async function getReview(eventId: string) {
+  try {
+    const reviews = await userAxios.get(`/events/${eventId}/reviews`);
+    return reviews.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}

@@ -21,8 +21,7 @@ export default function CreateEventType() {
 
   const mutation = useMutation({
     mutationFn: (eventTypeName: string) => createEventType(eventTypeName),
-    onSuccess: (data) => {
-      console.log("User updated profile successfully:", data);
+    onSuccess: () => {
       alert("Tạo thành công!");
       queryClient.invalidateQueries({
         queryKey: ["types"],

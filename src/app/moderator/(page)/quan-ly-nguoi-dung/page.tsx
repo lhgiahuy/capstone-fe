@@ -26,7 +26,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
 import NavBar from "../_component/moderator-navbar";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import {
   Pagination,
   PaginationContent,
@@ -38,7 +38,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function ManagementUser() {
   const [statusFilter, setStatusFilter] = useState<string>("Student");
-
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -262,15 +261,18 @@ export default function ManagementUser() {
           />
         )}
         <Sheet open={isSheetOpen} onOpenChange={(open) => setIsSheetOpen(open)}>
-          <SheetContent>
+          <SheetContent className="space-y-6">
+            <SheetHeader>Phê duyệt người dùng</SheetHeader>
+
             <div className="space-y-4">
               <Textarea
-                className="w-full p-2 border rounded text-gray-600"
+                className="w-full p-2 border rounded"
                 placeholder="Ghi lý do phê duyệt"
                 value={processNote}
+                rows={4}
                 onChange={(e) => setProcessNote(e.target.value)}
               />
-              <div className="flex justify-between">
+              <div className="w-full justify-end flex gap-4">
                 <Button
                   variant="outline"
                   onClick={() => {

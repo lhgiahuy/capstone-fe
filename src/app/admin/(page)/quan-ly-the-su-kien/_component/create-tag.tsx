@@ -21,8 +21,7 @@ export default function CreateTag() {
   const mutation = useMutation({
     mutationFn: (tag: Partial<ButtonCreateTag>) =>
       createTag(tag.svgContent as string, tag.tagName as string),
-    onSuccess: (data) => {
-      console.log("User updated profile successfully:", data);
+    onSuccess: () => {
       alert("Tạo thành công!");
       queryClient.invalidateQueries({
         queryKey: ["tags"],

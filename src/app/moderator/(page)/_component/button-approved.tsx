@@ -53,7 +53,7 @@ export default function ButtonApproved({ eventId }: { eventId: string }) {
               id="processNote"
               value={processNote}
               onChange={(e) => setProcessNote(e.target.value)}
-              className="border p-2 rounded text-black w-full"
+              className="border p-2 rounded w-full"
               rows={4}
               placeholder="Nhập lý do..."
             />

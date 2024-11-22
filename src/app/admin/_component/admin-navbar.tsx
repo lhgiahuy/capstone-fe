@@ -24,12 +24,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { signOutUser } from "@/lib/auth";
-import { useRouter } from "next/navigation";
 interface BreadcrumbsProps {
   links: string[];
 }
 export default function AdminNavBar({ links }: BreadcrumbsProps) {
-  const router = useRouter();
   return (
     <div className="py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
@@ -73,7 +71,7 @@ export default function AdminNavBar({ links }: BreadcrumbsProps) {
           <DropdownMenuItem
             onClick={() => {
               signOutUser({ redirect: false });
-              router.push("/admin/dang-nhap");
+              window.location.href = "/admin/dang-nhap";
             }}
           >
             Đăng xuất
