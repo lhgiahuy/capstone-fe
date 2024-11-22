@@ -5,6 +5,7 @@ const eventSchema = z
   .object({
     title: stringSchema,
     type: stringSchema,
+    maxAttendees: z.string().optional(),
     content: stringSchema,
     dateType: stringSchema,
     date: dateSchema,
@@ -13,10 +14,25 @@ const eventSchema = z
     startTime: stringSchema,
     endTime: stringSchema,
     locationType: stringSchema,
+    eventTags: z.array(z.string().optional()),
+    thumbnailImg: z
+      .any({ required_error: "Xin vui lòng nhập thông tin!" })
+      .refine((value) => value !== undefined && value !== null, {
+        message: "Xin vui lòng nhập thông tin!",
+      }),
+    posterImg: z
+      .any({ required_error: "Xin vui lòng nhập thông tin!" })
+      .refine((value) => value !== undefined && value !== null, {
+        message: "Xin vui lòng nhập thông tin!",
+      }),
+    proposal: z
+      .any({ required_error: "Xin vui lòng nhập thông tin!" })
+      .refine((value) => value !== undefined && value !== null, {
+        message: "Xin vui lòng nhập thông tin!",
+      }),
     eventLink: z.string().optional(),
     passwordMeeting: z.string().optional(),
     location: z.string().optional(),
-    imageUrl: z.any({ required_error: "Xin vui lòng nhập thông tin!" }),
   })
   .refine((data) => data.locationType !== "online" || data.eventLink, {
     message: "Vui lòng điền thông tin!",

@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { passwordRegex } from "./regex";
 
-export const stringSchema = z.string().min(1, "Xin vui lòng nhập thông tin!");
+export const stringSchema = z
+  .string({
+    required_error: "Xin vui lòng nhập thông tin!",
+    invalid_type_error: "Xin vui lòng nhập thông tin!",
+  })
+  .min(1, "Xin vui lòng nhập thông tin!");
 export const emailSchema = z
   .string({ required_error: "Xin vui lòng nhập email!" })
   .min(1, "Xin vui lòng nhập email!")

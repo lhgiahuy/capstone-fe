@@ -28,7 +28,8 @@ import { Event } from "@/interface/event";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMe } from "@/action/user";
-import { submitForm } from "@/action/event";
+import { registerEvent, submitForm, unRegisterEvent } from "@/action/event";
+import ReviewForm from "./review-form";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
@@ -46,6 +47,29 @@ export default function FormSheet({ data }: { data: Event }) {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["event", data.eventId] }),
   });
+
+  const { mutate: registerMutation, isPending } = useMutation({
+    mutationFn: (id: string) => registerEvent(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["event", data.eventId] }),
+  });
+  const { mutate: unRegisterMutation, isPending: isLoading } = useMutation({
+    mutationFn: (id: string) => unRegisterEvent(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["event", data.eventId] }),
+  });
+  const handleRegistration = () => {
+    registerMutation(data.eventId, {
+      onSuccess: () => toast("Đăng ký thành công!"),
+      onError: () => toast("Đăng ký thất bại!"),
+    });
+  };
+  const handleUnregistration = () => {
+    unRegisterMutation(data.eventId, {
+      onSuccess: () => toast("Huỷ đăng ký thành công!"),
+      onError: () => toast("Huỷ đăng ký thất bại!"),
+    });
+  };
   const onSubmit: SubmitHandler<any> = async (data) => {
     submitFormMutation(data, {
       onSuccess: () => {
@@ -55,27 +79,43 @@ export default function FormSheet({ data }: { data: Event }) {
     });
     setOpen(false);
   };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {user?.verifyStatus === "Verified" && data.status !== "Completed" ? (
+      {user?.verifyStatus === "Verified" &&
+      data.status !== "Completed" &&
+      !data.isRegistered &&
+      data.form.length > 0 ? (
         <SheetTrigger asChild>
-          <Button
-            disabled={data.isRegistered}
-            size="lg"
-            className="text-md py-8"
-          >
-            {data.isRegistered ? "Đã đăng ký" : "Đăng ký"}
+          <Button size="lg" className="text-md py-8 w-full">
+            Đăng ký
           </Button>
         </SheetTrigger>
-      ) : data.status === "Completed" ? (
-        <Button size="lg" variant="destructive" className="text-lg py-8">
+      ) : data.status === "Completed" && !data.isRegistered ? (
+        <Button
+          size="lg"
+          className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
+        >
           Đã kết thúc
+        </Button>
+      ) : data.isRegistered && data.status === "Completed" ? (
+        <ReviewForm id={data.eventId}></ReviewForm>
+      ) : data.isRegistered && data.status !== "Completed" ? (
+        <Button
+          size="lg"
+          variant={"destructive"}
+          className="text-lg w-full py-8"
+          disabled={isLoading}
+          onClick={handleUnregistration}
+        >
+          Huỷ đăng ký
         </Button>
       ) : (
         <Button
           size="lg"
-          className="text-md py-8"
-          onClick={() => toast("Vui lòng xác thực tài khoản để đăng ký")}
+          className="text-lg w-full py-8"
+          disabled={isPending}
+          onClick={handleRegistration}
         >
           Đăng ký
         </Button>

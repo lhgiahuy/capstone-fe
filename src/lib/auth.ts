@@ -13,7 +13,8 @@ export const authOptions = {
   },
   pages: {
     signIn: "/dang-nhap",
-    error: "/error",
+    signOut: "/",
+    error: "/",
   },
   providers: [
     Credentials({
@@ -109,7 +110,7 @@ export const authOptions = {
     redirect: ({ baseUrl }) => {
       return baseUrl;
     },
-    signIn: () => {
+    signIn: async () => {
       return true;
     },
   },

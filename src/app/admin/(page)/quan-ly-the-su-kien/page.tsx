@@ -61,13 +61,9 @@ export default function EventTag() {
           </Button>
         );
       },
-    },
-
-    {
-      accessorKey: "svgContent",
-      header: "Ảnh icon",
       cell: ({ row }) => (
-        <div className="flex justify-center items-center">
+        <div className="flex gap-4 items-center">
+          <p>{row.original.tagName}</p>
           <div
             dangerouslySetInnerHTML={{ __html: row.original.svgContent }}
             className="prose"
@@ -75,7 +71,6 @@ export default function EventTag() {
         </div>
       ),
     },
-
     {
       accessorKey: "createdAt",
       header: "Ngày tạo",
@@ -122,7 +117,7 @@ export default function EventTag() {
   const hideColumns = ["description", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Quản lý sự kiện"]} />
+      <AdminNavBar links={["Quản lý thẻ sự kiện"]} />
       <div className="mb-4 flex  items-center">
         <CreateTag />
       </div>

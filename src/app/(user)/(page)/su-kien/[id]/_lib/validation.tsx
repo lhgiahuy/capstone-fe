@@ -7,4 +7,11 @@ export const formSchema = z.object({
     .optional(),
 });
 
+export const reviewFormSchema = z.object({
+  rating: z.number().min(1, "Vui lòng nhập thông tin"),
+  comment: z.string().optional(),
+});
+
 export type TypeOfRegistrationForm = z.infer<typeof formSchema>;
+
+export type TypeOfReviewForm = z.infer<typeof reviewFormSchema>;

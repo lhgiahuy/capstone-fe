@@ -10,7 +10,7 @@ export default function Footer() {
         <div>
           <div className="flex gap-2 text-md items-center">
             <CopyrightIcon className="w-4 h-4" />
-            2024 Sker
+            2024 Fvent
           </div>
         </div>
         <div className="flex flex-col items-center text-balance text-center text-sm leading-loose text-background">

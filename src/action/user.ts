@@ -9,6 +9,7 @@ export interface getUserProps {
   PageNumber?: number;
   isDescending?: boolean;
   orderBy?: string;
+  roleName?: string;
 }
 
 export async function getUser(props?: getUserProps) {
@@ -59,7 +60,11 @@ export async function getMe(config: AxiosRequestConfig = {}) {
 }
 
 export async function updateInfo(data: any) {
-  return await userAxios.put("/users/", data);
+  return await userAxios.put("/users/", {
+    username: data.username,
+    avatarUrl: data.avatarUrl,
+    phoneNumber: data.phoneNumber,
+  });
 }
 
 export async function validateUser(data: string) {

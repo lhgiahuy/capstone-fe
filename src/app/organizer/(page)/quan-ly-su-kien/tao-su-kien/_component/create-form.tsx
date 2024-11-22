@@ -44,11 +44,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImageInput from "@/components/ui/image-input";
 import Image from "next/image";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createEvent, getEventType } from "@/action/event";
+import { createEvent, getEventType, getTag } from "@/action/event";
 import { EventType } from "@/interface/event-type";
 import { uploadImageToStorage } from "@/lib/firebase/upload-file";
+import { useRouter } from "next/navigation";
+import { TagInput } from "@/components/my-ui/tag-input";
 
-export default function EventTitle() {
+export default function CreateForm() {
+  const { data: tags } = useQuery({
+    queryKey: ["event-tags"],
+    queryFn: getTag,
+  });
   const { data: types } = useQuery({
     queryKey: ["event-types"],
     queryFn: getEventType,
@@ -64,6 +70,7 @@ export default function EventTitle() {
       event: {
         title: "",
         type: "",
+        maxAttendees: "",
         dateType: "one-day",
         locationType: "offline",
         location: "",
@@ -77,6 +84,7 @@ export default function EventTitle() {
       },
     },
   });
+  const router = useRouter();
   const [imagePopover, setImagePopover] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -106,9 +114,17 @@ export default function EventTitle() {
       toast.error("Thời gian không hợp lệ");
       setIsLoading(false);
     } else {
-      const url = await uploadImageToStorage({
-        saveLocation: `events/${values.event.title}`,
-        file: values.event.imageUrl,
+      const thumbnailUrl = await uploadImageToStorage({
+        saveLocation: `events/${values.event.title}-thumbnail`,
+        file: values.event.thumbnailImg,
+      });
+      const posterUrl = await uploadImageToStorage({
+        saveLocation: `events/${values.event.title}-poster`,
+        file: values.event.posterImg,
+      });
+      const proposalUrl = await uploadImageToStorage({
+        saveLocation: `events/${values.event.title}-proposal`,
+        file: values.event.proposal,
       });
       createEventMutate(
         {
@@ -126,26 +142,30 @@ export default function EventTitle() {
             values.event.locationType === "online"
               ? values.event.passwordMeeting
               : "",
-          posterImg: "string",
-          thumbnailImg: url,
-          eventTags: ["Test"],
+          posterImg: posterUrl,
+          thumbnailImg: thumbnailUrl,
+          eventTags: values.event.eventTags,
+          maxAttendee: parseInt(values.event.maxAttendees || "0"),
           createFormDetailsReq: values.createFormDetailsReq,
-          proposal: "string",
+          proposal: proposalUrl,
         },
         {
           onSuccess: () => {
-            toast("Tạo event thành công"), setIsLoading(false);
+            toast("Tạo event thành công"),
+              setIsLoading(false),
+              router.push("/organizer/quan-ly-su-kien?status=Draft");
           },
           onError: () => {
             setIsLoading(false);
-
             toast.error("Tạo event thất bại");
           },
         }
       );
     }
   }
-
+  // const onSubmit = (values: z.infer<typeof formSchema>) => {
+  //   console.log(values.event.eventTags);
+  // };
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "createFormDetailsReq",
@@ -154,7 +174,7 @@ export default function EventTitle() {
   const addForm = () => {
     append({ name: "", type: "", options: [] });
   };
-
+  if (!tags) return <></>;
   return (
     <>
       <Form {...form}>
@@ -163,38 +183,39 @@ export default function EventTitle() {
           className="space-y-8 max-w-3xl mx-auto py-8"
         >
           <div className="relative w-full min-h-[24rem] overflow-hidden border-muted-background hover:border-primary border-2 rounded-lg p-8 flex items-center justify-center">
-            <FormField
-              control={form.control}
-              name="event.imageUrl"
-              render={({ field }) => (
-                <>
-                  {!imagePopover ? (
-                    <div className="absolute flex justify-center items-center w-full h-full">
-                      <div className="relative w-full h-full opacity-60">
-                        <Image
-                          src="/images/event-bg-4.png"
-                          alt=""
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="absolute">
-                        <Button
-                          type="button"
-                          className="flex-col bg-foreground text-background hover:bg-foreground flex h-fit py-8  w-[10rem] gap-4"
-                          onClick={() => setImagePopover(true)}
-                        >
-                          <div className="p-3 bg-primary rounded-full text-background">
-                            <Upload className="h-4 w-4" />
-                          </div>
-                          <p className="text-wrap">Tải ảnh lên</p>
-                        </Button>
-                      </div>
+            {!imagePopover ? (
+              <div className="absolute flex justify-center items-center w-full h-full">
+                <div className="relative w-full h-full opacity-60">
+                  <Image
+                    src="/images/event-bg-4.png"
+                    alt=""
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="absolute">
+                  <Button
+                    type="button"
+                    className="flex-col bg-foreground text-background hover:bg-foreground flex h-fit py-8  w-[10rem] gap-4"
+                    onClick={() => setImagePopover(true)}
+                  >
+                    <div className="p-3 bg-primary rounded-full text-background">
+                      <Upload className="h-4 w-4" />
                     </div>
-                  ) : (
-                    <div className="w-full flex flex-col gap-16">
-                      <div className="font-bold text-2xl">Ảnh đại diện</div>
-                      <div className="flex flex-col gap-8 w-full">
+                    <p className="text-wrap">Tải ảnh lên</p>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full flex flex-col gap-16">
+                <div className="font-bold text-2xl">Ảnh đại diện</div>
+                <div className="flex flex-col gap-8 w-full">
+                  {/* Poster của sự kiện */}
+                  <FormField
+                    control={form.control}
+                    name="event.posterImg"
+                    render={({ field }) => (
+                      <>
                         <FormLabel>Poster của sự kiện</FormLabel>
                         <FormItem className="w-full">
                           <FormControl>
@@ -206,7 +227,17 @@ export default function EventTitle() {
                           </FormControl>
                           <FormMessage />
                         </FormItem>
-                        {/* <FormLabel>Ảnh nền của sự kiện</FormLabel>
+                      </>
+                    )}
+                  />
+
+                  {/* Ảnh nền của sự kiện */}
+                  <FormField
+                    control={form.control}
+                    name="event.thumbnailImg"
+                    render={({ field }) => (
+                      <>
+                        <FormLabel>Ảnh nền của sự kiện</FormLabel>
                         <FormItem>
                           <FormControl>
                             <ImageInput
@@ -215,13 +246,13 @@ export default function EventTitle() {
                             />
                           </FormControl>
                           <FormMessage />
-                        </FormItem> */}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            />
+                        </FormItem>
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <div className="border-2 flex flex-col gap-8 rounded-lg border-muted-background p-8 hover:border-primary">
             <div className="font-bold text-4xl">Tổng quan sự kiện</div>
@@ -264,6 +295,40 @@ export default function EventTitle() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="event.maxAttendees"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Số lượng người tham gia (Có thể bỏ trống)
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Số lượng" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="event.eventTags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tag</FormLabel>
+                  <FormControl>
+                    <TagInput
+                      options={tags}
+                      onValueChange={field.onChange}
+                      placeholder="Nhập tag"
+                      animation={2}
+                      maxCount={100}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -810,6 +875,29 @@ export default function EventTitle() {
                 </div>
               )}
             </div>
+          </div>
+          <div className="border-2 flex flex-col gap-8 rounded-lg border-muted-background p-8 hover:border-primary">
+            <div className="font-bold text-4xl">Proposal của sự kiện</div>
+            <FormField
+              control={form.control}
+              name="event.proposal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Đính kèm file proposal của sự kiện</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="hover:cursor-pointer"
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className="flex w-full justify-center">
             <Button

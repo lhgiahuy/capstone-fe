@@ -5,12 +5,21 @@ export default withAuth(
   function middleware(req) {
     const url = req.nextUrl.clone();
     const { pathname } = req.nextUrl;
-
     if (
       !pathname.startsWith("/admin") &&
       req.nextauth.token?.roleName === "admin"
     ) {
       url.pathname = "/admin";
+      return NextResponse.redirect(url);
+    }
+    if (req.nextauth.token && pathname.startsWith("/dang-nhap")) {
+      return Response.redirect(new URL("/", req.url));
+    }
+    if (
+      !pathname.startsWith("/moderator") &&
+      req.nextauth.token?.roleName === "moderator"
+    ) {
+      url.pathname = "/moderator";
       return NextResponse.redirect(url);
     }
   },
@@ -21,11 +30,20 @@ export default withAuth(
         if (pathname.startsWith("/admin")) {
           return token?.roleName === "admin";
         }
+        if (pathname.startsWith("/moderator")) {
+          return token?.roleName === "moderator";
+        }
+        if (
+          pathname.startsWith("/organizer") &&
+          pathname !== "/organizer/dang-ky"
+        ) {
+          return token?.roleName === "organizer";
+        }
         return true;
       },
     },
     pages: {
-      signIn: "/admin/dang-nhap",
+      signIn: "/dang-nhap",
       error: "/error",
     },
   }

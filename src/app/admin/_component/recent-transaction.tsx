@@ -9,7 +9,7 @@ export function RecentTransaction() {
   return (
     <Card x-chunk="dashboard-01-chunk-5 h-[650px]">
       <CardHeader>
-        <CardTitle>Giao dịch gần nhất</CardTitle>
+        <CardTitle>Các sự kiện hot</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-8">
         <div className="flex items-center gap-4">

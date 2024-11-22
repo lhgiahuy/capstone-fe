@@ -3,11 +3,17 @@ import DetailEvent from "./_component/detail-event";
 
 export default function Event({ params }: { params: { id: string } }) {
   return (
-    <>
-      <NavBar links={["Quản lý sự kiện - Nội dung sự kiện"]} />
-      <div>
-        <DetailEvent eventId={params.id} />
-      </div>
-    </>
+    <div className="flex flex-col flex-grow">
+      <NavBar
+        breadcrumb={[
+          { title: "Quản lý sự kiện", link: "/moderator/quan-ly-su-kien" },
+          {
+            title: "Chi tiết sự kiện",
+            link: "#",
+          },
+        ]}
+      />
+      <DetailEvent eventId={params.id} />
+    </div>
   );
 }

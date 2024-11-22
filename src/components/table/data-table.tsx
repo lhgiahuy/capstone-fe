@@ -18,15 +18,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-// import { DataTablePagination } from "./pagination";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -64,9 +56,10 @@ export function DataTable<TData, TValue>({
       });
   }, []);
 
+  if (!table) return <></>;
   return (
     <>
-      <div className="flex items-center pb-4">
+      {/* <div className="flex items-center pb-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -93,15 +86,15 @@ export function DataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-      <div className="rounded-md border">
+      </div> */}
+      <div className="rounded-md border w-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-center ">
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -115,7 +108,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table?.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -125,8 +118,7 @@ export function DataTable<TData, TValue>({
                     <TableCell
                       key={cell.id}
                       className={cn(
-                        cell.column.id === "email" ? "" : "capitalize",
-                        "text-center mx-auto"
+                        cell.column.id === "email" ? "" : "capitalize"
                       )}
                     >
                       {flexRender(
