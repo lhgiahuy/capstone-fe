@@ -7,7 +7,11 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 
-const images = ["/images/event-thumbnail-1.jpg", "/images/auth-bg.jpg"];
+const images = [
+  "/images/event-thumbnail-1.jpg",
+  "/images/banner-1.jpg",
+  "/images/banner-2.jpg",
+];
 export default function Banner() {
   return (
     <section>

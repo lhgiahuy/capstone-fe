@@ -114,7 +114,7 @@ export default function FormSheet({ data }: { data: Event }) {
         <Button
           size="lg"
           className="text-lg w-full py-8"
-          disabled={isPending}
+          disabled={isPending || !(user?.verifyStatus === "Verified")}
           onClick={handleRegistration}
         >
           Đăng ký

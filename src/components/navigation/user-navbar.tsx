@@ -263,7 +263,7 @@ export default function UserNavBar() {
               </DropdownMenu>
             </div>
           ) : (
-            <div className="flex gap-2 items-center text-sm">
+            <div className="flex gap-4 items-center text-sm">
               <Button
                 variant={"secondary"}
                 onClick={() => {
@@ -272,9 +272,11 @@ export default function UserNavBar() {
               >
                 Tạo sự kiện ngay
               </Button>
-              <Link href="/dang-nhap">Đăng nhập</Link>
-              <Separator orientation="vertical" className="h-4" />
-              <Link href="/dang-ky">Đăng ký</Link>
+              <div className="flex gap-2 items-center text-sm">
+                <Link href="/dang-nhap">Đăng nhập</Link>
+                <Separator orientation="vertical" className="h-4" />
+                <Link href="/dang-ky">Đăng ký</Link>
+              </div>
             </div>
           )}
         </div>

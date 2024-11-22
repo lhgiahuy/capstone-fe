@@ -333,6 +333,7 @@ export default function UpdateForm({ id }: { id: string }) {
                   <FormControl>
                     <div
                       dangerouslySetInnerHTML={{ __html: field.value }}
+                      className="[&_span]:inline-block [&_img]:inline-block [&_a]:text-primary [&_a]:underline [&_a]:transition[&_a]:duration-300 [&_a:hover]:text-primary/60"
                     ></div>
                   </FormControl>
                   <FormMessage />
