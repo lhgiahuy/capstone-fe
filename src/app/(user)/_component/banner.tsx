@@ -12,6 +12,7 @@ const images = [
   "/images/banner-1.jpg",
   "/images/banner-2.jpg",
 ];
+
 export default function Banner() {
   return (
     <section>

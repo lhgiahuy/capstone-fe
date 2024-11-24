@@ -24,19 +24,21 @@ export default function Event() {
   const month =
     parseInt((searchParams.get("InMonth") || "").replace("Tháng ", ""), 10) ||
     undefined;
+  const year = parseInt(searchParams.get("InYear") || "", 10) || undefined;
   const types = searchParams
     .getAll("EventTypes")
     .flatMap((item) => item.split(","))
     .filter((item) => item !== "");
   const tag = searchParams.get("EventTag")?.toString();
   const { data } = useQuery({
-    queryKey: ["events", searchString, month, types, tag],
+    queryKey: ["events", searchString, month, types, tag, year],
     queryFn: () =>
       getEvent({
         SearchKeyword: searchString,
         InMonth: month,
         EventTypes: types,
         EventTag: tag,
+        InYear: year,
       }),
   });
 

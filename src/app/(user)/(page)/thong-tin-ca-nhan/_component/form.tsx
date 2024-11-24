@@ -185,7 +185,7 @@ export default function ProfileForm({ values }: any) {
                       <FormLabel>Thẻ FPT</FormLabel>
                       <FormControl>
                         <div className="relative h-[16rem] overflow-hidden w-full shrink-0">
-                          {field.value?.startsWith("https//firebasestorage") ? (
+                          {field.value?.startsWith("https://firebase") ? (
                             <Image
                               src={field.value}
                               alt="user avatar"

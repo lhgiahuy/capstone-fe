@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import { CopyrightIcon } from "lucide-react";
 
 export default function Footer() {
@@ -13,7 +13,7 @@ export default function Footer() {
             2024 Fvent
           </div>
         </div>
-        <div className="flex flex-col items-center text-balance text-center text-sm leading-loose text-background">
+        {/* <div className="flex flex-col items-center text-balance text-center text-sm leading-loose text-background">
           <div className="flex gap-4">
             <div className="flex gap-2 items-center">
               <Link href="/su-kien">Sự kiện</Link>
@@ -28,7 +28,7 @@ export default function Footer() {
         </div>
         <div className="flex flex-col text-balance text-center text-sm leading-loose text-background">
           <p>Something</p>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

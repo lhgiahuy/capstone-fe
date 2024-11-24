@@ -27,7 +27,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useRouter } from "next/navigation";
 export default function EventDetail({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const { data } = useQuery<Event>({
     queryKey: ["event", params.id],
     queryFn: () => getEventById(params.id),
@@ -78,7 +80,13 @@ export default function EventDetail({ params }: { params: { id: string } }) {
               </div>
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <Button variant="link" className="text-foreground">
+                  <Button
+                    variant="link"
+                    className="text-foreground"
+                    onClick={() => {
+                      router.push(`/ban-to-chuc/${data.organizerId}`);
+                    }}
+                  >
                     {data.organizerName}
                   </Button>
                 </HoverCardTrigger>

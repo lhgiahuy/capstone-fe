@@ -1,57 +1,61 @@
 "use client";
 
-import { getEvent } from "@/action/event";
+import { getEventByOrganizer } from "@/action/event";
+import { getUserById } from "@/action/user";
 import EventList from "@/app/(user)/_component/event-list";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Event } from "@/interface/event";
+import { User } from "@/interface/user";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 
-export default function OrganizerDetail() {
-  const { data } = useQuery({
-    queryKey: ["events", 3],
-    queryFn: () => getEvent({ PageSize: 3 }),
+export default function OrganizerDetail({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { data } = useQuery<Event[]>({
+    queryKey: ["event"],
+    queryFn: () => getEventByOrganizer({ organizerId: params.id }),
+  });
+  const { data: organizer } = useQuery<User>({
+    queryKey: ["organizer", params.id],
+    queryFn: () => getUserById(params.id),
   });
   return (
-    <div className="h-full">
-      <div className=" w-full h-[24rem] left-0 top-[5rem] z-[-10] ">
-        <div className="relative w-full h-full">
-          <Image
-            src="/images/organizer-bg.png"
-            alt="organizer bg"
-            fill
-            className="object-contain"
-          ></Image>
+    <div className="w-full flex flex-col gap-4">
+      <div className="relative w-[64rem] h-[18rem] z-10">
+        <Image
+          src={
+            data?.at(0)?.thumbnailImg?.startsWith("https://firebase")
+              ? data?.at(0)?.thumbnailImg || "/images/image-placeholder.jpg"
+              : "/images/image-placeholder.jpg"
+          }
+          alt="organizer bg"
+          fill
+          className="object-cover object-top rounded-lg"
+        />
+      </div>
+      <div className="flex px-8 flex-col gap-4 mt-[-4rem] z-20">
+        <Image
+          src={
+            organizer?.avatarUrl.startsWith("https://firebase")
+              ? organizer.avatarUrl
+              : "/images/image-placeholder.jpg"
+          }
+          alt="organizer bg"
+          width={120}
+          height={200}
+          className="object-contain rounded-lg"
+        />
+        <div className="flex flex-col gap-2">
+          <h1 className="text-primary text-2xl font-bold">
+            {organizer?.username}
+          </h1>
+          <p className="text-muted-foreground">{organizer?.email}</p>
         </div>
       </div>
-      <div className="flex flex-col justify-center w-full h-full items-center relative mt-[-4rem] px-36">
-        <div className="bg-foreground shadow-lg text-accent w-full h-full py-6 px-4 rounded-lg flex justify-center items-center gap-4">
-          <Avatar className="w-36 h-36 mt-[-4rem] shadow-2xl border-8 border-foreground">
-            <AvatarImage src="/images/organizer-avt.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <h2 className="text-2xl font-semibold">
-            Phòng CTSV FPT Univeristy Campus
-          </h2>
-        </div>
-        <div className="w-full  mt-[-0.5rem] py-8 px-8 rounded-lg">
-          <Tabs defaultValue="a" className="w-full">
-            <TabsList className="w-full text-primary">
-              <TabsTrigger value="a" className="w-full">
-                Account
-              </TabsTrigger>
-              <TabsTrigger value="b" className="w-full ">
-                Password
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="a">
-              <EventList data={data} vertical ticketStyle />
-            </TabsContent>
-            <TabsContent value="b">
-              <EventList data={data} vertical ticketStyle />
-            </TabsContent>
-          </Tabs>
-        </div>
+      <div className="px-4 min-h-screen">
+        <EventList event={data}></EventList>
       </div>
     </div>
   );

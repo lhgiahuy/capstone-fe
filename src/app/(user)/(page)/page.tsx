@@ -92,20 +92,20 @@ import { getEvent } from "@/action/event";
 
 export default function Page() {
   const LIMIT = 6;
-  const { data: upcomingList } = useQuery({
-    queryKey: ["events", LIMIT, "Upcoming"],
-    queryFn: () => getEvent({ PageSize: LIMIT, Status: "Upcoming" }),
-  });
-  const { data: completeList } = useQuery({
-    queryKey: ["events", LIMIT, "Complete"],
-    queryFn: () => getEvent({ PageSize: LIMIT, Status: "Completed" }),
+  // const { data: completedList } = useQuery({
+  //   queryKey: ["events", LIMIT, "Upcoming"],
+  //   queryFn: () => getEvent({ PageSize: LIMIT, Status: "Completed" }),
+  // });
+  const { data: list } = useQuery({
+    queryKey: ["events", LIMIT, "InProgress"],
+    queryFn: () => getEvent({ PageSize: LIMIT, Status: "InProgress" }),
   });
   return (
     <div className="flex flex-col gap-16">
       <Banner />
       <Slider />
-      <EventList data={upcomingList} title="Sự kiện sắp tới" />
-      <EventList data={completeList} title="Sự kiện đã diễn ra" />
+      <EventList data={list} title="Sự kiện đang diễn ra" />
+      {/* <EventList data={completedList} title="Sự kiện đã diễn ra" /> */}
     </div>
   );
 }
