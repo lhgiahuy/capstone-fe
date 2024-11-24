@@ -9,6 +9,7 @@ export interface getEventProps {
   InMonth?: number;
   Status?: string;
   EventTag?: string;
+  InYear?: number;
 }
 
 export async function getEvent(props?: getEventProps) {

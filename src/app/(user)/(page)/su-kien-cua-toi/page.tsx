@@ -10,6 +10,8 @@ import EventList from "../../_component/event-list";
 import { useQuery } from "@tanstack/react-query";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
 import { getRegisteredEvent } from "@/action/user";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import YearSelect from "@/components/my-ui/year-select";
 
 export default function MyEvent() {
   const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -22,34 +24,45 @@ export default function MyEvent() {
   const month =
     searchParams.get("thang")?.toString() ||
     `Tháng ${new Date().getMonth() + 1}`;
+  const year =
+    searchParams.get("nam")?.toString() || new Date().getFullYear().toString();
   const monthNum =
-    parseInt((searchParams.get("thang") || "").replace("Tháng ", ""), 10) - 1 ||
-    today.month();
+    parseInt((searchParams.get("thang") || "").replace("Tháng ", ""), 10) - 1;
+  const yearNum = parseInt(year, 10);
+  const paramMonth = monthNum + 1 || today.month() + 1;
+  const paramYear = yearNum || today.year();
   const handleMonthFilter = (value: string) => {
     addParam({ thang: value });
-    setToday(today.month(monthNum - 1));
+    const selectedMonth = parseInt(value.replace("Tháng ", ""), 10) - 1;
+    setToday(today.month(selectedMonth));
   };
-  const paramMonth = monthNum + 1;
+
+  const handleYearFilter = (value: string) => {
+    addParam({ nam: value });
+    const selectedYear = parseInt(value, 10);
+    setToday(today.year(selectedYear));
+  };
   const { data: upcomingEvent } = useQuery({
-    queryKey: ["my-event", paramMonth],
-    queryFn: () => getRegisteredEvent(false, paramMonth),
+    queryKey: ["my-event", paramMonth, year],
+    queryFn: () => getRegisteredEvent(false, paramMonth, paramYear),
   });
   const { data: completedEvent } = useQuery({
     queryKey: ["my-event", true, paramMonth],
-    queryFn: () => getRegisteredEvent(true, paramMonth),
+    queryFn: () => getRegisteredEvent(true, paramMonth, paramYear),
   });
   // Extract start dates from events
   const eventDates = [...(upcomingEvent || []), ...(completedEvent || [])].map(
     (event) => dayjs(event.startTime).startOf("day").toDate()
   );
-
+  console.log(monthNum);
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl text-primary font-bold">Sự kiện của tôi</h1>
       <div className="flex justify-between items-center">
         <div className="flex justify-end w-full">
-          <div>
+          <div className="flex gap-4">
             <MonthSelect value={month} onValueChange={handleMonthFilter} />
+            <YearSelect value={year} onValueChange={handleYearFilter} />
           </div>
         </div>
       </div>
@@ -66,13 +79,12 @@ export default function MyEvent() {
             ))}
           </div>
 
-          <div className="grid grid-cols-7 ">
-            {generateDate(monthNum, today.year()).map(
+          <div className="grid grid-cols-7">
+            {generateDate(today.month(), today.year()).map(
               ({ date, currentMonth, today }, index) => {
                 const isEventDate = eventDates.some((eventDate) =>
                   dayjs(eventDate).isSame(date, "day")
                 );
-
                 return (
                   <div
                     key={index}
@@ -83,10 +95,6 @@ export default function MyEvent() {
                         currentMonth ? "" : "!hidden text-muted",
                         today ? "bg-accent text-foreground" : "",
                         isEventDate ? "bg-primary text-background" : "",
-                        // selectDate.toDate().toDateString() ===
-                        //   date.toDate().toDateString()
-                        //   ? "bg-primary text-accent"
-                        //   : "",
                         "h-10 w-10 rounded-full grid place-content-center transition-all cursor-pointer select-none"
                       )}
                     >
@@ -98,20 +106,18 @@ export default function MyEvent() {
             )}
           </div>
         </div>
-        <div className="flex justify-between w-full">
-          <div className="w-[calc(50%-1.5rem)] flex flex-col items-center gap-4">
-            <h3 className="text-primary text-2xl">Sắp diễn ra</h3>
-            <div className="h-full">
-              <EventList event={upcomingEvent} title="" ticketStyle vertical />
-            </div>
-          </div>
-          <div className="w-[calc(50%-1.5rem)] flex flex-col items-center gap-4">
-            <h3 className="text-destructive text-2xl">Đã kết thúc</h3>
-            <div className="h-full">
-              <EventList event={completedEvent} title="" ticketStyle vertical />
-            </div>
-          </div>
-        </div>
+        <Tabs defaultValue="upcoming">
+          <TabsList>
+            <TabsTrigger value="upcoming">Sắp diễn ra</TabsTrigger>
+            <TabsTrigger value="completed">Đã diễn ra</TabsTrigger>
+          </TabsList>
+          <TabsContent value="upcoming">
+            <EventList event={upcomingEvent} title="" ticketStyle vertical />
+          </TabsContent>
+          <TabsContent value="completed">
+            <EventList event={completedEvent} title="" ticketStyle vertical />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

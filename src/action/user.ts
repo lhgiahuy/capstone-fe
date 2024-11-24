@@ -83,11 +83,12 @@ export async function getUserById(id?: string) {
 
 export async function getRegisteredEvent(
   completed?: boolean,
-  InMonth?: number
+  InMonth?: number,
+  InYear?: number
 ) {
   try {
     const event = await userAxios.get(
-      `/users/participant?inMonth=${InMonth}&isCompleted=${completed}`
+      `/users/participant?inMonth=${InMonth}&isCompleted=${completed}&inYear=${InYear}`
     );
     return event.data;
   } catch (error) {

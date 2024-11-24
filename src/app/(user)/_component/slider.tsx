@@ -20,7 +20,9 @@ export default function Slider() {
   });
   return (
     <section className="flex flex-col gap-4">
-      <div className="text-primary font-semibold text-4xl">Sự kiện nổi bật</div>
+      {/* <div className="text-primary font-semibold text-4xl">
+        Tổng hợp sự kiện
+      </div> */}
       <Carousel
         plugins={[
           Autoplay({

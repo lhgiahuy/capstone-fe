@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Event } from "@/interface/event";
 import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
@@ -18,8 +19,8 @@ export default function EventCard({
 }: EventCardProps) {
   if (ticketStyle)
     return (
-      <Link href={`/su-kien/${data?.eventId}`}>
-        <div className="flex h-[12rem] w-[32rem] items-center">
+      <Link href={`/su-kien/${data?.eventId}`} className="w-[calc(50%-0.5rem)]">
+        <div className={cn("flex h-[12rem]  items-center", className)}>
           <div className="bg-card h-full w-[12rem] p-8 flex flex-col gap-2 items-center justify-center rounded-lg">
             <h3 className="text-5xl text-primary">
               {formatDate(data?.startTime, "d")}
@@ -43,8 +44,10 @@ export default function EventCard({
                 </p>
               </div>
               <div className="flex gap-2 items-center">
-                <MapPinned className="text-primary h-4 w-4" />
-                <p className="capitalize font-light text-sm">{data.location}</p>
+                <MapPinned className="text-primary h-4 w-4 shrink-0" />
+                <p className="capitalize font-light text-sm line-clamp-2">
+                  {data.location}
+                </p>
               </div>
             </div>
           </div>
@@ -54,9 +57,9 @@ export default function EventCard({
   return (
     <Link
       href={`/su-kien/${data?.eventId}`}
-      className={cn("flex w-full flex-col h-72 gap-4", className)}
+      className={cn("flex w-full flex-col h-full gap-4", className)}
     >
-      <div className="relative w-full min-w-[16rem] h-2/3 rounded-lg overflow-hidden">
+      <div className="relative w-full min-w-[16rem] shrink-0 min-h-[12rem] rounded-lg overflow-hidden">
         <Image
           src={
             data.thumbnailImg.startsWith("https")
@@ -68,8 +71,23 @@ export default function EventCard({
           className="object-cover object-top"
         />
       </div>
-      <div className="flex flex-col uppercase justify-between h-1/4">
-        <div className="line-clamp-2">{data?.eventName}</div>
+      <div className="flex flex-col uppercase gap-4 h-full">
+        <div className="flex flex-col gap-2">
+          <div className="line-clamp-2">{data?.eventName}</div>
+          <div className="flex gap-2 flex-wrap">
+            {data?.eventTags.slice(0, 3).map((item, index) => (
+              <Badge key={index} className="text-xs">
+                {item}
+              </Badge>
+            ))}
+            {data?.eventTags.length && data?.eventTags.length > 3 && (
+              <Badge className="text-xs">
+                {`+${data?.eventTags.length - 3} tag`}
+              </Badge>
+            )}
+          </div>
+        </div>
+
         <div className="flex gap-2 items-center">
           <Calendar className="h-4 w-4 text-primary" />
           <div className="capitalize font-light text-sm">

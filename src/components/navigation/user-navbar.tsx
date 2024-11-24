@@ -21,10 +21,10 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useEffect, useState } from "react";
-import EventCard from "@/app/(user)/_component/event-card";
+// import EventCard from "@/app/(user)/_component/event-card";
 import { useQuery } from "@tanstack/react-query";
 import { getEvent, getTag } from "@/action/event";
-import { Event } from "@/interface/event";
+// import { Event } from "@/interface/event";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Tag } from "@/interface/tag";
 import { Badge } from "../ui/badge";
@@ -33,6 +33,7 @@ import { signOutUser } from "@/lib/auth";
 import { getMe } from "@/action/user";
 import useDebounce from "@/hooks/use-debounce";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
+import EventList from "@/app/(user)/_component/event-list";
 
 export default function UserNavBar() {
   const { data: user } = useQuery({
@@ -76,6 +77,10 @@ export default function UserNavBar() {
       clearParam("tu-khoa");
     }
   }, [debouncedSearchValue, addParam, clearParam]);
+  const handleTagInput = (value: string) => {
+    addParam({ "tu-khoa": value });
+    setSearchValue(value);
+  };
   return (
     <nav className="bg-primary text-primary-foreground">
       <div className="container flex justify-between items-center py-4">
@@ -126,25 +131,27 @@ export default function UserNavBar() {
               <PopoverContent
                 align="center"
                 sideOffset={10}
-                className="flex flex-col gap-4 w-full justify-center"
+                className="flex flex-col gap-4 w-full justify-center min-w-[48rem]"
               >
                 <div className="flex flex-col gap-4">
-                  <h3>Kết quả tìm kiếm</h3>
+                  {/* {!searchString && <h3>Gợi ý tag</h3>} */}
+
                   {searchString ? (
                     <></>
                   ) : (
-                    <div className="flex gap-8">
+                    <div className="flex gap-8 mt-4">
                       {tag
                         ?.sort(() => Math.random() - 0.5) // Randomize order
                         .slice(0, 5)
                         .map((item: Tag, index: number) => (
-                          <Link
-                            onMouseDown={(e) => e.preventDefault()} // Prevent popover from closing on click
-                            href={`/su-kien?EventTag=${item.tagName}`}
+                          <div
                             key={item.tagId}
                             className="flex flex-col items-center"
                           >
-                            <div
+                            <Button
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => handleTagInput(item.tagName)}
+                              variant={"link"}
                               className={cn(
                                 "rounded-full w-28 h-28 flex items-center justify-center",
                                 `${
@@ -160,11 +167,11 @@ export default function UserNavBar() {
                                 }}
                                 className="*:w-12 *:h-12"
                               ></div>
-                            </div>
+                            </Button>
                             <Badge className="bg-foreground rounded-full mt-[-1rem] py-1 uppercase w-[8rem] flex items-center justify-center text-center">
                               {item.tagName}
                             </Badge>
-                          </Link>
+                          </div>
                         ))}
                       {/* <div className="flex flex-col items-center">
                         <div className="rounded-full w-28 h-28 bg-foreground text-background  flex items-center justify-center">
@@ -179,8 +186,12 @@ export default function UserNavBar() {
                     </div>
                   )}
                 </div>
-                {searchString ? <></> : <h3>Gợi ý dành riêng cho bạn</h3>}
-                <div className="flex max-w-[48rem] gap-4 flex-wrap">
+                {searchString ? (
+                  <h3>Kết quả tìm kiếm</h3>
+                ) : (
+                  <h3 className="mt-4 text-lg">Gợi ý tìm kiếm</h3>
+                )}
+                {/* <div className="flex max-w-[48rem] gap-4 flex-wrap">
                   {event?.items.map((item: Event) => (
                     <EventCard
                       key={item.eventId}
@@ -188,7 +199,12 @@ export default function UserNavBar() {
                       className="basis-[calc(50%-0.5rem)] min-w-[18rem]"
                     />
                   ))}
-                </div>
+                </div> */}
+                <EventList
+                  data={event}
+                  className="flex max-w-[48rem] gap-4 flex-wrap"
+                  cardClassName="basis-[calc(50%-0.5rem)]"
+                />
               </PopoverContent>
             </Popover>
           )}
