@@ -1,0 +1,55 @@
+.description h1 {
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 2.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.description h2 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.description h3 {
+    font-size: 18px;
+}
+
+.description ul {
+    list-style-type: circle;
+    padding: 0.5rem 1rem;
+
+}
+
+.description li {
+    padding: 0.5rem 0.5rem;
+    /* Add padding to each list item */
+    margin: 2px 0;
+
+    position: relative;
+}
+
+
+
+li[aria-level="1"] {
+    padding-left: 15px;
+    margin-left: 0;
+}
+
+li[aria-level="2"] {
+    padding-left: 30px;
+    margin-left: 15px;
+}
+
+li[aria-level="3"] {
+    padding-left: 45px;
+    margin-left: 30px;
+}
+
+li[aria-level="4"] {
+    padding-left: 60px;
+    margin-left: 45px;
+}
