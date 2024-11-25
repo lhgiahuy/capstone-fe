@@ -1,5 +1,9 @@
 "use client";
-import { getParticipant, getSubmittedFormData } from "@/action/event";
+import {
+  getEventById,
+  getParticipant,
+  getSubmittedFormData,
+} from "@/action/event";
 import { DataTable } from "@/components/table/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -7,7 +11,7 @@ import { User } from "@/interface/user";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Check, X } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import NavBar from "../../../_component/navbar";
 import {
@@ -19,6 +23,7 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Event } from "@/interface/event";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { data, isPending } = useQuery({
@@ -29,6 +34,10 @@ export default function Page({ params }: { params: { id: string } }) {
   const { data: formData } = useQuery({
     queryKey: ["form", params.id, userId],
     queryFn: () => getSubmittedFormData(params.id, userId),
+  });
+  const { data: event } = useQuery<Event>({
+    queryKey: ["event", params.id],
+    queryFn: () => getEventById(params.id),
   });
   const columns: ColumnDef<User>[] = [
     {
@@ -102,24 +111,26 @@ export default function Page({ params }: { params: { id: string } }) {
           <p>Chưa có thẻ</p>
         ),
     },
-    {
-      accessorKey: "isCheckin",
-      header: "Check in",
-      cell: ({ row }) => {
-        return (
-          <div className="flex px-4">
-            {row.original.isCheckin ? (
-              <Check className="text-green-400 center"></Check>
-            ) : (
-              <X className="text-red-400"></X>
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "isCheckin",
+    //   header: "Check in",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="flex px-4">
+    //         {row.original.isCheckin ? (
+    //           <Check className="text-green-400 center"></Check>
+    //         ) : (
+    //           <X className="text-red-400"></X>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
+
     {
       id: "actions",
       cell: ({ row }) => {
+        if (!event?.form.length) return <></>;
         return (
           <Sheet>
             <SheetTrigger asChild>
