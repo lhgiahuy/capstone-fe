@@ -12,7 +12,7 @@ const text = {
     opacity: 0,
     top: 0,
     transition: { duration: 0.6, delay: 0.4, ease: [0.76, 0, 0.24, 1] },
-    transitionEnd: { top: "47.5%", zIndex: 0 },
+    transitionEnd: { top: "47.5%", zIndex: 0, display: "none" },
     // zIndex: 0,
   },
   exit: {
