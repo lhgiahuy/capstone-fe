@@ -11,7 +11,7 @@ const text = {
   enter: {
     opacity: 0,
     top: 0,
-    transition: { duration: 0.6, delay: 0.4, ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.3, delay: 0.4, ease: [0.76, 0, 0.24, 1] },
     transitionEnd: { top: "47.5%", zIndex: 0, display: "none" },
     // zIndex: 0,
   },
@@ -109,7 +109,7 @@ const Curve = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div className="bg-background z-30">
         <div
           className="fixed h-[calc(100vh+600px)] w-screen pointer-events-none left-0 top-0 bg-black transition-opacity duration-0 z-30"

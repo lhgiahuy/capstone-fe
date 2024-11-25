@@ -1,5 +1,5 @@
 import { getMe, loginUser } from "@/action/user";
-import { TypeOfLoginForm } from "@/app/(user)/(auth)/dang-nhap/_lib/validation";
+import { TypeOfLoginForm } from "@/app/(auth)/dang-nhap/_lib/validation";
 import { getServerSession, NextAuthOptions, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { atomStore } from "./atom/store";
