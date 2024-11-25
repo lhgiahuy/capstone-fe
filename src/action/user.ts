@@ -1,5 +1,5 @@
-import { TypeOfSignUpForm } from "@/app/(user)/(auth)/dang-ky/_lib/validation";
-import { TypeOfLoginForm } from "@/app/(user)/(auth)/dang-nhap/_lib/validation";
+import { TypeOfSignUpForm } from "@/app/(auth)/dang-ky/_lib/validation";
+import { TypeOfLoginForm } from "@/app/(auth)/dang-nhap/_lib/validation";
 import { userAxios } from "@/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
