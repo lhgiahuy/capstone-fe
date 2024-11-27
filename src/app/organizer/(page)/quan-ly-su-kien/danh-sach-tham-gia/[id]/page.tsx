@@ -1,5 +1,6 @@
 "use client";
 import {
+  CheckIn,
   getEventById,
   getParticipant,
   getSubmittedFormData,
@@ -9,9 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { User } from "@/interface/user";
 import { getFirstLetterOfName } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Check, X } from "lucide-react";
 import Link from "next/link";
 import NavBar from "../../../_component/navbar";
 import {
@@ -24,6 +25,7 @@ import {
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Event } from "@/interface/event";
+import { toast } from "sonner";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { data, isPending } = useQuery({
@@ -39,6 +41,23 @@ export default function Page({ params }: { params: { id: string } }) {
     queryKey: ["event", params.id],
     queryFn: () => getEventById(params.id),
   });
+  const query = useQueryClient();
+  const { mutate: checkInMutation } = useMutation({
+    mutationFn: (id: string) => CheckIn(id),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["participants", params.id] });
+    },
+  });
+  const handleCheckIn = () => {
+    checkInMutation(params.id, {
+      onSuccess: () => {
+        toast("Check in thành công!");
+      },
+      onError: () => {
+        toast("Check in thất bại!");
+      },
+    });
+  };
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "username",
@@ -111,22 +130,33 @@ export default function Page({ params }: { params: { id: string } }) {
           <p>Chưa có thẻ</p>
         ),
     },
-    // {
-    //   accessorKey: "isCheckin",
-    //   header: "Check in",
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div className="flex px-4">
-    //         {row.original.isCheckin ? (
-    //           <Check className="text-green-400 center"></Check>
-    //         ) : (
-    //           <X className="text-red-400"></X>
-    //         )}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: "isCheckin",
+      header: "Check in",
+      cell: ({ row }) => {
+        return (
+          <div className="flex px-4">
+            {row.original.isCheckin ? (
+              <Check className="text-green-400 center"></Check>
+            ) : (
+              <X className="text-red-400"></X>
+            )}
+          </div>
+        );
+      },
+    },
 
+    {
+      id: "check-in",
+      cell: ({ row }) => {
+        if (row.original.isCheckin) return <Button>Huỷ check in</Button>;
+        return (
+          <Button size={"sm"} onClick={handleCheckIn}>
+            Check in
+          </Button>
+        );
+      },
+    },
     {
       id: "actions",
       cell: ({ row }) => {
@@ -169,6 +199,10 @@ export default function Page({ params }: { params: { id: string } }) {
       <NavBar
         breadcrumb={[
           { title: "Quản lý sự kiện", link: "/organizer/quan-ly-su-kien" },
+          {
+            title: "Chi tiết sự kiện",
+            link: `/organizer/quan-ly-su-kien/${params.id}`,
+          },
           {
             title: "Danh sách người tham gia",
             link: "#",

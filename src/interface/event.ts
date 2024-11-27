@@ -19,6 +19,9 @@ export interface Event {
   linkEvent: string;
   isRegistered: boolean;
   proposal: string;
+  isOverlap: boolean;
+  isReviewed: boolean;
+  canReview: boolean;
   form: [
     {
       name: string;

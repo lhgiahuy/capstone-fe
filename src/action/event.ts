@@ -209,3 +209,7 @@ export async function getReview(eventId: string) {
     console.error("Failed to fetch event data", error);
   }
 }
+
+export async function CheckIn(eventId: string) {
+  return await userAxios.put(`/events/${eventId}/checkIn`);
+}

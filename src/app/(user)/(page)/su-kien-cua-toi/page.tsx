@@ -54,7 +54,6 @@ export default function MyEvent() {
   const eventDates = [...(upcomingEvent || []), ...(completedEvent || [])].map(
     (event) => dayjs(event.startTime).startOf("day").toDate()
   );
-  console.log(monthNum);
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl text-primary font-bold">Sự kiện của tôi</h1>

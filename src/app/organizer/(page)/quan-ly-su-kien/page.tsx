@@ -201,14 +201,20 @@ export default function EventTable() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-
-                <DropdownMenuItem>Tạo mã QR</DropdownMenuItem>
-                <DropdownMenuItem>Chỉnh sửa sự kiện</DropdownMenuItem>
-                <DropdownMenuItem>
-                  <AlertDialogTrigger asChild>
-                    <p>Xoá sự kiện</p>
-                  </AlertDialogTrigger>
-                </DropdownMenuItem>
+                {row.original.status === "InProgress" ||
+                  (row.original.status === "Upcoming" && (
+                    <DropdownMenuItem>Tạo mã QR</DropdownMenuItem>
+                  ))}
+                {row.original.status === "Draft" && (
+                  <DropdownMenuItem>Chỉnh sửa sự kiện</DropdownMenuItem>
+                )}
+                {row.original.status === "Draft" && (
+                  <DropdownMenuItem>
+                    <AlertDialogTrigger asChild>
+                      <p>Xoá sự kiện</p>
+                    </AlertDialogTrigger>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <AlertDialogContent>

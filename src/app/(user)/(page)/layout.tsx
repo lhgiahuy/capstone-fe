@@ -9,7 +9,7 @@ export default async function UserLayout({
   return (
     <div className="flex flex-col gap-12">
       <UserNavBar />
-      <div className="container min-h-screen">{children}</div>
+      <div className="container mt-32 min-h-screen">{children}</div>
       <UserFooter />
     </div>
   );

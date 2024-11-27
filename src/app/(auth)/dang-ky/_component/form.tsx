@@ -27,6 +27,7 @@ export default function SignUpForm() {
       username: "",
       phoneNumber: "",
       email: "",
+      studentId: "",
       password: "",
       confirmPassword: "",
     },
@@ -66,6 +67,18 @@ export default function SignUpForm() {
             <FormItem>
               <FormControl>
                 <Input placeholder="Email*" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="studentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Mã số sinh viên*" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
