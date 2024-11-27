@@ -30,6 +30,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMe } from "@/action/user";
 import { registerEvent, submitForm, unRegisterEvent } from "@/action/event";
 import ReviewForm from "./review-form";
+import OverlapDialog from "./overlap-dialog";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
@@ -79,7 +80,6 @@ export default function FormSheet({ data }: { data: Event }) {
     });
     setOpen(false);
   };
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       {user?.verifyStatus === "Verified" &&
@@ -91,14 +91,18 @@ export default function FormSheet({ data }: { data: Event }) {
             Đăng ký
           </Button>
         </SheetTrigger>
-      ) : data.status === "Completed" && !data.isRegistered ? (
+      ) : data.status !== "Completed" && !data.isRegistered ? (
         <Button
           size="lg"
-          className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
+          className="text-lg w-full py-8"
+          disabled={isPending || !(user?.verifyStatus === "Verified")}
+          onClick={handleRegistration}
         >
-          Đã kết thúc
+          Đăng ký
         </Button>
-      ) : data.isRegistered && data.status === "Completed" ? (
+      ) : data.isRegistered &&
+        !data.isReviewed &&
+        data.status === "Completed" ? (
         <ReviewForm id={data.eventId}></ReviewForm>
       ) : data.isRegistered && data.status !== "Completed" ? (
         <Button
@@ -110,14 +114,14 @@ export default function FormSheet({ data }: { data: Event }) {
         >
           Huỷ đăng ký
         </Button>
+      ) : data.isOverlap ? (
+        <OverlapDialog id={data.eventId} />
       ) : (
         <Button
           size="lg"
-          className="text-lg w-full py-8"
-          disabled={isPending || !(user?.verifyStatus === "Verified")}
-          onClick={handleRegistration}
+          className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
         >
-          Đăng ký
+          Đã kết thúc
         </Button>
       )}
 

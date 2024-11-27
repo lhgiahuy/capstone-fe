@@ -62,17 +62,14 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={10}>
-          <DropdownMenuLabel>{user?.username}</DropdownMenuLabel>
+          <DropdownMenuLabel className="max-w-[12rem]">
+            {user?.username}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link href="/thong-tin-ca-nhan">Hồ sơ</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => {
-              signOutUser({ redirect: false });
-              window.location.href = "/";
-            }}
-          >
+          <DropdownMenuItem onClick={() => signOutUser()}>
             Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>

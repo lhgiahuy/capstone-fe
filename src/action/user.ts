@@ -1,5 +1,6 @@
 import { TypeOfSignUpForm } from "@/app/(auth)/dang-ky/_lib/validation";
 import { TypeOfLoginForm } from "@/app/(auth)/dang-nhap/_lib/validation";
+import { TypeOfOrganizerSignUpForm } from "@/app/organizer/(auth)/dang-ky/_lib/validation";
 import { userAxios } from "@/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
@@ -48,7 +49,7 @@ export async function signUpStudent(data: TypeOfSignUpForm) {
   return await userAxios.post("/users/register", { ...data, role: "student" });
 }
 
-export async function signUpOrganizer(data: TypeOfSignUpForm) {
+export async function signUpOrganizer(data: TypeOfOrganizerSignUpForm) {
   return await userAxios.post("/users/register", {
     ...data,
     role: "organizer",
@@ -94,4 +95,28 @@ export async function getRegisteredEvent(
   } catch (error) {
     console.error("Failed to fetch event data", error);
   }
+}
+
+export async function verifyEmail(userId: string, token: string) {
+  try {
+    const res = await userAxios.get(
+      `/users/verify-email?userId=${userId}&token=${token}`
+    );
+    return res;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function getUserNotification() {
+  try {
+    const res = await userAxios.get(`/users/notifications`);
+    return res.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function readNotification(notiId: string) {
+  return await userAxios.put(`/notifications/${notiId}/read`);
 }

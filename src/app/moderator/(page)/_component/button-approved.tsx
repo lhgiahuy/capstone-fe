@@ -47,10 +47,10 @@ export default function ButtonApproved({ eventId }: { eventId: string }) {
     <div className="w-full">
       <Button
         onClick={handleApprove}
-        disabled={!(data?.status === "Draft")}
+        disabled={!(data?.status === "UnderReview")}
         className="w-full py-8 text-xl"
       >
-        {`${data?.status === "Draft" ? "Phê duyệt" : "Đã phê duyệt"}`}
+        {`${data?.status === "UnderReview" ? "Phê duyệt" : "Đã phê duyệt"}`}
       </Button>
       {showProcessNoteInput && (
         <div className="fixed inset-0 bg-gray-500 text-foreground bg-opacity-50 flex justify-center items-center z-50">

@@ -165,6 +165,26 @@ export default function ProfileForm({ values }: any) {
               />
               <FormField
                 control={form.control}
+                name="studentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mã số sinh viên</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="MSSV*"
+                        disabled={
+                          values.verifyStatus === "Verified" ||
+                          values.verifyStatus === "UnderVerify"
+                        }
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>

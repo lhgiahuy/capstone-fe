@@ -76,9 +76,9 @@ export default function CreateForm() {
         location: "",
         eventLink: "",
         passwordMeeting: "",
-        date: new Date(),
-        startDate: new Date(),
-        endDate: new Date(),
+        date: new Date(new Date().setDate(new Date().getDate() + 7)),
+        startDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+        endDate: new Date(new Date().setDate(new Date().getDate() + 8)),
         startTime: "05:00",
         endTime: "08:00",
       },
@@ -403,7 +403,7 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
                                           <span>Chọn ngày</span>
                                         )}
@@ -422,10 +422,13 @@ export default function CreateForm() {
                                       disabled={(date) =>
                                         date <
                                         new Date(
-                                          new Date().setHours(0, 0, 0, 0)
+                                          new Date().setDate(
+                                            new Date().getDate() + 6
+                                          )
                                         )
                                       }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>
@@ -539,9 +542,9 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
-                                          <span>Pick a date</span>
+                                          <span>Chọn ngày</span>
                                         )}
                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                       </Button>
@@ -555,8 +558,16 @@ export default function CreateForm() {
                                       mode="single"
                                       selected={field.value}
                                       onSelect={field.onChange}
-                                      disabled={(date) => date < new Date()}
+                                      disabled={(date) =>
+                                        date <
+                                        new Date(
+                                          new Date().setDate(
+                                            new Date().getDate() + 6
+                                          )
+                                        )
+                                      }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>
@@ -624,7 +635,7 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
                                           <span>Chọn ngày</span>
                                         )}
@@ -640,8 +651,16 @@ export default function CreateForm() {
                                       mode="single"
                                       selected={field.value}
                                       onSelect={field.onChange}
-                                      disabled={(date) => date < new Date()}
+                                      disabled={(date) =>
+                                        date <
+                                        new Date(
+                                          new Date().setDate(
+                                            new Date().getDate() + 7
+                                          )
+                                        )
+                                      }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>

@@ -31,7 +31,7 @@ export default function Event() {
     .filter((item) => item !== "");
   const tag = searchParams.get("EventTag")?.toString();
   const { data } = useQuery({
-    queryKey: ["events", searchString, month, types, tag, year],
+    queryKey: ["events", searchString, month, types, tag, year, currentPage],
     queryFn: () =>
       getEvent({
         SearchKeyword: searchString,
@@ -39,6 +39,7 @@ export default function Event() {
         EventTypes: types,
         EventTag: tag,
         InYear: year,
+        PageNumber: currentPage,
       }),
   });
 
@@ -64,6 +65,7 @@ export default function Event() {
   return (
     <div className="flex flex-col gap-16">
       <EventList
+        className="min-h-screen"
         data={data}
         title={`Kết quả tìm kiếm: ${searchString}`}
         filter

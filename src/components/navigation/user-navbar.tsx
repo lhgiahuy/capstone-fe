@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Search } from "lucide-react";
+import { Bell, BellOff, Calendar, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -22,7 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useEffect, useState } from "react";
 // import EventCard from "@/app/(user)/_component/event-card";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getEvent, getTag } from "@/action/event";
 // import { Event } from "@/interface/event";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -30,10 +30,14 @@ import { Tag } from "@/interface/tag";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { signOutUser } from "@/lib/auth";
-import { getMe } from "@/action/user";
+import { getMe, getUserNotification, readNotification } from "@/action/user";
 import useDebounce from "@/hooks/use-debounce";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
 import EventList from "@/app/(user)/_component/event-list";
+import { Notification } from "@/interface/notification";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function UserNavBar() {
   const { data: user } = useQuery({
@@ -41,6 +45,8 @@ export default function UserNavBar() {
     queryFn: getMe,
   });
   const [open, setOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { push } = useRouter();
@@ -81,8 +87,22 @@ export default function UserNavBar() {
     addParam({ "tu-khoa": value });
     setSearchValue(value);
   };
+  const { data: notification } = useQuery<Notification[]>({
+    queryKey: ["notification"],
+    queryFn: getUserNotification,
+  });
+  const query = useQueryClient();
+  const { mutate: readNotificationMutation } = useMutation({
+    mutationFn: (notiId: string) => readNotification(notiId),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["notification"] });
+    },
+  });
+  const handleReadNotification = (notiId: string) => {
+    readNotificationMutation(notiId);
+  };
   return (
-    <nav className="bg-primary text-primary-foreground">
+    <nav className="bg-primary fixed top-0 w-full z-20 text-primary-foreground">
       <div className="container flex justify-between items-center py-4">
         <Link href="/" className="font-bold text-2xl">
           FVENT
@@ -215,35 +235,78 @@ export default function UserNavBar() {
               {user.roleName === "organizer" ? (
                 <></>
               ) : (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/su-kien-cua-toi"
-                        className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center"
-                      >
-                        <Calendar className="w-5 h-5 text-background"></Calendar>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-foreground">
-                      <p>Xem lịch</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href="/su-kien-cua-toi"
+                          className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center"
+                        >
+                          <Calendar className="w-5 h-5 text-background"></Calendar>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-foreground">
+                        <p>Xem lịch</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
+                        <Bell className="w-5 h-5 text-background" />
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="min-w-[32rem] flex flex-col gap-8">
+                      <h2 className="text-primary font-bold text-4xl">
+                        Thông báo
+                      </h2>
+                      {notification?.length ? (
+                        <ScrollArea className="flex flex-col w-full gap-4 h-[32rem]">
+                          {notification.map((item) => (
+                            <Button
+                              // href={`/su-kien/${item.eventId}`}
+                              onClick={() => {
+                                setPopoverOpen(false);
+                                handleReadNotification(item.notiId);
+                                if (item?.eventId)
+                                  router.push(`/su-kien/${item.eventId}`);
+                              }}
+                              variant={"ghost"}
+                              key={item.notiId}
+                              className="flex gap-4 text-left justify-start items-start	h-full hover:bg-card w-full px-4 rounded-lg py-2"
+                            >
+                              {item.readStatus === "Unread" && (
+                                <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
+                              )}
+                              <div className="flex flex-col w-full justify-start gap-2">
+                                <div className="flex flex-col gap-2">
+                                  <h3 className="text-primary text-lg">
+                                    {item.title}
+                                  </h3>
+                                  <p className="text-lg">{item.message}</p>
+                                </div>
+
+                                <p className="text-muted-foreground text-sm">
+                                  {formatDistanceToNow(item.sendTime, {
+                                    locale: vi,
+                                  })}
+                                </p>
+                              </div>
+                            </Button>
+                          ))}
+                        </ScrollArea>
+                      ) : (
+                        <div className="min-h-[24rem] flex flex-col gap-2 items-center w-full justify-center item-center">
+                          <BellOff className="text-primary h-8 w-8"></BellOff>
+                          <p className="text-primary">Chưa có thông báo</p>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                </>
               )}
 
-              {/* <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
-                      <Bell className="w-5 h-5 text-background" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-foreground">
-                    <p>Xem thông báo</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex gap-4 items-center">

@@ -19,12 +19,15 @@ export default function Page() {
           hoặc spam.
         </span>
         <div className="mt-8 flex justify-center gap-2">
+          <Button onClick={() => router.back()} variant="default" size="lg">
+            Quay lại
+          </Button>
           <Button
-            onClick={() => router.push("/dang-nhap")}
-            variant="default"
+            onClick={() => router.push("/")}
+            variant="secondary"
             size="lg"
           >
-            Đăng nhập
+            Trang chủ
           </Button>
         </div>
       </div>
