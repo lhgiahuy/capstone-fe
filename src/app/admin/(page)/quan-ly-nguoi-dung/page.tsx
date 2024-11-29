@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminNavBar from "../../_component/admin-navbar";
-import { getUser } from "@/action/user";
+import { deleteUser, getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, getFirstLetterOfName } from "@/lib/utils";
@@ -34,11 +34,16 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SkeletonTable } from "../../_component/skeleton-table";
+import { BanUserDialog } from "./_component/dialog-ban-user";
+import { useState } from "react";
 
 export default function AdminManagementUser() {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const pathname = usePathname();
   const router = useRouter();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
@@ -65,6 +70,27 @@ export default function AdminManagementUser() {
     }
     return pages;
   };
+
+  // Ban user
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", currentPage] });
+      setDialogOpen(false);
+    },
+  });
+
+  const handleOpenDialog = (userId: string) => {
+    setSelectedUserId(userId);
+    setDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedUserId) {
+      deleteMutation.mutate(selectedUserId);
+    }
+  };
+
   // if (!data) return <></>;
   const columns: ColumnDef<User>[] = [
     {
@@ -193,7 +219,9 @@ export default function AdminManagementUser() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
-              <DropdownMenuItem>Xoá người dùng</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleOpenDialog(user.userId)}>
+                Tạm khóa người dùng
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -262,6 +290,13 @@ export default function AdminManagementUser() {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+      <BanUserDialog
+        isOpen={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận tạm khóa"
+        description="Bạn có chắc chắn muốn tạm khóa tài khoản này không?"
+      />
     </>
   );
 }

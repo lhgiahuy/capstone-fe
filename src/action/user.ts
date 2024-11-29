@@ -120,3 +120,12 @@ export async function getUserNotification() {
 export async function readNotification(notiId: string) {
   return await userAxios.put(`/notifications/${notiId}/read`);
 }
+
+export async function deleteUser(userId: string) {
+  try {
+    const res = await userAxios.delete(`/users/${userId}`);
+    return res;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
