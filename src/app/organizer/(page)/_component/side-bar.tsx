@@ -44,7 +44,7 @@ export default function Sidebar() {
 
   const menu = [
     {
-      title: "Bảng số liệu",
+      title: "Dashboard",
       link: "#",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },

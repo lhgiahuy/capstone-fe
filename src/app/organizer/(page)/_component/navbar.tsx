@@ -69,7 +69,12 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
           <DropdownMenuItem>
             <Link href="/thong-tin-ca-nhan">Hồ sơ</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => signOutUser()}>
+          <DropdownMenuItem
+            onClick={async () => {
+              await signOutUser({ redirect: false });
+              window.location.href = "/";
+            }}
+          >
             Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -18,17 +18,7 @@ import NavBar from "../_component/navbar";
 import Image from "next/image";
 import { Event } from "@/interface/event";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import useSearchParamsHandler from "@/hooks/use-add-search-param";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,13 +44,10 @@ import {
 
 export default function EventTable() {
   const [user] = useAtom(userAtom);
-  const searchParams = useSearchParams();
-  const [status, setStatus] = useState(
-    searchParams.get("status")?.toString() || "Upcoming"
-  );
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status")?.toString() || "Upcoming";
   const query = useQueryClient();
-  const [addParam] = useSearchParamsHandler();
   const { mutate: deleteEventMutation } = useMutation({
     mutationFn: (id: string) => deleteEvent(id),
     onSuccess: () =>
@@ -240,18 +227,23 @@ export default function EventTable() {
       enableHiding: false, // disable hiding for this column
     },
   ];
-  const handleStatusChange = (value: string) => {
-    setStatus(value);
-    addParam({ status: value });
-  };
-  const statusList = [
-    "Tất cả",
-    "Upcoming",
-    "Completed",
-    "Draft",
-    "UnderReview",
-  ];
+
   const hideColumns = ["isDeleted", "deletedAt"];
+  const selectOptions = [
+    {
+      option: [
+        { name: "Tất cả", value: "All" },
+        { name: "Upcoming", value: "Upcoming" },
+        { name: "Completed", value: "Completed" },
+        { name: "Draft", value: "Draft" },
+        { name: "InProgress", value: "InProgress" },
+        { name: "UnderReview", value: "UnderReview" },
+      ],
+      placeholder: "Status",
+      title: "status",
+      defaultValue: status,
+    },
+  ];
   return (
     <>
       <NavBar
@@ -262,33 +254,22 @@ export default function EventTable() {
       {isPending ? (
         <></>
       ) : (
-        <div className="flex flex-col items-end gap-4">
-          <div className="flex gap-4">
-            <Select value={status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="flex gap-4 py-5 bg-secondary-background text-secondary">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent align="end">
-                <SelectGroup>
-                  {statusList.map((item, index) => (
-                    <SelectItem key={index} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Button
-              size={"lg"}
-              onClick={() =>
-                router.push("/organizer/quan-ly-su-kien/tao-su-kien")
-              }
-            >
-              Thêm sự kiện
-            </Button>
-          </div>
-          <DataTable hideColumns={hideColumns} columns={columns} data={data} />
-        </div>
+        <>
+          <Button
+            size={"lg"}
+            onClick={() =>
+              router.push("/organizer/quan-ly-su-kien/tao-su-kien")
+            }
+          >
+            Thêm sự kiện
+          </Button>
+          <DataTable
+            hideColumns={hideColumns}
+            columns={columns}
+            data={data}
+            selectOptions={selectOptions}
+          />
+        </>
       )}
     </>
   );

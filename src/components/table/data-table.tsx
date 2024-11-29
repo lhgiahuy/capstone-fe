@@ -20,20 +20,45 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Input } from "../ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
+import useSearchParamsHandler from "@/hooks/use-add-search-param";
+import useDebounce from "@/hooks/use-debounce";
+import { useSearchParams } from "next/navigation";
+import MyPagination from "./my-pagination";
+
+interface selectOptions {
+  option: {
+    name: string;
+    value: string;
+  }[];
+  placeholder: string;
+  title: string;
+  defaultValue: string;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   hideColumns: string[];
+  selectOptions?: selectOptions[];
+  totalPages?: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   hideColumns,
+  selectOptions,
+  totalPages,
 }: DataTableProps<TData, TValue>) {
+  const searchParams = useSearchParams();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const searchString = searchParams.get("SearchKeyword")?.toString() || "";
+  const [searchValue, setSearchValue] = useState(searchString);
+  const debouncedSearchValue = useDebounce(searchValue, 300);
+
   const table = useReactTable({
     data,
     columns,
@@ -55,10 +80,58 @@ export function DataTable<TData, TValue>({
         column.toggleVisibility(false);
       });
   }, []);
-
+  const [addParam, clearParam] = useSearchParamsHandler();
+  const handleFilterChange = (value: string, title: string) => {
+    addParam({ [title]: value });
+  };
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
+  useEffect(() => {
+    if (debouncedSearchValue) {
+      // Add or update the search parameter if there is a value
+      addParam({ SearchKeyword: debouncedSearchValue });
+    } else {
+      // Clear the search parameter if the value is empty
+      clearParam("SearchKeyword");
+    }
+  }, [debouncedSearchValue, addParam, clearParam]);
   if (!table) return <></>;
   return (
-    <>
+    <div className="flex flex-col gap-4">
+      <div className="flex w-full justify-end gap-4">
+        {selectOptions &&
+          selectOptions.map((item, index) => {
+            const selectedOption =
+              item.option.find((option) => option.value === item.defaultValue)
+                ?.name || item.placeholder;
+            return (
+              <Select
+                key={index}
+                onValueChange={(value) => handleFilterChange(value, item.title)}
+                value={item.defaultValue}
+              >
+                <SelectTrigger className="max-w-[12rem]">
+                  {selectedOption || item.placeholder}
+                </SelectTrigger>
+                <SelectContent>
+                  {item.option.map((option, optionIndex) => (
+                    <SelectItem key={optionIndex} value={option.value}>
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          })}
+        <Input
+          type="text"
+          placeholder="Tìm kiếm"
+          className="max-w-[24rem]"
+          onChange={(e) => handleSearch(e)}
+        />
+      </div>
+
       {/* <div className="flex items-center pb-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -142,9 +215,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
-        <DataTablePagination table={table} />
-      </div> */}
-    </>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <MyPagination totalPages={totalPages || 1} />
+      </div>
+    </div>
   );
 }

@@ -334,7 +334,12 @@ export default function UserNavBar() {
                     </DropdownMenuItem>
                     {/* <DropdownMenuItem>Billing</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem> */}
-                    <DropdownMenuItem onClick={() => signOutUser()}>
+                    <DropdownMenuItem
+                      onClick={async () => {
+                        await signOutUser({ redirect: false });
+                        window.location.href = "/";
+                      }}
+                    >
                       Đăng xuất
                     </DropdownMenuItem>
                   </DropdownMenuGroup>

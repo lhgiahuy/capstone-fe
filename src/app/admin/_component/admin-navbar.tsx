@@ -69,8 +69,8 @@ export default function AdminNavBar({ links }: BreadcrumbsProps) {
             <Link href="/event">Sự kiện</Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => {
-              signOutUser({ redirect: false });
+            onClick={async () => {
+              await signOutUser({ redirect: false });
               window.location.href = "/admin/dang-nhap";
             }}
           >
