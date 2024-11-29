@@ -17,39 +17,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-} from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
 import NavBar from "../_component/moderator-navbar";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function ManagementUser() {
-  const [statusFilter, setStatusFilter] = useState<string>("Student");
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
+  const role = searchParams.get("role") || "Student";
+
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [processNote, setProcessNote] = useState("");
   const { data, isPending } = useQuery({
-    queryKey: ["user", currentPage, statusFilter],
-    queryFn: () => getUser({ PageNumber: currentPage, roleName: statusFilter }),
+    queryKey: ["user", currentPage, role],
+    queryFn: () => getUser({ PageNumber: currentPage, roleName: role }),
   });
   const query = useQueryClient();
   const approveMutation = useMutation({
@@ -67,25 +54,6 @@ export default function ManagementUser() {
       query.invalidateQueries({ queryKey: ["user"] });
     },
   });
-  const renderPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= data?.totalPages; i++) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href={`${pathname}?${new URLSearchParams({
-              ...Object.fromEntries(searchParamsPaging),
-              PageNumber: i.toString(),
-            }).toString()}`}
-            isActive={i == currentPage}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    return pages;
-  };
   if (!data) return <></>;
 
   const columns: ColumnDef<any>[] = [
@@ -144,30 +112,7 @@ export default function ManagementUser() {
     },
     {
       accessorKey: "roleName",
-      header: () => {
-        return (
-          <div className="flex items-center">
-            <div>Vai trò</div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8">
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Chọn role</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setStatusFilter("Student")}>
-                  Student
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("Organizer")}>
-                  Organizer
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      },
+      header: "Vai trò",
       cell: ({ row }) => (
         <Badge
           className={cn(
@@ -247,7 +192,26 @@ export default function ManagementUser() {
   ];
 
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
-
+  const selectOptions = [
+    {
+      option: [
+        { name: "Đã xác thực", value: "2" },
+        { name: "Chưa xác thực", value: "1" },
+      ],
+      placeholder: "Xác thực",
+      title: "verified",
+      defaultValue: "true",
+    },
+    {
+      option: [
+        { name: "Sinh viên", value: "student" },
+        { name: "Organizer", value: "organizer" },
+      ],
+      placeholder: "Vai trò",
+      title: "role",
+      defaultValue: role,
+    },
+  ];
   return (
     <>
       <NavBar
@@ -266,6 +230,8 @@ export default function ManagementUser() {
             hideColumns={hideColumns}
             columns={columns}
             data={data.items}
+            totalPages={data.totalPages}
+            selectOptions={selectOptions}
           />
         )}
         <Sheet open={isSheetOpen} onOpenChange={(open) => setIsSheetOpen(open)}>
@@ -312,51 +278,6 @@ export default function ManagementUser() {
             </div>
           </SheetContent>
         </Sheet>
-        <Pagination>
-          <PaginationContent className="items-center mt-3">
-            <PaginationItem>
-              <Button
-                onClick={() =>
-                  router.replace(
-                    `${pathname}?${new URLSearchParams({
-                      ...Object.fromEntries(searchParamsPaging),
-                      PageNumber: `${(
-                        parseInt(currentPage.toString()) - 1
-                      ).toString()}`,
-                    }).toString()}`
-                  )
-                }
-                disabled={currentPage == 1}
-                size="icon"
-                variant="ghost"
-              >
-                <ChevronLeft />
-              </Button>
-            </PaginationItem>
-            {renderPageNumbers()}
-            <PaginationItem>
-              <Button
-                onClick={() =>
-                  router.push(
-                    `${pathname}?${new URLSearchParams({
-                      ...Object.fromEntries(searchParamsPaging),
-                      PageNumber: `${(
-                        parseInt(currentPage.toString()) + 1
-                      ).toString()}`,
-                    }).toString()}`
-                  )
-                }
-                disabled={currentPage == data?.totalPages}
-                size="icon"
-                variant="ghost"
-              >
-                <div className="flex gap-2 items-center">
-                  <ChevronRight />
-                </div>
-              </Button>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       </div>
     </>
   );

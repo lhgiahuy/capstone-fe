@@ -210,6 +210,8 @@ export async function getReview(eventId: string) {
   }
 }
 
-export async function CheckIn(eventId: string) {
-  return await userAxios.put(`/events/${eventId}/checkIn`);
+export async function CheckIn(eventId: string, userId: string) {
+  return await userAxios.put(
+    `/events/${eventId}/checkin-organizer?userId=${userId}`
+  );
 }

@@ -6,8 +6,8 @@ import * as React from "react";
 import { Clock, MapPinned } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 // import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
-import { getEventById, getParticipant } from "@/action/event";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getEventById, getParticipant, submitEvent } from "@/action/event";
 import Image from "next/image";
 import { Event } from "@/interface/event";
 // import { Button } from "@/components/ui/button";
@@ -27,8 +27,12 @@ import { getFirstLetterOfName } from "@/lib/utils";
 
 export default function EventDetail({ eventId }: { eventId: string }) {
   const { data } = useQuery<Event>({
-    queryKey: ["events"],
+    queryKey: ["event", eventId],
     queryFn: () => getEventById(eventId),
+  });
+  console.log(eventId);
+  const { mutate: submitMutation } = useMutation({
+    mutationFn: (id: string) => submitEvent(id),
   });
   const router = useRouter();
   const handleGenerateQR = async () => {
@@ -42,6 +46,12 @@ export default function EventDetail({ eventId }: { eventId: string }) {
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
+  };
+  const handleSubmitEvent = (eventId: string) => {
+    submitMutation(eventId, {
+      onSuccess: () =>
+        router.push("/organizer/quan-ly-su-kien?status=UnderReview"),
+    });
   };
   const { data: participants } = useQuery<User[]>({
     queryKey: ["participants", eventId],
@@ -122,7 +132,11 @@ export default function EventDetail({ eventId }: { eventId: string }) {
               {data.status === "Draft" ? (
                 <div className="flex gap-4 w-full">
                   <Button className="w-full py-8 text-lg">Chỉnh sửa</Button>
-                  <Button className="w-full py-8 text-lg" variant={"secondary"}>
+                  <Button
+                    className="w-full py-8 text-lg"
+                    variant={"secondary"}
+                    onClick={() => handleSubmitEvent(data.eventId)}
+                  >
                     Publish
                   </Button>
                 </div>

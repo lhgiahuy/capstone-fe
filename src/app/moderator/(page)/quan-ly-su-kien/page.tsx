@@ -7,14 +7,6 @@ import { ColumnDef } from "@tanstack/react-table";
 // import { getFirstLetterOfName } from "@/lib/utils";
 import { DataTable } from "@/components/table/data-table";
 // import { User } from "@/interface/user";
-import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
@@ -25,13 +17,14 @@ import NavBar from "../_component/moderator-navbar";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { Event } from "@/interface/event";
 import { formatDate } from "@/lib/date";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function EventDetail() {
-  const [statusFilter, setStatusFilter] = useState<string>("underReview");
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status") || "UnderReview";
   const { data, isPending } = useQuery({
-    queryKey: ["events", statusFilter],
-    queryFn: () => getAllEvent({ Status: statusFilter }),
+    queryKey: ["events", status],
+    queryFn: () => getAllEvent({ Status: status }),
   });
   const router = useRouter();
   const columns: ColumnDef<Event>[] = [
@@ -85,44 +78,13 @@ export default function EventDetail() {
       accessorKey: "maxAttendees",
       header: "Số người tham gia",
       cell: ({ row }) => {
-        return <div>{row.original.maxAttendees || "chưa có dữ liệu"}</div>;
+        return <div>{row.original.maxAttendees || "Chưa có dữ liệu"}</div>;
       },
     },
 
     {
       accessorKey: "status",
-      header: () => {
-        return (
-          <div className="flex items-center">
-            <div>Trạng thái</div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8">
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Chọn trạng thái</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setStatusFilter("")}>
-                  Tất cả
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("upcoming")}>
-                  Sắp tới
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setStatusFilter("underReview")}
-                >
-                  Chờ xác thực
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("completed")}>
-                  Hoàn thành
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      },
+      header: "Trạng thái",
     },
 
     {
@@ -147,13 +109,27 @@ export default function EventDetail() {
     },
   ];
   const hideColumns = ["isDeleted", "deletedAt"];
+  const selectOptions = [
+    {
+      option: [
+        { name: "Tất cả", value: "All" },
+        { name: "Draft", value: "Draft" },
+        { name: "UnderReview", value: "UnderReview" },
+        { name: "Completed", value: "Completed" },
+        { name: "InProgress", value: "InProgress" },
+      ],
+      placeholder: "Trạng thái",
+      title: "status",
+      defaultValue: status,
+    },
+  ];
   return (
     <>
       <NavBar
         breadcrumb={[
           { title: "Quản lý sự kiện", link: "/moderator/quan-ly-su-kien" },
         ]}
-      />{" "}
+      />
       <div className="">
         {isPending ? (
           <></>
@@ -162,6 +138,8 @@ export default function EventDetail() {
             hideColumns={hideColumns}
             columns={columns}
             data={data.items}
+            selectOptions={selectOptions}
+            totalPages={data?.totalPages}
           />
         )}
       </div>

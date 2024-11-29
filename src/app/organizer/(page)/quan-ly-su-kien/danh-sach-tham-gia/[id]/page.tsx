@@ -12,7 +12,7 @@ import { User } from "@/interface/user";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Check, X } from "lucide-react";
+import { ArrowUpDown, Check, MoreHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import NavBar from "../../../_component/navbar";
 import {
@@ -26,6 +26,14 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Event } from "@/interface/event";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { data, isPending } = useQuery({
@@ -43,20 +51,37 @@ export default function Page({ params }: { params: { id: string } }) {
   });
   const query = useQueryClient();
   const { mutate: checkInMutation } = useMutation({
-    mutationFn: (id: string) => CheckIn(id),
+    mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
+      CheckIn(eventId, userId),
     onSuccess: () => {
       query.invalidateQueries({ queryKey: ["participants", params.id] });
     },
   });
-  const handleCheckIn = () => {
-    checkInMutation(params.id, {
-      onSuccess: () => {
-        toast("Check in thành công!");
-      },
-      onError: () => {
-        toast("Check in thất bại!");
-      },
-    });
+  const handleCheckIn = (userId: string) => {
+    checkInMutation(
+      { eventId: params.id, userId: userId },
+      {
+        onSuccess: () => {
+          toast("Check in thành công!");
+        },
+        onError: () => {
+          toast("Check in thất bại!");
+        },
+      }
+    );
+  };
+  const handleCancelCheckIn = (userId: string) => {
+    checkInMutation(
+      { eventId: params.id, userId: userId },
+      {
+        onSuccess: () => {
+          toast("Huỷ check in thành công!");
+        },
+        onError: () => {
+          toast("Huỷ check in thất bại!");
+        },
+      }
+    );
   };
   const columns: ColumnDef<User>[] = [
     {
@@ -147,32 +172,45 @@ export default function Page({ params }: { params: { id: string } }) {
     },
 
     {
-      id: "check-in",
-      cell: ({ row }) => {
-        if (row.original.isCheckin) return <Button>Huỷ check in</Button>;
-        return (
-          <Button size={"sm"} onClick={handleCheckIn}>
-            Check in
-          </Button>
-        );
-      },
-    },
-    {
       id: "actions",
       cell: ({ row }) => {
-        if (!event?.form.length) return <></>;
         return (
           <Sheet>
-            <SheetTrigger asChild>
-              <div className="w-[6rem] pl-6 flex justify-center">
-                <Button
-                  variant={"link"}
-                  onClick={() => setUserId(row.original.userId)}
-                >
-                  Xem form đăng ký
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
-              </div>
-            </SheetTrigger>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {event?.form.length && (
+                  <DropdownMenuItem
+                    onClick={() => setUserId(row.original.userId)}
+                  >
+                    <SheetTrigger asChild>
+                      <p>Xem form đăng ký</p>
+                    </SheetTrigger>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={() =>
+                    row.original.isCheckin
+                      ? handleCancelCheckIn(row.original.userId)
+                      : handleCheckIn(row.original.userId)
+                  }
+                >
+                  {row.original.isCheckin ? (
+                    <p>Huỷ check in</p>
+                  ) : (
+                    <p>Check in</p>
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <SheetContent>
               <SheetHeader>
                 <SheetTitle className="text-primary text-3xl">
@@ -194,6 +232,17 @@ export default function Page({ params }: { params: { id: string } }) {
     },
   ];
   const hideColumns = ["isDeleted", "deletedAt"];
+  const selectOptions = [
+    {
+      option: [
+        { name: "Đã check in", value: "true" },
+        { name: "Chưa check in", value: "false" },
+      ],
+      placeholder: "Check in",
+      title: "isCheckin",
+      defaultValue: "true",
+    },
+  ];
   return (
     <>
       <NavBar
@@ -212,7 +261,12 @@ export default function Page({ params }: { params: { id: string } }) {
       {isPending ? (
         <></>
       ) : (
-        <DataTable hideColumns={hideColumns} columns={columns} data={data} />
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data}
+          selectOptions={selectOptions}
+        />
       )}
     </>
   );

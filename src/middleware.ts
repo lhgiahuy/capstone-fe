@@ -27,10 +27,13 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        if (pathname.startsWith("/admin")) {
+        if (pathname.startsWith("/admin") && pathname !== "/admin/dang-nhap") {
           return token?.roleName === "admin";
         }
-        if (pathname.startsWith("/moderator")) {
+        if (
+          pathname.startsWith("/moderator") &&
+          pathname !== "/admin/dang-nhap"
+        ) {
           return token?.roleName === "moderator";
         }
         if (
