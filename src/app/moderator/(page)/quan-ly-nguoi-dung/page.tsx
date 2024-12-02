@@ -24,19 +24,28 @@ import NavBar from "../_component/moderator-navbar";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 export default function ManagementUser() {
   const searchParams = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
   const role = searchParams.get("role") || "Student";
+  const verified = searchParams.get("verified")?.toString() || "Unverified";
+  const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [processNote, setProcessNote] = useState("");
-  const { data, isPending } = useQuery({
-    queryKey: ["user", currentPage, role],
-    queryFn: () => getUser({ PageNumber: currentPage, roleName: role }),
+  const { data } = useQuery({
+    queryKey: ["user", currentPage, role, verified, searchKeyword],
+    queryFn: () =>
+      getUser({
+        PageNumber: currentPage,
+        roleName: role,
+        Verified: verified,
+        Username: searchKeyword,
+      }),
   });
   const query = useQueryClient();
   const approveMutation = useMutation({
@@ -54,7 +63,6 @@ export default function ManagementUser() {
       query.invalidateQueries({ queryKey: ["user"] });
     },
   });
-  if (!data) return <></>;
 
   const columns: ColumnDef<any>[] = [
     {
@@ -91,22 +99,20 @@ export default function ManagementUser() {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
     },
-    {
-      accessorKey: "cardUrl",
-      header: "Thẻ sinh viên",
-      cell: ({ row }) => <a href={row.original.cardUrl}>View Card</a>, // Example to render link
-    },
+
     {
       accessorKey: "verified",
       header: "Xác thực",
       cell: ({ row }) => (
         <Badge
           className={`${
-            row.original.verified === 2
+            row.original.verified === "Verified"
               ? "bg-green-400"
               : "bg-red-800 text-foreground"
           }`}
-        >{`${row.original.verified === 2 ? "Đã xác thực" : "Chưa xác thực"}
+        >{`${
+          row.original.verified === "Verified" ? "Đã xác thực" : "Chưa xác thực"
+        }
 `}</Badge>
       ),
     },
@@ -183,6 +189,11 @@ export default function ManagementUser() {
               >
                 Xác thực người dùng
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={row.original.cardUrl}>
+                  Xem thẻ sinh viên/ nhân viên
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -195,12 +206,12 @@ export default function ManagementUser() {
   const selectOptions = [
     {
       option: [
-        { name: "Đã xác thực", value: "2" },
-        { name: "Chưa xác thực", value: "1" },
+        { name: "Đã xác thực", value: "Verified" },
+        { name: "Chưa xác thực", value: "Unverified" },
       ],
       placeholder: "Xác thực",
       title: "verified",
-      defaultValue: "true",
+      defaultValue: verified,
     },
     {
       option: [
@@ -223,17 +234,13 @@ export default function ManagementUser() {
         ]}
       />
       <div className="">
-        {isPending ? (
-          <></>
-        ) : (
-          <DataTable
-            hideColumns={hideColumns}
-            columns={columns}
-            data={data.items}
-            totalPages={data.totalPages}
-            selectOptions={selectOptions}
-          />
-        )}
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data?.items}
+          totalPages={data?.totalPages}
+          selectOptions={selectOptions}
+        />
         <Sheet open={isSheetOpen} onOpenChange={(open) => setIsSheetOpen(open)}>
           <SheetContent className="space-y-6">
             <SheetHeader>Phê duyệt người dùng</SheetHeader>

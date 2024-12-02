@@ -17,7 +17,8 @@ export default withAuth(
     }
     if (
       !pathname.startsWith("/moderator") &&
-      req.nextauth.token?.roleName === "moderator"
+      req.nextauth.token?.roleName === "moderator" &&
+      pathname !== "/thong-tin-ca-nhan"
     ) {
       url.pathname = "/moderator";
       return NextResponse.redirect(url);

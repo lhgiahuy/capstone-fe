@@ -34,11 +34,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSearchParams } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
-  const { data, isPending } = useQuery({
-    queryKey: ["participants", params.id],
-    queryFn: () => getParticipant(params.id),
+  const searchParams = useSearchParams();
+  const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
+  const currentPage =
+    parseInt(searchParams.get("PageNumber")?.toString() || "1", 10) || 1;
+  const { data } = useQuery({
+    queryKey: ["participants", params.id, searchKeyword, currentPage],
+    queryFn: () =>
+      getParticipant({
+        eventId: params.id,
+        SearchKeyword: searchKeyword,
+        PageNumber: currentPage,
+      }),
   });
   const [userId, setUserId] = useState("");
   const { data: formData } = useQuery({
@@ -138,23 +148,13 @@ export default function Page({ params }: { params: { id: string } }) {
         );
       },
       cell: ({ row }) =>
-        row.original.phoneNumber ? <p>{row.original.phoneNumber}</p> : "N/A",
-    },
-    {
-      accessorKey: "cardUrl",
-      header: "Thẻ sinh viên",
-      cell: ({ row }) =>
-        row.original.cardUrl ? (
-          <Link
-            href={row.original.cardUrl}
-            className="text-primary hover:text-primary/80"
-          >
-            Xem thẻ
-          </Link>
+        row.original.phoneNumber ? (
+          <p>{row.original.phoneNumber}</p>
         ) : (
-          <p>Chưa có thẻ</p>
+          "Không có dữ liệu."
         ),
     },
+
     {
       accessorKey: "isCheckin",
       header: "Check in",
@@ -208,6 +208,11 @@ export default function Page({ params }: { params: { id: string } }) {
                     <p>Check in</p>
                   )}
                 </DropdownMenuItem>
+                {row.original.cardUrl.startsWith("https://firebase") && (
+                  <DropdownMenuItem>
+                    <Link href={row.original.cardUrl}>Xem thẻ sinh viên</Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -232,17 +237,17 @@ export default function Page({ params }: { params: { id: string } }) {
     },
   ];
   const hideColumns = ["isDeleted", "deletedAt"];
-  const selectOptions = [
-    {
-      option: [
-        { name: "Đã check in", value: "true" },
-        { name: "Chưa check in", value: "false" },
-      ],
-      placeholder: "Check in",
-      title: "isCheckin",
-      defaultValue: "true",
-    },
-  ];
+  // const selectOptions = [
+  //   {
+  //     option: [
+  //       { name: "Đã check in", value: "true" },
+  //       { name: "Chưa check in", value: "false" },
+  //     ],
+  //     placeholder: "Check in",
+  //     title: "isCheckin",
+  //     defaultValue: "true",
+  //   },
+  // ];
   return (
     <>
       <NavBar
@@ -258,16 +263,14 @@ export default function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      {isPending ? (
-        <></>
-      ) : (
-        <DataTable
-          hideColumns={hideColumns}
-          columns={columns}
-          data={data}
-          selectOptions={selectOptions}
-        />
-      )}
+
+      <DataTable
+        hideColumns={hideColumns}
+        columns={columns}
+        data={data?.items}
+        // selectOptions={selectOptions}
+        totalPages={data?.totalPages}
+      />
     </>
   );
 }

@@ -11,14 +11,14 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
-import { deleteEvent, getEventByOrganizer } from "@/action/event";
+import { deleteEvent, getEventByOrganizerPrivate } from "@/action/event";
 import { useAtom } from "jotai";
 import { userAtom } from "@/lib/atom/user";
 import NavBar from "../_component/navbar";
 import Image from "next/image";
 import { Event } from "@/interface/event";
 import { Badge } from "@/components/ui/badge";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,19 +44,26 @@ import {
 
 export default function EventTable() {
   const [user] = useAtom(userAtom);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get("status")?.toString() || "Upcoming";
+  const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
+  const currentPage =
+    parseInt(searchParams.get("PageNumber")?.toString() || "1", 10) || 1;
   const query = useQueryClient();
   const { mutate: deleteEventMutation } = useMutation({
     mutationFn: (id: string) => deleteEvent(id),
     onSuccess: () =>
       query.invalidateQueries({ queryKey: ["events", user?.userId, status] }),
   });
-  const { data, isPending } = useQuery({
-    queryKey: ["events", user?.userId, status],
+  const { data } = useQuery({
+    queryKey: ["events", user?.userId, status, searchKeyword, currentPage],
     queryFn: () =>
-      getEventByOrganizer({ organizerId: user?.userId, status: status }),
+      getEventByOrganizerPrivate({
+        UserId: user?.userId,
+        Status: status,
+        SearchKeyword: searchKeyword,
+        PageNumber: currentPage,
+      }),
   });
   const handleDelete = (id: string) => {
     deleteEventMutation(id, { onSuccess: () => toast("Xoá event thành công") });
@@ -138,7 +145,7 @@ export default function EventTable() {
         return row.original.maxAttendees ? (
           <p>{row.original.maxAttendees}</p>
         ) : (
-          <p>N/A</p>
+          <p>Không có dữ liệu</p>
         );
       },
     },
@@ -251,26 +258,15 @@ export default function EventTable() {
           { title: "Quản lý sự kiện", link: "/organizer/quan-ly-su-kien" },
         ]}
       />
-      {isPending ? (
-        <></>
-      ) : (
-        <>
-          <Button
-            size={"lg"}
-            onClick={() =>
-              router.push("/organizer/quan-ly-su-kien/tao-su-kien")
-            }
-          >
-            Thêm sự kiện
-          </Button>
-          <DataTable
-            hideColumns={hideColumns}
-            columns={columns}
-            data={data}
-            selectOptions={selectOptions}
-          />
-        </>
-      )}
+      <>
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data?.items}
+          selectOptions={selectOptions}
+          totalPages={data?.totalPages}
+        />
+      </>
     </>
   );
 }

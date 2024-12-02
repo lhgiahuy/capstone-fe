@@ -7,6 +7,7 @@ import AuthProvider from "@/components/providers/auth-provider";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { Toaster } from "sonner";
+import CheckAuth from "@/components/providers/check-auth";
 
 export const metadata: Metadata = {
   title: "Fvent",
@@ -25,9 +26,11 @@ export default async function RootLayout({
         {/* <NextAuthProvider> */}
         <JotaiProvider>
           <QueryProvider>
-            <AuthProvider data={session?.user}>
-              <div className="min-h-screen">{children}</div>
-            </AuthProvider>
+            <CheckAuth data={session?.user}>
+              <AuthProvider data={session?.user}>
+                <div className="min-h-screen">{children}</div>
+              </AuthProvider>
+            </CheckAuth>
           </QueryProvider>
         </JotaiProvider>
         {/* </NextAuthProvider> */}
