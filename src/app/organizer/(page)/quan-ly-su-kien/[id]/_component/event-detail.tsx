@@ -53,9 +53,9 @@ export default function EventDetail({ eventId }: { eventId: string }) {
         router.push("/organizer/quan-ly-su-kien?status=UnderReview"),
     });
   };
-  const { data: participants } = useQuery<User[]>({
+  const { data: participants } = useQuery({
     queryKey: ["participants", eventId],
-    queryFn: () => getParticipant(eventId),
+    queryFn: () => getParticipant({ eventId: eventId }),
   });
   if (!data) return <></>;
   if (!data?.eventTags) return <></>;
@@ -84,14 +84,16 @@ export default function EventDetail({ eventId }: { eventId: string }) {
               href={`/organizer/quan-ly-su-kien/danh-sach-tham-gia/${eventId}`}
               className="flex -space-x-3 *:ring *:ring-primary"
             >
-              {participants?.slice(0, 5).map((item, index) => (
-                <Avatar key={index} className="h-8 w-8">
-                  <AvatarImage src={item.avatarUrl} />
-                  <AvatarFallback>
-                    {getFirstLetterOfName(item.username)}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
+              {participants?.items
+                .slice(0, 5)
+                .map((item: User, index: number) => (
+                  <Avatar key={index} className="h-8 w-8">
+                    <AvatarImage src={item.avatarUrl} />
+                    <AvatarFallback>
+                      {getFirstLetterOfName(item.username)}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
             </Link>
           </div>
         </div>

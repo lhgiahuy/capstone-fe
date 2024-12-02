@@ -17,6 +17,7 @@ import { formSchema, TypeOfLoginForm } from "../_lib/validation";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -80,15 +81,18 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        {/* <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-end items-center">
+          {/* <div className="flex items-center gap-2">
             <Checkbox />
             <div className="text-sm text-gray-500">Ghi nhớ đăng nhập</div>
-          </div>
-          <Link href="/" className="font-semibold">
+          </div> */}
+          <Link
+            href="/quen-mat-khau"
+            className="font-semibold text-primary hover:text-primary/90"
+          >
             Quên mật khẩu?
           </Link>
-        </div> */}
+        </div>
         <Button
           type="submit"
           size={"lg"}

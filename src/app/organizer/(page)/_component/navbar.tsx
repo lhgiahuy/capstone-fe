@@ -23,6 +23,8 @@ import { signOutUser } from "@/lib/auth";
 import { getMe } from "@/action/user";
 import { useQuery } from "@tanstack/react-query";
 import { getFirstLetterOfName } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 interface Breadcrumb {
   link: string;
   title: string;
@@ -36,6 +38,7 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
     queryKey: ["Me"],
     queryFn: getMe,
   });
+  const router = useRouter();
   return (
     <div className="py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
@@ -52,33 +55,41 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="focus:outline-none">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={user?.avatarUrl} alt="imgAvatar" />
-            <AvatarFallback>
-              {getFirstLetterOfName(user?.username)}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={10}>
-          <DropdownMenuLabel className="max-w-[12rem]">
-            {user?.username}
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link href="/thong-tin-ca-nhan">Hồ sơ</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={async () => {
-              await signOutUser({ redirect: false });
-              window.location.href = "/";
-            }}
-          >
-            Đăng xuất
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex gap-4">
+        <Button
+          size={"lg"}
+          onClick={() => router.push("/organizer/quan-ly-su-kien/tao-su-kien")}
+        >
+          Thêm sự kiện
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="focus:outline-none">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={user?.avatarUrl} alt="imgAvatar" />
+              <AvatarFallback>
+                {getFirstLetterOfName(user?.username)}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={10}>
+            <DropdownMenuLabel className="max-w-[12rem]">
+              {user?.username}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link href="/thong-tin-ca-nhan">Hồ sơ</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                await signOutUser({ redirect: false });
+                window.location.href = "/";
+              }}
+            >
+              Đăng xuất
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

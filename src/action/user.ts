@@ -5,12 +5,13 @@ import { userAxios } from "@/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
 export interface getUserProps {
-  // SearchKeyword?: string;
+  Username?: string;
   PageSize?: number;
   PageNumber?: number;
   isDescending?: boolean;
   orderBy?: string;
   roleName?: string;
+  Verified?: string;
 }
 
 export async function getUser(props?: getUserProps) {
@@ -65,6 +66,7 @@ export async function updateInfo(data: any) {
     username: data.username,
     avatarUrl: data.avatarUrl,
     phoneNumber: data.phoneNumber,
+    studentId: data.studentId,
   });
 }
 
@@ -119,4 +121,23 @@ export async function getUserNotification() {
 
 export async function readNotification(notiId: string) {
   return await userAxios.put(`/notifications/${notiId}/read`);
+}
+
+export async function forgotPassword(email: string) {
+  return await userAxios.post(`/users/forgot-password`, { email: email });
+}
+
+export async function resetPassword({
+  userId,
+  token,
+  password,
+}: {
+  userId: string;
+  token: string;
+  password: string;
+}) {
+  return await userAxios.post(
+    `/users/reset-password?userId=${userId}&token=${token}`,
+    password
+  );
 }

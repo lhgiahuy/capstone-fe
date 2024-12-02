@@ -310,7 +310,7 @@ export default function UserNavBar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex gap-4 items-center">
-                    <div className="text-sm">Hi, {user?.username}</div>
+                    <div className="text-sm">Xin chào, {user?.username}</div>
                     <Avatar className="w-8 h-8 hover:cursor-pointer">
                       <AvatarImage
                         src={user?.avatarUrl || "https://github.com/shadcn.png"}

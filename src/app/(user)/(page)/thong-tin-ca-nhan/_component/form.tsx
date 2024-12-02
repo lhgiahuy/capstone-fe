@@ -37,36 +37,45 @@ export default function ProfileForm({ values }: any) {
   const { mutate: updateInfoMutation } = useMutation({
     mutationFn: (data: any) => updateInfo(data),
   });
+  const [change, setChange] = useState(false);
   const form = useForm<TypeOfProfileForm>({
-    defaultValues: {},
     resolver: zodResolver(formSchema),
     values,
   });
   const queryClient = useQueryClient();
-
   const onSubmit: SubmitHandler<TypeOfProfileForm> = async (data) => {
-    if (imageFile) {
-      const avatarUrl = await uploadImageToStorage({
-        saveLocation: `users/${data.username}`,
-        file: imageFile,
-      });
-      updateInfoMutation(
-        {
-          username: data.username,
-          phoneNumber: data.phoneNumber,
-          avatarUrl: avatarUrl,
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["Me"] });
+    if (change) {
+      try {
+        let avatarUrl = values?.avatarUrl;
 
-            toast("Cập nhật thông tin thành công!");
-          },
-          onError: () => toast.error("Cập nhật thông tin thất bại!"),
+        if (imageFile) {
+          avatarUrl = await uploadImageToStorage({
+            saveLocation: `users/${data.username}`,
+            file: imageFile, // imageFile is guaranteed to be of type File here.
+          });
         }
-      );
+
+        updateInfoMutation(
+          {
+            username: data.username,
+            phoneNumber: data.phoneNumber,
+            avatarUrl,
+            studentId: data.studentId || "",
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["Me"] });
+              toast("Cập nhật thông tin thành công!");
+            },
+            onError: () => toast.error("Cập nhật thông tin thất bại!"),
+          }
+        );
+      } catch (error) {
+        toast.error("Lỗi khi tải lên hình ảnh!");
+      }
     }
   };
+
   const [image, setImage] = useState<string>(
     values?.avatarUrl.startsWith("https://firebase")
       ? values?.avatarUrl
@@ -87,6 +96,7 @@ export default function ProfileForm({ values }: any) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        onChange={() => setChange(true)}
         className="flex flex-col gap-16"
       >
         <h1 className="text-4xl text-primary">Thông tin cá nhân</h1>
@@ -163,26 +173,29 @@ export default function ProfileForm({ values }: any) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="studentId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mã số sinh viên</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="MSSV*"
-                        disabled={
-                          values.verifyStatus === "Verified" ||
-                          values.verifyStatus === "UnderVerify"
-                        }
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {values.roleName === "student" && (
+                <FormField
+                  control={form.control}
+                  name="studentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mã số sinh viên</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="MSSV*"
+                          disabled={
+                            values.verifyStatus === "Verified" ||
+                            values.verifyStatus === "UnderVerify"
+                          }
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="phoneNumber"
@@ -196,37 +209,38 @@ export default function ProfileForm({ values }: any) {
                   </FormItem>
                 )}
               />
-              {values?.verifyStatus !== "Unverified" && (
-                <FormField
-                  control={form.control}
-                  name="cardUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thẻ FPT</FormLabel>
-                      <FormControl>
-                        <div className="relative h-[16rem] overflow-hidden w-full shrink-0">
-                          {field.value?.startsWith("https://firebase") ? (
-                            <Image
-                              src={field.value}
-                              alt="user avatar"
-                              fill
-                              className="object-contain"
-                            />
-                          ) : (
-                            <Image
-                              src={"/images/image-placeholder.jpg"}
-                              alt="user avatar"
-                              fill
-                              className="object-contain"
-                            />
-                          )}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              {values?.verifyStatus !== "Unverified" &&
+                values?.cardUrl.startsWith("https://firebase") && (
+                  <FormField
+                    control={form.control}
+                    name="cardUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Thẻ FPT</FormLabel>
+                        <FormControl>
+                          <div className="relative h-[16rem] overflow-hidden w-full shrink-0">
+                            {field.value?.startsWith("https://firebase") ? (
+                              <Image
+                                src={field.value}
+                                alt="user avatar"
+                                fill
+                                className="object-contain"
+                              />
+                            ) : (
+                              <Image
+                                src={"/images/image-placeholder.jpg"}
+                                alt="user avatar"
+                                fill
+                                className="object-contain"
+                              />
+                            )}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               <div className="w-full flex justify-center gap-8 pt-8">
                 {values?.verifyStatus === "Unverified" && (
                   <Button
@@ -248,7 +262,7 @@ export default function ProfileForm({ values }: any) {
                 <Button
                   type="submit"
                   size={"lg"}
-                  disabled={isLoading}
+                  disabled={isLoading || !change}
                   className="w-full "
                 >
                   {isLoading ? (
