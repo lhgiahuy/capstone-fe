@@ -205,14 +205,14 @@ export default function EventTable() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                {row.original.status === "InProgress" ||
-                  (row.original.status === "Upcoming" && (
-                    <DropdownMenuItem
-                      onClick={() => handleGenerateQR(row.original.eventId)}
-                    >
-                      Tạo mã QR
-                    </DropdownMenuItem>
-                  ))}
+                {(row.original.status === "InProgress" ||
+                  row.original.status === "Upcoming") && (
+                  <DropdownMenuItem
+                    onClick={() => handleGenerateQR(row.original.eventId)}
+                  >
+                    Tạo mã QR
+                  </DropdownMenuItem>
+                )}
                 {row.original.status === "Draft" && (
                   <DropdownMenuItem>Chỉnh sửa sự kiện</DropdownMenuItem>
                 )}
@@ -254,11 +254,11 @@ export default function EventTable() {
     {
       option: [
         { name: "Tất cả", value: "All" },
-        { name: "Upcoming", value: "Upcoming" },
-        { name: "Completed", value: "Completed" },
-        { name: "Draft", value: "Draft" },
-        { name: "InProgress", value: "InProgress" },
-        { name: "UnderReview", value: "UnderReview" },
+        { name: "Sắp diễn ra", value: "Upcoming" },
+        { name: "Đã kết thúc", value: "Completed" },
+        { name: "Nháp", value: "Draft" },
+        { name: "Đang diễn ra", value: "InProgress" },
+        { name: "Đang chờ duyệt", value: "UnderReview" },
       ],
       placeholder: "Status",
       title: "status",
