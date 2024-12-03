@@ -30,14 +30,13 @@ export default function EventDetail({ eventId }: { eventId: string }) {
     queryKey: ["event", eventId],
     queryFn: () => getEventById(eventId),
   });
-  console.log(eventId);
   const { mutate: submitMutation } = useMutation({
     mutationFn: (id: string) => submitEvent(id),
   });
   const router = useRouter();
   const handleGenerateQR = async () => {
     try {
-      const qrSrc = await QRCode.toDataURL(`{eventId}`);
+      const qrSrc = await QRCode.toDataURL(`${eventId}`);
       router.push(`/organizer/qr-check-in?qr=${encodeURIComponent(qrSrc)}`);
     } catch (error) {
       console.error("Error generating QR code:", error);

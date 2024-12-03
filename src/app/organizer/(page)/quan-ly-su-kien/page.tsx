@@ -18,7 +18,7 @@ import NavBar from "../_component/navbar";
 import Image from "next/image";
 import { Event } from "@/interface/event";
 import { Badge } from "@/components/ui/badge";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +41,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 // import { formatDate } from "@/lib/date";
+import QRCode from "qrcode";
 
 export default function EventTable() {
   const [user] = useAtom(userAtom);
@@ -55,6 +56,7 @@ export default function EventTable() {
     onSuccess: () =>
       query.invalidateQueries({ queryKey: ["events", user?.userId, status] }),
   });
+  const router = useRouter();
   const { data } = useQuery({
     queryKey: ["events", user?.userId, status, searchKeyword, currentPage],
     queryFn: () =>
@@ -67,6 +69,14 @@ export default function EventTable() {
   });
   const handleDelete = (id: string) => {
     deleteEventMutation(id, { onSuccess: () => toast("Xoá event thành công") });
+  };
+  const handleGenerateQR = async (eventId: string) => {
+    try {
+      const qrSrc = await QRCode.toDataURL(`${eventId}`);
+      router.push(`/organizer/qr-check-in?qr=${encodeURIComponent(qrSrc)}`);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+    }
   };
   const columns: ColumnDef<Event>[] = [
     // {
@@ -197,7 +207,11 @@ export default function EventTable() {
                   )}
                 {row.original.status === "InProgress" ||
                   (row.original.status === "Upcoming" && (
-                    <DropdownMenuItem>Tạo mã QR</DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleGenerateQR(row.original.eventId)}
+                    >
+                      Tạo mã QR
+                    </DropdownMenuItem>
                   ))}
                 {row.original.status === "Draft" && (
                   <DropdownMenuItem>Chỉnh sửa sự kiện</DropdownMenuItem>

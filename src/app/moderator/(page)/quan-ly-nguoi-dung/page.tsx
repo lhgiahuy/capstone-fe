@@ -31,9 +31,8 @@ export default function ManagementUser() {
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
   const role = searchParams.get("role") || "Student";
-  const verified = searchParams.get("verified")?.toString() || "Unverified";
+  const verified = searchParams.get("verified")?.toString() || "UnderVerify";
   const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
-
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [processNote, setProcessNote] = useState("");
@@ -108,10 +107,16 @@ export default function ManagementUser() {
           className={`${
             row.original.verified === "Verified"
               ? "bg-green-400"
+              : row.original.verified === "UnderVerify"
+              ? "bg-orange-600 text-foreground"
               : "bg-red-800 text-foreground"
           }`}
         >{`${
-          row.original.verified === "Verified" ? "Đã xác thực" : "Chưa xác thực"
+          row.original.verified === "Verified"
+            ? "Đã xác thực"
+            : row.original.verified === "UnderVerify"
+            ? "Đang chờ xác thực"
+            : "Chưa xác thực"
         }
 `}</Badge>
       ),
@@ -164,6 +169,7 @@ export default function ManagementUser() {
       id: "actions",
       cell: ({ row }) => {
         const user = row.original;
+        if (user.verified !== "UnderVerify") return <></>;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -180,18 +186,19 @@ export default function ManagementUser() {
                 Sao chép email người dùng
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedUser(user);
-                  setIsSheetOpen(true);
-                }}
-              >
-                Xác thực người dùng
-              </DropdownMenuItem>
+              {row.original.status === "Underverified" && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setIsSheetOpen(true);
+                  }}
+                >
+                  Xác thực người dùng
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>
                 <Link href={row.original.cardUrl}>
-                  Xem thẻ sinh viên/ nhân viên
+                  Xem thẻ sinh viên/nhân viên
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -206,8 +213,11 @@ export default function ManagementUser() {
   const selectOptions = [
     {
       option: [
+        { name: "Tất cả", value: "All" },
+
         { name: "Đã xác thực", value: "Verified" },
         { name: "Chưa xác thực", value: "Unverified" },
+        { name: "Đang chờ xác thực", value: "UnderVerify" },
       ],
       placeholder: "Xác thực",
       title: "verified",
