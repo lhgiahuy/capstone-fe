@@ -1,8 +1,10 @@
+"use client";
+
 import { signOutUser } from "@/lib/auth";
 import { jwtDecode } from "jwt-decode";
 import { User } from "next-auth";
 
-export default async function CheckAuth({
+export default function CheckAuth({
   data,
   children,
 }: {
@@ -15,9 +17,10 @@ export default async function CheckAuth({
       const now = new Date();
       const expiredDate = new Date(expiredAt * 1000);
       if (now >= expiredDate) {
-        await signOutUser();
+        signOutUser();
       }
     }
   }
+
   return <>{children}</>;
 }

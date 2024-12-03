@@ -167,7 +167,7 @@ export async function getEventByOrganizer({
 }) {
   try {
     const event = await userAxios.get(
-      `/events/organizer?OrganizerId=${organizerId}&Status=${status}`
+      `/events/organizerPublic?OrganizerId=${organizerId}&Status=${status}`
     );
     return event.data;
   } catch (error) {
