@@ -102,7 +102,7 @@ export default function UserNavBar() {
     readNotificationMutation(notiId);
   };
   return (
-    <nav className="bg-primary fixed top-0 w-full z-20 text-primary-foreground">
+    <nav className="bg-primary sticky top-0 w-full z-30 text-primary-foreground">
       <div className="container flex justify-between items-center py-4">
         <Link href="/" className="font-bold text-2xl">
           FVENT
