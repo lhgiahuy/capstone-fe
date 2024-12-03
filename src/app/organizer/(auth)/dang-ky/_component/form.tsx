@@ -29,6 +29,7 @@ export default function SignUpForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      studentId: "",
     },
   });
   const { mutate: signUpMutate, isPending } = useMutation({
