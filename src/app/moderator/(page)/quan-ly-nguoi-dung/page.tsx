@@ -186,7 +186,7 @@ export default function ManagementUser() {
                 Sao chép email người dùng
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {row.original.status === "Underverified" && (
+              {row.original.status === "Underverify" && (
                 <DropdownMenuItem
                   onClick={() => {
                     setSelectedUser(user);
