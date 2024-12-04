@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Calendar,
-  LayoutDashboard,
-  Package2,
-  User,
-  BellRing,
-} from "lucide-react";
+import { Calendar, LayoutDashboard, Package2, User } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -50,7 +44,7 @@ export default function Sidebar() {
 
   const menu = [
     {
-      title: "Bảng số liệu",
+      title: "Dashboard",
       link: "/moderator",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
@@ -64,11 +58,11 @@ export default function Sidebar() {
       link: "/moderator/quan-ly-nguoi-dung",
       icon: <User className="h-5 w-5" />,
     },
-    {
-      title: "Thông báo",
-      link: "/admin/thong-bao",
-      icon: <BellRing className="h-5 w-5" />,
-    },
+    // {
+    //   title: "Thông báo",
+    //   link: "/admin/thong-bao",
+    //   icon: <BellRing className="h-5 w-5" />,
+    // },
     // {
     //   title: "Quản lý rút tiền",
     //   link: "/admin/quan-ly-rut-tien",
