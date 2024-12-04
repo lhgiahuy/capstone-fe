@@ -85,13 +85,16 @@ export default function FormSheet({ data }: { data: Event }) {
       {user?.verifyStatus === "Verified" &&
       data.status !== "Completed" &&
       !data.isRegistered &&
-      data.form.length > 0 ? (
+      data.form.length > 0 &&
+      data.status !== "InProgress" ? (
         <SheetTrigger asChild>
           <Button size="lg" className="text-md py-8 w-full">
             Đăng ký
           </Button>
         </SheetTrigger>
-      ) : data.status !== "Completed" && !data.isRegistered ? (
+      ) : data.status !== "Completed" &&
+        data.status !== "InProgress" &&
+        !data.isRegistered ? (
         <Button
           size="lg"
           className="text-lg w-full py-8"
@@ -116,6 +119,13 @@ export default function FormSheet({ data }: { data: Event }) {
         </Button>
       ) : data.isOverlap ? (
         <OverlapDialog id={data.eventId} />
+      ) : data.status === "InProgress" ? (
+        <Button
+          size="lg"
+          className="text-lg py-8 w-full text-foreground hover:bg-green-600 bg-green-600"
+        >
+          Đang diễn ra
+        </Button>
       ) : (
         <Button
           size="lg"
