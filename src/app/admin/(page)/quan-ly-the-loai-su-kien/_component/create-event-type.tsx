@@ -57,7 +57,6 @@ export default function CreateEventType() {
             <Input
               type="text"
               placeholder="Nhập tên loại sự kiện"
-              className="w-full p-2 border rounded text-gray-600"
               value={eventTypeName}
               onChange={(e) => setEventTypeName(e.target.value)}
             />

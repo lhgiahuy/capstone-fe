@@ -2,13 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { RegistrationDetail } from "@/interface/organizer-report";
 
@@ -40,43 +34,47 @@ export function Chart({
   registrationData?: RegistrationDetail[];
 }) {
   return (
-    <Card className="min-h-[32rem] min-w-[40rem] w-full flex flex-col">
+    <Card className="min-h-[32rem] min-w-[32rem] w-full flex flex-col">
       <CardHeader>
         <CardTitle>Sự kiện</CardTitle>
-        <CardDescription>Tháng 1, 2024 - Tháng 1, 2025 </CardDescription>
+        {/* <CardDescription>Tháng 1, 2024 - Tháng 1, 2025 </CardDescription> */}
       </CardHeader>
       {registrationData ? (
         <CardContent className="flex-grow overflow-y-auto">
           <ChartContainer config={chartConfig} className="h-full w-full">
-            <BarChart
-              accessibilityLayer
-              data={registrationData}
-              margin={{
-                top: 20,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => monthLabels[value] || value}
-              />
-
-              <Bar
-                dataKey="noOfRegistered"
-                fill="var(--color-event)"
-                radius={8}
+            <div className="w-full h-full mx-auto flex justify-center">
+              {/* Wrapper with max-width */}
+              <BarChart
+                accessibilityLayer
+                data={registrationData}
+                margin={{
+                  top: 20,
+                }}
+                width={300} // Optional: Set a fixed width to match the max-w
+                height={400} // Optional: Adjust height as needed
               >
-                <LabelList
-                  position="top"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={12}
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => monthLabels[value] || value}
                 />
-              </Bar>
-            </BarChart>
+                <Bar
+                  dataKey="noOfRegistered"
+                  fill="var(--color-event)"
+                  radius={8}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
+              </BarChart>
+            </div>
           </ChartContainer>
         </CardContent>
       ) : (

@@ -103,6 +103,7 @@ export default function Event() {
             hideColumns={hideColumns}
             columns={columns}
             data={data?.items}
+            totalPages={data?.totalPages}
           />
         )}
       </div>

@@ -17,3 +17,17 @@ export async function getOrganizerReport({
     console.error("Failed to report data", error);
   }
 }
+
+export async function getReport({
+  startDate,
+  endDate,
+}: GetOrganizerReportProps) {
+  try {
+    const report = await userAxios.get(
+      `/events/report?startDate=${startDate}&endDate=${endDate}`
+    );
+    return report.data;
+  } catch (error) {
+    console.error("Failed to report data", error);
+  }
+}

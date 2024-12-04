@@ -118,14 +118,19 @@ export default function EventTag() {
   return (
     <>
       <AdminNavBar links={["Quản lý thẻ sự kiện"]} />
-      <div className="mb-4 flex  items-center">
+      <div className="mb-4 flex justify-end  items-center">
         <CreateTag />
       </div>
       <div className="">
         {isPending ? (
           <></>
         ) : (
-          <DataTable hideColumns={hideColumns} columns={columns} data={data} />
+          <DataTable
+            hideColumns={hideColumns}
+            columns={columns}
+            data={data}
+            noFilter
+          />
         )}
       </div>
       <DialogDelete
