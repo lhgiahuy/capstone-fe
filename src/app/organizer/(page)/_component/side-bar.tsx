@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, LayoutDashboard, Package2, BellRing } from "lucide-react";
+import { Calendar, LayoutDashboard, Package2 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -45,7 +45,7 @@ export default function Sidebar() {
   const menu = [
     {
       title: "Dashboard",
-      link: "#",
+      link: "/organizer",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
@@ -53,11 +53,11 @@ export default function Sidebar() {
       link: "/organizer/quan-ly-su-kien",
       icon: <Calendar className="h-5 w-5" />,
     },
-    {
-      title: "Thông báo",
-      link: "#",
-      icon: <BellRing className="h-5 w-5" />,
-    },
+    // {
+    //   title: "Thông báo",
+    //   link: "#",
+    //   icon: <BellRing className="h-5 w-5" />,
+    // },
   ];
   return (
     <motion.nav
@@ -70,7 +70,7 @@ export default function Sidebar() {
     >
       <div className="flex gap-4 px-1 items-center w-full">
         <Link
-          href="#"
+          href="/"
           className="group flex h-8 w-8 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
         >
           <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />

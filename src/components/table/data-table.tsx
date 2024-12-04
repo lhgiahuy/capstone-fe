@@ -43,6 +43,7 @@ interface DataTableProps<TData, TValue> {
   hideColumns: string[];
   selectOptions?: selectOptions[];
   totalPages?: number;
+  noFilter?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +52,7 @@ export function DataTable<TData, TValue>({
   hideColumns,
   selectOptions,
   totalPages,
+  noFilter,
 }: DataTableProps<TData, TValue>) {
   const searchParams = useSearchParams();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -98,38 +100,42 @@ export function DataTable<TData, TValue>({
   }, [debouncedSearchValue, addParam, clearParam]);
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex w-full justify-end gap-4">
-        {selectOptions &&
-          selectOptions.map((item, index) => {
-            const selectedOption =
-              item.option.find((option) => option.value === item.defaultValue)
-                ?.name || item.placeholder;
-            return (
-              <Select
-                key={index}
-                onValueChange={(value) => handleFilterChange(value, item.title)}
-                value={item.defaultValue}
-              >
-                <SelectTrigger className="max-w-[12rem]">
-                  {selectedOption || item.placeholder}
-                </SelectTrigger>
-                <SelectContent>
-                  {item.option.map((option, optionIndex) => (
-                    <SelectItem key={optionIndex} value={option.value}>
-                      {option.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            );
-          })}
-        <Input
-          type="text"
-          placeholder="Tìm kiếm"
-          className="max-w-[24rem]"
-          onChange={(e) => handleSearch(e)}
-        />
-      </div>
+      {!noFilter && (
+        <div className="flex w-full justify-end gap-4">
+          {selectOptions &&
+            selectOptions.map((item, index) => {
+              const selectedOption =
+                item.option.find((option) => option.value === item.defaultValue)
+                  ?.name || item.placeholder;
+              return (
+                <Select
+                  key={index}
+                  onValueChange={(value) =>
+                    handleFilterChange(value, item.title)
+                  }
+                  value={item.defaultValue}
+                >
+                  <SelectTrigger className="max-w-[12rem]">
+                    {selectedOption || item.placeholder}
+                  </SelectTrigger>
+                  <SelectContent>
+                    {item.option.map((option, optionIndex) => (
+                      <SelectItem key={optionIndex} value={option.value}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            })}
+          <Input
+            type="text"
+            placeholder="Tìm kiếm"
+            className="max-w-[24rem]"
+            onChange={(e) => handleSearch(e)}
+          />
+        </div>
+      )}
 
       {/* <div className="flex items-center pb-4">
         <DropdownMenu>
@@ -216,10 +222,11 @@ export function DataTable<TData, TValue>({
           </Table>
         </div>
       )}
-
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <MyPagination totalPages={totalPages || 1} />
-      </div>
+      {!noFilter && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <MyPagination totalPages={totalPages || 1} />
+        </div>
+      )}
     </div>
   );
 }
