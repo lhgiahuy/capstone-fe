@@ -121,14 +121,19 @@ export default function EventTypes() {
   return (
     <>
       <AdminNavBar links={["Quản lý thể loại sự kiện"]} />
-      <div className="mb-4 flex  items-center">
+      <div className="mb-4 flex justify-end items-center">
         <CreateEventType />
       </div>
       <div className="">
         {isPending ? (
           <></>
         ) : (
-          <DataTable hideColumns={hideColumns} columns={columns} data={data} />
+          <DataTable
+            hideColumns={hideColumns}
+            columns={columns}
+            data={data}
+            noFilter
+          />
         )}
       </div>
       <DialogDeleteType

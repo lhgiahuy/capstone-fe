@@ -12,6 +12,8 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ButtonCreateTag } from "@/interface/tag";
 import { createTag } from "@/action/tag";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CreateTag() {
   const [open, setOpen] = useState(false);
@@ -57,16 +59,14 @@ export default function CreateTag() {
             <DialogTitle>Tạo Thẻ Mới</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <input
+            <Input
               type="text"
               placeholder="Nhập tên thẻ"
-              className="w-full p-2 border rounded text-gray-600"
               value={tagName}
               onChange={(e) => setTagName(e.target.value)}
             />
-            <textarea
+            <Textarea
               placeholder="Nhập nội dung SVG"
-              className="w-full p-2 border rounded text-gray-600"
               value={svgContent}
               onChange={(e) => setSvgContent(e.target.value)}
             />
