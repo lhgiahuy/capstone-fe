@@ -197,7 +197,7 @@ export function DataTable<TData, TValue>({
                       <TableCell
                         key={cell.id}
                         className={cn(
-                          cell.column.id === "email" ? "" : "capitalize"
+                          cell.column.id === "email" ? "" : "normal-case"
                         )}
                       >
                         {flexRender(

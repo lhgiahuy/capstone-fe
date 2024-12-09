@@ -81,6 +81,28 @@ export const generateDate = (
   return arrayOfDate;
 };
 
+export function formatTo12HourTime(dateString: string): string {
+  const date = new Date(dateString);
+
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  // Convert to 12-hour format
+  hours = hours % 12 || 12; // 0 becomes 12
+
+  // Format hours and minutes to always be two digits
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  // Combine the parts
+  return `${formattedHours}:${formattedMinutes}`;
+}
+
 export const monthsWithAll = [
   "Tất cả",
   "Tháng 1",

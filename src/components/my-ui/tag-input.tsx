@@ -6,7 +6,6 @@ import { XCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Command } from "@/components/ui/command";
 import { useState } from "react";
 import { Input } from "../ui/input";
 import {
@@ -101,21 +100,23 @@ interface MultiSelectProps
   className?: string;
 }
 export const TagInput = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
-  ({
-    options,
-    onValueChange,
-    variant,
-    defaultValue = [],
-    placeholder = "Select options",
-    animation = 0,
-    modalPopover = false,
-    className,
-  }) => {
+  (
+    {
+      options,
+      onValueChange,
+      variant,
+      defaultValue = [],
+      placeholder = "Select options",
+      animation = 0,
+      modalPopover = false,
+      className,
+    },
+    ref
+  ) => {
     const [selectedValues, setSelectedValues] =
       useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [newOption, setNewOption] = useState(""); // New value from the user
-
     const handleInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
       const value = (event.target as HTMLInputElement).value;
 
@@ -179,6 +180,7 @@ export const TagInput = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
               </>
             ) : (
               <span
+                ref={ref}
                 className={cn(
                   "absolute text-sm text-slate-400 mx-3 my-2 transition-opacity duration-300",
                   newOption || isPopoverOpen ? "opacity-0" : "opacity-100"
@@ -237,27 +239,25 @@ export const TagInput = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           side="bottom"
           avoidCollisions={false}
         >
-          <Command>
-            <DropdownMenuGroup>
-              <h1 className="px-4 py-2">Danh sách tag</h1>
-              <Separator></Separator>
-              <ScrollArea className="h-64">
-                {options?.map((option) => {
-                  const isSelected = selectedValues.includes(option.tagName);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={option.tagName}
-                      onCheckedChange={() => toggleOption(option.tagName)}
-                      className="cursor-pointer"
-                      checked={isSelected}
-                    >
-                      {option.tagName}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-              </ScrollArea>
-            </DropdownMenuGroup>
-          </Command>
+          <DropdownMenuGroup>
+            <h1 className="px-4 py-2">Danh sách tag</h1>
+            <Separator></Separator>
+            <ScrollArea className="h-64">
+              {options?.map((option) => {
+                const isSelected = selectedValues.includes(option.tagName);
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={option.tagName}
+                    onCheckedChange={() => toggleOption(option.tagName)}
+                    className="cursor-pointer"
+                    checked={isSelected}
+                  >
+                    {option.tagName}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+            </ScrollArea>
+          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     );

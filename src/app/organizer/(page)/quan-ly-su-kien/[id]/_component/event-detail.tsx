@@ -21,6 +21,17 @@ import { User } from "@/interface/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getFirstLetterOfName } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 // import "../../../style/description.css";
 
 // import { Upload } from "lucide-react";
@@ -128,14 +139,40 @@ export default function EventDetail({ eventId }: { eventId: string }) {
               </div>
               {data.status === "Draft" ? (
                 <div className="flex gap-4 w-full">
-                  <Button className="w-full py-8 text-lg">Chỉnh sửa</Button>
-                  <Button
-                    className="w-full py-8 text-lg"
-                    variant={"secondary"}
-                    onClick={() => handleSubmitEvent(data.eventId)}
-                  >
-                    Publish
+                  <Button variant={"secondary"} className="w-full py-8 text-lg">
+                    <Link
+                      className="w-full flex justify-center"
+                      href={`/organizer/quan-ly-su-kien/chinh-sua-su-kien/${data.eventId}`}
+                    >
+                      Chỉnh sửa
+                    </Link>
                   </Button>
+                  <AlertDialog>
+                    <Button className="w-full py-8 text-lg">
+                      <AlertDialogTrigger asChild className="w-full">
+                        <p>Đăng</p>
+                      </AlertDialogTrigger>
+                    </Button>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Bạn có muốn đăng sự kiện?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Thao tác này không thể hoàn tác. Sự kiện sẽ không thể
+                          chỉnh sửa sau khi đăng.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Đóng</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleSubmitEvent(data.eventId)}
+                        >
+                          Đăng
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               ) : (
                 <div className="flex gap-4 w-full">

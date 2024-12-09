@@ -82,64 +82,94 @@ export default function FormSheet({ data }: { data: Event }) {
   };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {user?.verifyStatus === "Verified" &&
-      data.status !== "Completed" &&
-      !data.isRegistered &&
-      data.form.length > 0 &&
-      data.status !== "InProgress" ? (
-        <SheetTrigger asChild>
-          <Button size="lg" className="text-md py-8 w-full">
-            Đăng ký
-          </Button>
-        </SheetTrigger>
-      ) : data.status !== "Completed" &&
-        data.status !== "InProgress" &&
-        !data.isRegistered ? (
-        <Button
-          size="lg"
-          className="text-lg w-full py-8"
-          disabled={isPending || !(user?.verifyStatus === "Verified")}
-          onClick={handleRegistration}
-        >
-          Đăng ký
-        </Button>
-      ) : data.isRegistered &&
-        !data.isReviewed &&
-        data.status === "Completed" ? (
-        <ReviewForm id={data.eventId}></ReviewForm>
-      ) : data.isRegistered && data.status !== "Completed" ? (
-        <Button
-          size="lg"
-          variant={"destructive"}
-          className="text-lg w-full py-8"
-          disabled={isLoading}
-          onClick={handleUnregistration}
-        >
-          Huỷ đăng ký
-        </Button>
-      ) : data.isOverlap ? (
-        <OverlapDialog id={data.eventId} />
-      ) : data.status === "InProgress" ? (
-        <Button
-          size="lg"
-          className="text-lg py-8 w-full text-foreground hover:bg-green-600 bg-green-600"
-        >
-          Đang diễn ra
-        </Button>
-      ) : (
-        <Button
-          size="lg"
-          className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
-        >
-          Đã kết thúc
-        </Button>
-      )}
+      {(() => {
+        const isVerified = user?.verifyStatus === "Verified";
+        const isNotCompleted = data.status !== "Completed";
+        const isNotInProgress = data.status !== "InProgress";
+        const canRegister =
+          isVerified &&
+          isNotCompleted &&
+          !data.isRegistered &&
+          data.form.length > 0;
+        const shouldRegisterDisabled = !isVerified || isPending;
+        const canUnregister =
+          data.isRegistered && !data.isReviewed && isNotCompleted;
+        const isOngoing = data.status === "InProgress";
+        const isEnded = data.status === "Completed";
+        const hasOverlap =
+          data.isOverlap && isNotCompleted && !data.isRegistered;
 
-      {/* <SheetTrigger asChild>
-        <Button size="lg" className="text-md py-8">
-          Đăng ký
-        </Button>
-      </SheetTrigger> */}
+        if (canRegister) {
+          return (
+            <SheetTrigger asChild>
+              <Button size="lg" className="text-md py-8 w-full">
+                Đăng ký
+              </Button>
+            </SheetTrigger>
+          );
+        }
+
+        if (isNotCompleted && isNotInProgress && !data.isRegistered) {
+          return (
+            <Button
+              size="lg"
+              className="text-lg w-full py-8"
+              disabled={shouldRegisterDisabled}
+              onClick={handleRegistration}
+            >
+              Đăng ký
+            </Button>
+          );
+        }
+
+        if (
+          data.isRegistered &&
+          isEnded &&
+          !data.isReviewed &&
+          data.canReview
+        ) {
+          return <ReviewForm id={data.eventId}></ReviewForm>;
+        }
+
+        if (canUnregister && !isEnded) {
+          return (
+            <Button
+              size="lg"
+              variant="destructive"
+              className="text-lg w-full py-8"
+              disabled={isLoading}
+              onClick={handleUnregistration}
+            >
+              Huỷ đăng ký
+            </Button>
+          );
+        }
+
+        if (hasOverlap) {
+          return <OverlapDialog id={data.eventId} />;
+        }
+
+        if (isOngoing) {
+          return (
+            <Button
+              size="lg"
+              className="text-lg py-8 w-full text-foreground hover:bg-green-600 bg-green-600"
+            >
+              Đang diễn ra
+            </Button>
+          );
+        }
+
+        return (
+          <Button
+            size="lg"
+            className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
+          >
+            Đã kết thúc
+          </Button>
+        );
+      })()}
+
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Form đăng ký sự kiện</SheetTitle>
@@ -153,7 +183,6 @@ export default function FormSheet({ data }: { data: Event }) {
               >
                 {data.form.map((item, index) => (
                   <div className="flex flex-col gap-4" key={index}>
-                    {/* <h2 className="text-xl">{`Câu hỏi ${index + 1}: `}</h2> */}
                     <FormField
                       control={form.control}
                       name={`data.${index}.question`}
@@ -190,20 +219,20 @@ export default function FormSheet({ data }: { data: Event }) {
                                 value={field.value}
                                 onValueChange={field.onChange}
                               >
-                                {item.options.map((item, index) => (
+                                {item.options.map((option, i) => (
                                   <div
-                                    key={index}
+                                    key={i}
                                     className="flex items-center space-x-2"
                                   >
                                     <RadioGroupItem
-                                      value={item}
-                                      id={`r${index}`}
+                                      value={option}
+                                      id={`r${i}`}
                                     />
                                     <Label
-                                      htmlFor={`r${index}`}
+                                      htmlFor={`r${i}`}
                                       className="text-md"
                                     >
-                                      {item}
+                                      {option}
                                     </Label>
                                   </div>
                                 ))}
