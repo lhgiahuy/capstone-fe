@@ -11,7 +11,11 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
-import { deleteEvent, getEventByOrganizerPrivate } from "@/action/event";
+import {
+  cancelEvent,
+  deleteEvent,
+  getEventByOrganizerPrivate,
+} from "@/action/event";
 import { useAtom } from "jotai";
 import { userAtom } from "@/lib/atom/user";
 import NavBar from "../_component/navbar";
@@ -42,6 +46,7 @@ import {
 } from "@/components/ui/alert-dialog";
 // import { formatDate } from "@/lib/date";
 import QRCode from "qrcode";
+import { statusMap } from "@/interface/status";
 
 export default function EventTable() {
   const [user] = useAtom(userAtom);
@@ -53,6 +58,11 @@ export default function EventTable() {
   const query = useQueryClient();
   const { mutate: deleteEventMutation } = useMutation({
     mutationFn: (id: string) => deleteEvent(id),
+    onSuccess: () =>
+      query.invalidateQueries({ queryKey: ["events", user?.userId, status] }),
+  });
+  const { mutate: cancelEventMutation } = useMutation({
+    mutationFn: (id: string) => cancelEvent(id),
     onSuccess: () =>
       query.invalidateQueries({ queryKey: ["events", user?.userId, status] }),
   });
@@ -77,6 +87,9 @@ export default function EventTable() {
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
+  };
+  const handleCancel = (id: string) => {
+    cancelEventMutation(id, { onSuccess: () => toast("Huỷ event thành công") });
   };
   const columns: ColumnDef<Event>[] = [
     // {
@@ -170,79 +183,123 @@ export default function EventTable() {
       accessorKey: "status",
       header: "Trạng thái",
       cell: ({ row }) => {
-        return <Badge> {row.original.status}</Badge>;
+        return <Badge>{statusMap[row.original.status] || "Không rõ"}</Badge>;
       },
     },
     {
       id: "actions",
       cell: ({ row }) => {
         return (
-          <AlertDialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link
-                    href={`/organizer/quan-ly-su-kien/${row.original.eventId}`}
-                  >
-                    Thông tin sự kiện
-                  </Link>
-                </DropdownMenuItem>
-                {row.original.status !== "Draft" &&
-                  row.original.status !== "UnderReview" && (
+          <>
+            <AlertDialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/organizer/quan-ly-su-kien/${row.original.eventId}`}
+                    >
+                      Thông tin sự kiện
+                    </Link>
+                  </DropdownMenuItem>
+                  {row.original.status !== "Draft" &&
+                    row.original.status !== "UnderReview" && (
+                      <DropdownMenuItem>
+                        <Link
+                          href={`/organizer/quan-ly-su-kien/danh-sach-tham-gia/${row.original.eventId}`}
+                        >
+                          Danh sách người tham dự
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                  {(row.original.status === "InProgress" ||
+                    row.original.status === "Upcoming") && (
+                    <DropdownMenuItem
+                      onClick={() => handleGenerateQR(row.original.eventId)}
+                    >
+                      Tạo mã QR
+                    </DropdownMenuItem>
+                  )}
+                  {row.original.status === "Upcoming" && (
+                    <DropdownMenuItem>
+                      <AlertDialogTrigger asChild>
+                        <p>Huỷ sự kiện</p>
+                      </AlertDialogTrigger>
+                    </DropdownMenuItem>
+                  )}
+                  {row.original.status === "Draft" && (
                     <DropdownMenuItem>
                       <Link
-                        href={`/organizer/quan-ly-su-kien/danh-sach-tham-gia/${row.original.eventId}`}
+                        href={`/organizer/quan-ly-su-kien/chinh-sua-su-kien/${row.original.eventId}`}
                       >
-                        Danh sách người tham dự
+                        Chỉnh sửa sự kiện
                       </Link>
                     </DropdownMenuItem>
                   )}
-                {(row.original.status === "InProgress" ||
-                  row.original.status === "Upcoming") && (
-                  <DropdownMenuItem
-                    onClick={() => handleGenerateQR(row.original.eventId)}
-                  >
-                    Tạo mã QR
-                  </DropdownMenuItem>
-                )}
-                {row.original.status === "Draft" && (
-                  <DropdownMenuItem>Chỉnh sửa sự kiện</DropdownMenuItem>
-                )}
-                {row.original.status === "Draft" && (
-                  <DropdownMenuItem>
-                    <AlertDialogTrigger asChild>
-                      <p>Xoá sự kiện</p>
-                    </AlertDialogTrigger>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Bạn có muốn xoá sự kiện?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Thao tác này không thể hoàn tác. Sự kiện sẽ bị xoá vĩnh viễn
-                  và không thể khôi phục.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Đóng</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleDelete(row.original.eventId)}
-                >
-                  Xoá
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                  {row.original.status === "Draft" && (
+                    <DropdownMenuItem>
+                      <AlertDialogTrigger asChild>
+                        <p>Xoá sự kiện</p>
+                      </AlertDialogTrigger>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Dialog for Cancel Event */}
+              {row.original.status === "Upcoming" && (
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Bạn có muốn huỷ sự kiện?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Thao tác này không thể hoàn tác. Sự kiện sẽ bị huỷ và
+                      không thể khôi phục.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Đóng</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleCancel(row.original.eventId)}
+                    >
+                      Huỷ
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              )}
+
+              {/* Dialog for Delete Event */}
+              {row.original.status === "Draft" && (
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Bạn có muốn xoá sự kiện?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Thao tác này không thể hoàn tác. Sự kiện sẽ bị xoá vĩnh
+                      viễn và không thể khôi phục.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Đóng</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(row.original.eventId)}
+                    >
+                      Xoá
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              )}
+            </AlertDialog>
+          </>
         );
       },
       enableHiding: false, // disable hiding for this column
@@ -252,14 +309,10 @@ export default function EventTable() {
   const hideColumns = ["isDeleted", "deletedAt"];
   const selectOptions = [
     {
-      option: [
-        { name: "Tất cả", value: "All" },
-        { name: "Sắp diễn ra", value: "Upcoming" },
-        { name: "Đã kết thúc", value: "Completed" },
-        { name: "Nháp", value: "Draft" },
-        { name: "Đang diễn ra", value: "InProgress" },
-        { name: "Đang chờ duyệt", value: "UnderReview" },
-      ],
+      option: Object.entries(statusMap).map(([value, name]) => ({
+        name,
+        value,
+      })),
       placeholder: "Status",
       title: "status",
       defaultValue: status,

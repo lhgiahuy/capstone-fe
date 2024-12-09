@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellOff, Calendar, Search } from "lucide-react";
+import { Bell, BellDot, BellOff, Calendar, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -38,6 +38,7 @@ import { Notification } from "@/interface/notification";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ScrollArea } from "../ui/scroll-area";
+import ShowMoreText from "react-show-more-text";
 
 export default function UserNavBar() {
   const { data: user } = useQuery({
@@ -153,47 +154,48 @@ export default function UserNavBar() {
                 sideOffset={10}
                 className="flex flex-col gap-4 w-full justify-center min-w-[48rem]"
               >
-                <div className="flex flex-col gap-4">
-                  {/* {!searchString && <h3>Gợi ý tag</h3>} */}
+                <ScrollArea className="h-[32rem]">
+                  <div className="flex flex-col gap-4">
+                    {/* {!searchString && <h3>Gợi ý tag</h3>} */}
 
-                  {searchString ? (
-                    <></>
-                  ) : (
-                    <div className="flex gap-8 mt-4">
-                      {tag
-                        ?.sort(() => Math.random() - 0.5) // Randomize order
-                        .slice(0, 5)
-                        .map((item: Tag, index: number) => (
-                          <div
-                            key={item.tagId}
-                            className="flex flex-col items-center"
-                          >
-                            <Button
-                              onMouseDown={(e) => e.preventDefault()}
-                              onClick={() => handleTagInput(item.tagName)}
-                              variant={"link"}
-                              className={cn(
-                                "rounded-full w-28 h-28 flex items-center justify-center",
-                                `${
-                                  index % 2 === 0
-                                    ? "bg-primary text-accent"
-                                    : "bg-secondary text-secondary-background"
-                                }`
-                              )}
+                    {searchString ? (
+                      <></>
+                    ) : (
+                      <div className="flex gap-8 mt-4">
+                        {tag
+                          ?.sort(() => Math.random() - 0.5) // Randomize order
+                          .slice(0, 5)
+                          .map((item: Tag, index: number) => (
+                            <div
+                              key={item.tagId}
+                              className="flex flex-col items-center"
                             >
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: item.svgContent,
-                                }}
-                                className="*:w-12 *:h-12"
-                              ></div>
-                            </Button>
-                            <Badge className="bg-foreground rounded-full mt-[-1rem] py-1 uppercase w-[8rem] flex items-center justify-center text-center">
-                              {item.tagName}
-                            </Badge>
-                          </div>
-                        ))}
-                      {/* <div className="flex flex-col items-center">
+                              <Button
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => handleTagInput(item.tagName)}
+                                variant={"link"}
+                                className={cn(
+                                  "rounded-full w-28 h-28 flex items-center justify-center",
+                                  `${
+                                    index % 2 === 0
+                                      ? "bg-primary text-accent"
+                                      : "bg-secondary text-secondary-background"
+                                  }`
+                                )}
+                              >
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.svgContent,
+                                  }}
+                                  className="*:w-12 *:h-12"
+                                ></div>
+                              </Button>
+                              <Badge className="bg-foreground rounded-full mt-[-1rem] py-1 uppercase w-[8rem] flex items-center justify-center text-center">
+                                {item.tagName}
+                              </Badge>
+                            </div>
+                          ))}
+                        {/* <div className="flex flex-col items-center">
                         <div className="rounded-full w-28 h-28 bg-foreground text-background  flex items-center justify-center">
                           <p className="font-bold text-4xl">{`+${
                             tag?.length - 3
@@ -203,15 +205,15 @@ export default function UserNavBar() {
                           {`tag`}
                         </Badge>
                       </div> */}
-                    </div>
+                      </div>
+                    )}
+                  </div>
+                  {searchString ? (
+                    <h3>Kết quả tìm kiếm</h3>
+                  ) : (
+                    <h3 className="mt-4 text-lg">Gợi ý tìm kiếm</h3>
                   )}
-                </div>
-                {searchString ? (
-                  <h3>Kết quả tìm kiếm</h3>
-                ) : (
-                  <h3 className="mt-4 text-lg">Gợi ý tìm kiếm</h3>
-                )}
-                {/* <div className="flex max-w-[48rem] gap-4 flex-wrap">
+                  {/* <div className="flex max-w-[48rem] gap-4 flex-wrap">
                   {event?.items.map((item: Event) => (
                     <EventCard
                       key={item.eventId}
@@ -220,11 +222,12 @@ export default function UserNavBar() {
                     />
                   ))}
                 </div> */}
-                <EventList
-                  data={event}
-                  className="flex max-w-[48rem] gap-4 flex-wrap"
-                  cardClassName="basis-[calc(50%-0.5rem)]"
-                />
+                  <EventList
+                    data={event}
+                    className="flex max-w-[48rem] gap-4 flex-wrap"
+                    cardClassName="basis-[calc(50%-0.5rem)]"
+                  />
+                </ScrollArea>
               </PopoverContent>
             </Popover>
           )}
@@ -254,47 +257,74 @@ export default function UserNavBar() {
                   <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                     <PopoverTrigger asChild>
                       <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
-                        <Bell className="w-5 h-5 text-background" />
+                        {user.isHaveUnreadNoti ? (
+                          <BellDot className="w-5 h-5 text-background"></BellDot>
+                        ) : (
+                          <Bell className="w-5 h-5 text-background" />
+                        )}
                       </div>
                     </PopoverTrigger>
-                    <PopoverContent className="min-w-[32rem] flex flex-col gap-8">
-                      <h2 className="text-primary font-bold text-4xl">
+                    <PopoverContent className="min-w-[32rem] flex flex-col gap-4">
+                      <h2 className="text-primary font-bold text-2xl">
                         Thông báo
                       </h2>
                       {notification?.length ? (
-                        <ScrollArea className="flex flex-col w-full gap-4 h-[32rem]">
-                          {notification.map((item) => (
-                            <Button
-                              // href={`/su-kien/${item.eventId}`}
-                              onClick={() => {
-                                setPopoverOpen(false);
-                                handleReadNotification(item.notiId);
-                                if (item?.eventId)
-                                  router.push(`/su-kien/${item.eventId}`);
-                              }}
-                              variant={"ghost"}
-                              key={item.notiId}
-                              className="flex gap-4 text-left justify-start items-start	h-full hover:bg-card w-full px-4 rounded-lg py-2"
-                            >
-                              {item.readStatus === "Unread" && (
-                                <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
-                              )}
-                              <div className="flex flex-col w-full justify-start gap-2">
-                                <div className="flex flex-col gap-2">
-                                  <h3 className="text-primary text-lg">
-                                    {item.title}
-                                  </h3>
-                                  <p className="text-lg">{item.message}</p>
-                                </div>
+                        <ScrollArea className="h-[24rem] max-w-[32rem]">
+                          <div className="w-full flex flex-col">
+                            {notification.map((item) => (
+                              <div
+                                // href={`/su-kien/${item.eventId}`}
 
-                                <p className="text-muted-foreground text-sm">
-                                  {formatDistanceToNow(item.sendTime, {
-                                    locale: vi,
-                                  })}
-                                </p>
+                                key={item.notiId}
+                                className="flex gap-4 py-2 text-left w-full justify-start items-start h-full hover:bg-card px-4 rounded-lg py-2"
+                              >
+                                {item.readStatus === "Unread" && (
+                                  <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
+                                )}
+                                <div className="flex flex-col w-fit justify-start gap-2 text-wrap">
+                                  <div className="flex flex-col gap-2">
+                                    <h3 className="text-primary text-sm">
+                                      {item.title}
+                                    </h3>
+                                    <ShowMoreText
+                                      lines={1}
+                                      more="Xem thêm"
+                                      less="Ẩn bớt"
+                                      className="text-sm"
+                                      anchorClass="text-primary hover:cursor-pointer"
+                                      width={600}
+                                      truncatedEndingComponent={"  ... "}
+                                    >
+                                      <p className="text-sm">{item.message}</p>
+                                    </ShowMoreText>
+                                  </div>
+                                  <div className="flex w-full items-center py-2 justify-between">
+                                    <p className="text-muted-foreground text-sm">
+                                      {formatDistanceToNow(item.sendTime, {
+                                        locale: vi,
+                                      })}
+                                    </p>
+                                    <div>
+                                      <Button
+                                        size={"sm"}
+                                        onClick={() => {
+                                          setPopoverOpen(false);
+                                          handleReadNotification(item.notiId);
+                                          if (item?.eventId)
+                                            router.push(
+                                              `/su-kien/${item.eventId}`
+                                            );
+                                        }}
+                                        // variant={"ghost"}
+                                      >
+                                        Xem chi tiết sự kiện
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </Button>
-                          ))}
+                            ))}
+                          </div>
                         </ScrollArea>
                       ) : (
                         <div className="min-h-[24rem] flex flex-col gap-2 items-center w-full justify-center item-center">

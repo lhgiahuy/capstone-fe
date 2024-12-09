@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formSchema } from "../_lib/validation";
 import TinyEditor from "@/components/editor/tiny-editor";
 import {
   Popover,
@@ -30,13 +29,14 @@ import {
 } from "@/components/ui/popover";
 import {
   CalendarIcon,
+  Download,
   LayoutList,
   Loader2,
   MinusCircle,
   Trash,
   Upload,
 } from "lucide-react";
-import { format, formatISO } from "date-fns";
+import { format, formatISO, toDate } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -44,13 +44,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImageInput from "@/components/ui/image-input";
 import Image from "next/image";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createEvent, getEventType, getTag } from "@/action/event";
+import { getEventType, getTag, updateEvent } from "@/action/event";
 import { EventType } from "@/interface/event-type";
-import { uploadImageToStorage } from "@/lib/firebase/upload-file";
-import { useRouter } from "next/navigation";
 import { TagInput } from "@/components/my-ui/tag-input";
+import { formSchema } from "../_lib/validation";
+import { Event } from "@/interface/event";
+import { formatTo12HourTime } from "@/lib/date";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { uploadImageToStorage } from "@/lib/firebase/upload-file";
 
-export default function CreateForm() {
+export default function UpdateForm({ data }: { data: Event }) {
   const { data: tags } = useQuery({
     queryKey: ["event-tags"],
     queryFn: getTag,
@@ -61,31 +65,33 @@ export default function CreateForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const formType = ["Plain Text", "Choice"];
-  const { mutate: createEventMutate } = useMutation({
-    mutationFn: (data: any) => createEvent(data),
-  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: {},
+    values: {
       event: {
-        title: "",
-        type: "",
-        maxAttendees: "",
+        ...(data as any),
         dateType: "one-day",
-        locationType: "offline",
-        location: "",
-        eventLink: "",
-        passwordMeeting: "",
-        date: new Date(new Date().setDate(new Date().getDate() + 7)),
-        startDate: new Date(new Date().setDate(new Date().getDate() + 7)),
-        endDate: new Date(new Date().setDate(new Date().getDate() + 8)),
-        startTime: "05:00",
-        endTime: "08:00",
+        date: toDate(data.startTime),
+        startDate: toDate(data.startTime),
+        endDate: toDate(data.endTime),
+        startTime: formatTo12HourTime(data.startTime),
+        endTime: formatTo12HourTime(data.endTime),
+        eventLink: data.linkEvent,
+        locationType: data.location !== "" ? "offline" : "online",
+        maxAttendees: data.maxAttendees.toString(),
       },
     },
   });
-  const router = useRouter();
+  const { mutate: updateEventMutate } = useMutation({
+    mutationFn: ({ data, eventId }: { data: any; eventId: string }) =>
+      updateEvent(data, eventId),
+  });
   const [imagePopover, setImagePopover] = useState(false);
+  const [editProposal, setEditProposal] = useState(false);
+  const router = useRouter();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     const startDate =
@@ -115,57 +121,58 @@ export default function CreateForm() {
       setIsLoading(false);
     } else {
       const thumbnailUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.title}-thumbnail`,
+        saveLocation: `events/${values.event.eventName}-thumbnail`,
         file: values.event.thumbnailImg,
       });
       const posterUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.title}-poster`,
+        saveLocation: `events/${values.event.eventName}-poster`,
         file: values.event.posterImg,
       });
       const proposalUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.title}-proposal`,
+        saveLocation: `events/${values.event.eventName}-proposal`,
         file: values.event.proposal,
       });
-      createEventMutate(
+      updateEventMutate(
         {
-          eventName: values.event.title,
-          description: values.event.content,
-          startTime: startDate,
-          endTime: endDate,
-          eventTypeId: values.event.type,
-          location: values.event.location,
-          linkEvent:
-            values.event.locationType === "online"
-              ? values.event.eventLink
-              : "",
-          passwordMeeting:
-            values.event.locationType === "online"
-              ? values.event.passwordMeeting
-              : "",
-          posterImg: posterUrl,
-          thumbnailImg: thumbnailUrl,
-          eventTags: values.event.eventTags,
-          maxAttendees: parseInt(values.event.maxAttendees || "0"),
-          createFormDetailsReq: values.createFormDetailsReq,
-          proposal: proposalUrl,
+          data: {
+            eventName: values.event.eventName,
+            description: values.event.description,
+            startTime: startDate,
+            endTime: endDate,
+            eventTypeId: values.event.eventTypeId,
+            location: values.event.location,
+            linkEvent:
+              values.event.locationType === "online"
+                ? values.event.eventLink
+                : "",
+            passwordMeeting:
+              values.event.locationType === "online"
+                ? values.event.passwordMeeting
+                : "",
+            posterImg: posterUrl,
+            thumbnailImg: thumbnailUrl,
+            eventTags: values.event.eventTags,
+            maxAttendees: parseInt(values.event.maxAttendees || "0"),
+            createFormDetailsReq: values.createFormDetailsReq,
+            proposal: proposalUrl,
+          },
+          eventId: data.eventId,
         },
         {
           onSuccess: () => {
-            toast("Tạo sự kiện thành công"),
+            toast("Chỉnh sửa sự kiện thành công"),
               setIsLoading(false),
               router.push("/organizer/quan-ly-su-kien?status=Draft");
           },
           onError: () => {
             setIsLoading(false);
-            toast.error("Tạo sự kiện thất bại");
+            toast.error("Chỉnh sửa sự kiện thất bại");
           },
         }
       );
     }
   }
-  // const onSubmit = (values: z.infer<typeof formSchema>) => {
-  //   console.log(values.event.eventTags);
-  // };
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "createFormDetailsReq",
@@ -221,7 +228,7 @@ export default function CreateForm() {
                           <FormControl>
                             <ImageInput
                               subtitle="Nên sử dụng hình khổ dọc"
-                              placeholderImage="/images/image-placeholder-portrait.jpg"
+                              placeholderImage={field.value}
                               {...field}
                             />
                           </FormControl>
@@ -242,6 +249,7 @@ export default function CreateForm() {
                           <FormControl>
                             <ImageInput
                               subtitle="Nên sử dụng hình khổ ngang"
+                              placeholderImage={field.value}
                               {...field}
                             />
                           </FormControl>
@@ -258,7 +266,7 @@ export default function CreateForm() {
             <div className="font-bold text-4xl">Tổng quan sự kiện</div>
             <FormField
               control={form.control}
-              name="event.title"
+              name="event.eventName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tên sự kiện</FormLabel>
@@ -271,14 +279,11 @@ export default function CreateForm() {
             />
             <FormField
               control={form.control}
-              name="event.type"
+              name="event.eventTypeId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Loại sự kiện</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Loại sự kiện" />
@@ -318,19 +323,24 @@ export default function CreateForm() {
               control={form.control}
               name="event.eventTags"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tag</FormLabel>
-                  <FormControl>
-                    <TagInput
-                      options={tags}
-                      onValueChange={field.onChange}
-                      placeholder="Nhập tag"
-                      animation={2}
-                      maxCount={100}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <>
+                  {field.value && (
+                    <FormItem>
+                      <FormLabel>Tag</FormLabel>
+                      <FormControl>
+                        <TagInput
+                          defaultValue={field.value}
+                          options={tags}
+                          onValueChange={field.onChange}
+                          placeholder="Nhập tag"
+                          animation={2}
+                          maxCount={100}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                </>
               )}
             />
           </div>
@@ -338,7 +348,7 @@ export default function CreateForm() {
             <div className="font-bold text-4xl">Mô tả</div>
             <FormField
               control={form.control}
-              name="event.content"
+              name="event.description"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-4">
                   {/* <FormLabel>Nội dung</FormLabel> */}
@@ -445,7 +455,7 @@ export default function CreateForm() {
                                 <FormControl>
                                   <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                   >
                                     <SelectTrigger className="font-normal focus:ring-0">
                                       <SelectValue />
@@ -487,7 +497,7 @@ export default function CreateForm() {
                                 <FormControl>
                                   <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                   >
                                     <SelectTrigger className="font-normal focus:ring-0">
                                       <SelectValue />
@@ -584,7 +594,7 @@ export default function CreateForm() {
                                 <FormControl>
                                   <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                   >
                                     <SelectTrigger className="font-normal focus:ring-0">
                                       <SelectValue />
@@ -678,7 +688,7 @@ export default function CreateForm() {
                                 <FormControl>
                                   <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                   >
                                     <SelectTrigger className="font-normal focus:ring-0">
                                       <SelectValue />
@@ -897,26 +907,44 @@ export default function CreateForm() {
           </div>
           <div className="border-2 flex flex-col gap-8 rounded-lg border-muted-background p-8 hover:border-primary">
             <div className="font-bold text-4xl">Proposal của sự kiện</div>
-            <FormField
-              control={form.control}
-              name="event.proposal"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Đính kèm file proposal của sự kiện</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="hover:cursor-pointer"
-                      type="file"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        field.onChange(file);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            {editProposal ? (
+              <>
+                <FormField
+                  control={form.control}
+                  name="event.proposal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đính kèm file proposal của sự kiện</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="hover:cursor-pointer"
+                          type="file"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            field.onChange(file);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ) : (
+              <div className="flex flex-col gap-8">
+                <Link
+                  href={data.proposal}
+                  className="text-primary hover:text-primary/80 flex gap-2"
+                >
+                  <Download></Download>
+                  Tải xuống proposal
+                </Link>
+                <Button className="py-4" onClick={() => setEditProposal(true)}>
+                  Chỉnh sửa proposal
+                </Button>
+              </div>
+            )}
           </div>
           <div className="flex w-full justify-center">
             <Button

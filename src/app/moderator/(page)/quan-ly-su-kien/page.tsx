@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { statusMap } from "@/interface/status";
 
 export default function EventDetail() {
   const searchParams = useSearchParams();
@@ -88,7 +89,7 @@ export default function EventDetail() {
       accessorKey: "status",
       header: "Trạng thái",
       cell: ({ row }) => {
-        return <Badge>{row.original.status}</Badge>;
+        return <Badge>{statusMap[row.original.status] || "Không rõ"}</Badge>;
       },
     },
 
@@ -126,14 +127,11 @@ export default function EventDetail() {
   const hideColumns = ["isDeleted", "deletedAt"];
   const selectOptions = [
     {
-      option: [
-        { name: "Tất cả", value: "All" },
-        { name: "Draft", value: "Draft" },
-        { name: "UnderReview", value: "UnderReview" },
-        { name: "Completed", value: "Completed" },
-        { name: "InProgress", value: "InProgress" },
-      ],
-      placeholder: "Trạng thái",
+      option: Object.entries(statusMap).map(([value, name]) => ({
+        name,
+        value,
+      })),
+      placeholder: "Status",
       title: "status",
       defaultValue: status,
     },

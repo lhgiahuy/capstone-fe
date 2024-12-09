@@ -20,7 +20,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -50,11 +49,20 @@ export default function Page({ params }: { params: { id: string } }) {
         PageNumber: currentPage,
       }),
   });
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState("abc");
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Fetch the form data based on userId only when the userId is available
   const { data: formData } = useQuery({
     queryKey: ["form", params.id, userId],
     queryFn: () => getSubmittedFormData(params.id, userId),
   });
+
+  const handleOpenSheet = (userId: string) => {
+    setUserId(userId); // Set the userId first
+    setSheetOpen(true); // Then open the sheet
+  };
+
   const { data: event } = useQuery<Event>({
     queryKey: ["event", params.id],
     queryFn: () => getEventById(params.id),
@@ -175,7 +183,7 @@ export default function Page({ params }: { params: { id: string } }) {
       id: "actions",
       cell: ({ row }) => {
         return (
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -186,14 +194,16 @@ export default function Page({ params }: { params: { id: string } }) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {event?.form.length && (
+                {event?.form.length ? (
                   <DropdownMenuItem
-                    onClick={() => setUserId(row.original.userId)}
+                    onClick={() => {
+                      handleOpenSheet(row.original.userId); // Open the sheet after setting userId
+                    }}
                   >
-                    <SheetTrigger asChild>
-                      <p>Xem form đăng ký</p>
-                    </SheetTrigger>
+                    Xem form đăng ký
                   </DropdownMenuItem>
+                ) : (
+                  <></>
                 )}
                 <DropdownMenuItem
                   onClick={() =>
@@ -221,14 +231,18 @@ export default function Page({ params }: { params: { id: string } }) {
                 <SheetTitle className="text-primary text-3xl">
                   Form đăng ký
                 </SheetTitle>
-                <div className="flex flex-col gap-8 py-8">
-                  {formData?.data.map((item: any, index: number) => (
-                    <div key={index} className="flex flex-col gap-2">
-                      <div>{item.question}</div>
-                      <Input value={item.answer}></Input>
-                    </div>
-                  ))}
-                </div>
+                {formData ? (
+                  <div className="flex flex-col gap-8 py-8">
+                    {formData?.data.map((item: any, index: number) => (
+                      <div key={index} className="flex flex-col gap-2">
+                        <div>{item.question}</div>
+                        <Input defaultValue={item.answer}></Input>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <></>
+                )}
               </SheetHeader>
             </SheetContent>
           </Sheet>

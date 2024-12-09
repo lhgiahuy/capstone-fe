@@ -70,6 +70,10 @@ export async function createEvent(data: any) {
   return await userAxios.post("/events", data);
 }
 
+export async function updateEvent(data: any, eventId: string) {
+  return await userAxios.put(`/events/${eventId}`, data);
+}
+
 export async function submitForm(data: any, eventId: string) {
   return await userAxios.post(`/events/${eventId}/submit-form`, data);
 }
@@ -251,4 +255,8 @@ export async function CheckIn(eventId: string, userId: string) {
   return await userAxios.put(
     `/events/${eventId}/checkin-organizer?userId=${userId}`
   );
+}
+
+export async function cancelEvent(eventId: string) {
+  return await userAxios.put(`/events/${eventId}/cancelEvent`);
 }
