@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import AdminNavBar from "../../_component/admin-navbar";
-import { getUser } from "@/action/user";
+import { getBannedUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, getFirstLetterOfName } from "@/lib/utils";
@@ -28,10 +28,10 @@ export default function AdminManagementUser() {
   const searchParams = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
-  const role = searchParams.get("role") || "student";
+  const role = searchParams.get("role") || "Student";
   const { data, isPending } = useQuery({
-    queryKey: ["user", currentPage, role],
-    queryFn: () => getUser({ PageNumber: currentPage, roleName: role }),
+    queryKey: ["bannedUser", currentPage, role],
+    queryFn: () => getBannedUser({ PageNumber: currentPage, roleName: role }),
   });
   const selectOptions = [
     {
@@ -174,7 +174,7 @@ export default function AdminManagementUser() {
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Danh sách tất cả người dùng"]} />
+      <AdminNavBar links={["Danh sách người dùng bị khoá"]} />
       {isPending ? (
         <SkeletonTable
           hideColumns={hideColumns}

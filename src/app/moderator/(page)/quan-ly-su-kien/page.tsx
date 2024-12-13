@@ -89,7 +89,13 @@ export default function EventDetail() {
       accessorKey: "status",
       header: "Trạng thái",
       cell: ({ row }) => {
-        return <Badge>{statusMap[row.original.status] || "Không rõ"}</Badge>;
+        const statusInfo = statusMap[row.original.status] || {
+          label: "Không xác định",
+          color: "gray",
+        };
+        return (
+          <Badge className={`${statusInfo.color}`}>{statusInfo.label}</Badge>
+        );
       },
     },
 
@@ -127,8 +133,8 @@ export default function EventDetail() {
   const hideColumns = ["isDeleted", "deletedAt"];
   const selectOptions = [
     {
-      option: Object.entries(statusMap).map(([value, name]) => ({
-        name,
+      option: Object.entries(statusMap).map(([value, { label }]) => ({
+        name: label,
         value,
       })),
       placeholder: "Status",

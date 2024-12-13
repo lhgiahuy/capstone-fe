@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Event } from "@/interface/event";
+import { statusMap } from "@/interface/status";
 import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { Calendar, MapPinned } from "lucide-react";
@@ -17,6 +18,10 @@ export default function EventCard({
   ticketStyle,
   className,
 }: EventCardProps) {
+  const statusInfo = statusMap[data.status] || {
+    label: "Không xác định",
+    color: "gray",
+  };
   if (ticketStyle)
     return (
       <Link href={`/su-kien/${data?.eventId}`} className="w-[calc(50%-0.5rem)]">
@@ -70,6 +75,9 @@ export default function EventCard({
           fill
           className="object-cover object-top"
         />
+        <Badge className={`${statusInfo.color} z-10 absolute top-4 right-4`}>
+          {statusInfo.label}
+        </Badge>
       </div>
       <div className="flex flex-col uppercase gap-4 h-full">
         <div className="flex flex-col gap-2">

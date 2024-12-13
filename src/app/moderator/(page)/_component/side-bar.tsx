@@ -1,6 +1,12 @@
 "use client";
 
-import { Calendar, LayoutDashboard, Package2, User } from "lucide-react";
+import {
+  BellRing,
+  Calendar,
+  LayoutDashboard,
+  Package2,
+  User,
+} from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -58,11 +64,11 @@ export default function Sidebar() {
       link: "/moderator/quan-ly-nguoi-dung",
       icon: <User className="h-5 w-5" />,
     },
-    // {
-    //   title: "Thông báo",
-    //   link: "/admin/thong-bao",
-    //   icon: <BellRing className="h-5 w-5" />,
-    // },
+    {
+      title: "Gửi thông báo",
+      link: "/moderator/thong-bao",
+      icon: <BellRing className="h-5 w-5" />,
+    },
     // {
     //   title: "Quản lý rút tiền",
     //   link: "/admin/quan-ly-rut-tien",

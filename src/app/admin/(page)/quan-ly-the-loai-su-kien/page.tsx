@@ -38,7 +38,7 @@ export default function EventTypes() {
   const [openDialog, setOpenDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
-  const [selectedTypeName, setSelectedTypeName] = useState<string>("");
+  const [selectedTypeName] = useState<string>("");
   const { data, isPending } = useQuery({
     queryKey: ["types"],
     queryFn: () => getEventType(),
@@ -101,7 +101,7 @@ export default function EventTypes() {
               >
                 Xoá thể loại
               </DropdownMenuItem>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() => {
                   setSelectedTypeId(type.eventTypeId);
                   setSelectedTypeName(type.eventTypeName);
@@ -109,7 +109,7 @@ export default function EventTypes() {
                 }}
               >
                 Cập nhật thể loại
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -117,14 +117,14 @@ export default function EventTypes() {
       enableHiding: false,
     },
   ];
-  const hideColumns = ["description", "isDeleted", "deletedAt"];
+  const hideColumns = [""];
   return (
     <>
       <AdminNavBar links={["Quản lý thể loại sự kiện"]} />
       <div className="mb-4 flex justify-end items-center">
         <CreateEventType />
       </div>
-      <div className="">
+      <div className="container max-w-[64rem]">
         {isPending ? (
           <></>
         ) : (

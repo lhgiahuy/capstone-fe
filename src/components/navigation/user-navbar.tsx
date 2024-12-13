@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellDot, BellOff, Calendar, Search } from "lucide-react";
+import { Bell, BellOff, Calendar, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -97,6 +97,7 @@ export default function UserNavBar() {
     mutationFn: (notiId: string) => readNotification(notiId),
     onSuccess: () => {
       query.invalidateQueries({ queryKey: ["notification"] });
+      query.invalidateQueries({ queryKey: ["Me"] });
     },
   });
   const handleReadNotification = (notiId: string) => {
@@ -254,89 +255,107 @@ export default function UserNavBar() {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
-                        {user.isHaveUnreadNoti ? (
-                          <BellDot className="w-5 h-5 text-background"></BellDot>
-                        ) : (
-                          <Bell className="w-5 h-5 text-background" />
-                        )}
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="min-w-[32rem] flex flex-col gap-4">
-                      <h2 className="text-primary font-bold text-2xl">
-                        Thông báo
-                      </h2>
-                      {notification?.length ? (
-                        <ScrollArea className="h-[24rem] max-w-[32rem]">
-                          <div className="w-full flex flex-col">
-                            {notification.map((item) => (
-                              <div
-                                // href={`/su-kien/${item.eventId}`}
-
-                                key={item.notiId}
-                                className="flex gap-4 py-2 text-left w-full justify-start items-start h-full hover:bg-card px-4 rounded-lg py-2"
-                              >
-                                {item.readStatus === "Unread" && (
-                                  <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
-                                )}
-                                <div className="flex flex-col w-fit justify-start gap-2 text-wrap">
-                                  <div className="flex flex-col gap-2">
-                                    <h3 className="text-primary text-sm">
-                                      {item.title}
-                                    </h3>
-                                    <ShowMoreText
-                                      lines={1}
-                                      more="Xem thêm"
-                                      less="Ẩn bớt"
-                                      className="text-sm"
-                                      anchorClass="text-primary hover:cursor-pointer"
-                                      width={600}
-                                      truncatedEndingComponent={"  ... "}
-                                    >
-                                      <p className="text-sm">{item.message}</p>
-                                    </ShowMoreText>
-                                  </div>
-                                  <div className="flex w-full items-center py-2 justify-between">
-                                    <p className="text-muted-foreground text-sm">
-                                      {formatDistanceToNow(item.sendTime, {
-                                        locale: vi,
-                                      })}
-                                    </p>
-                                    <div>
-                                      <Button
-                                        size={"sm"}
-                                        onClick={() => {
-                                          setPopoverOpen(false);
-                                          handleReadNotification(item.notiId);
-                                          if (item?.eventId)
-                                            router.push(
-                                              `/su-kien/${item.eventId}`
-                                            );
-                                        }}
-                                        // variant={"ghost"}
-                                      >
-                                        Xem chi tiết sự kiện
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </ScrollArea>
-                      ) : (
-                        <div className="min-h-[24rem] flex flex-col gap-2 items-center w-full justify-center item-center">
-                          <BellOff className="text-primary h-8 w-8"></BellOff>
-                          <p className="text-primary">Chưa có thông báo</p>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
                 </>
               )}
-
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  {user.isHaveUnreadNoti ? (
+                    <div className="relative rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
+                      <Bell className="w-5 h-5 text-background" />
+                      <div className="absolute top-[-1px] right-0 bg-red-600 rounded-full h-3 w-3"></div>
+                    </div>
+                  ) : (
+                    <div className="rounded-full w-10 h-10 bg-foreground flex items-center justify-center">
+                      <Bell className="w-5 h-5 text-background" />
+                    </div>
+                  )}
+                </PopoverTrigger>
+                <PopoverContent className="min-w-[32rem] flex flex-col gap-4">
+                  <h2 className="text-primary font-bold text-2xl">Thông báo</h2>
+                  {notification?.length ? (
+                    <ScrollArea className="h-[24rem] max-w-[32rem]">
+                      <div className="w-full flex flex-col">
+                        {notification.map((item) => (
+                          <Button
+                            // href={`/su-kien/${item.eventId}`}
+                            variant={"ghost"}
+                            onClick={() => {
+                              setPopoverOpen(false);
+                              handleReadNotification(item.notiId);
+                              if (item?.eventId) {
+                                user.roleName === "student"
+                                  ? router.push(`/su-kien/${item.eventId}`)
+                                  : router.push(
+                                      `/organizer/quan-ly-su-kien/${item.eventId}`
+                                    );
+                              }
+                            }}
+                            key={item.notiId}
+                            className="flex relative gap-4 py-2 text-left w-full justify-between items-start h-full hover:bg-card px-4 rounded-lg py-2"
+                          >
+                            <div className="flex flex-col w-fit justify-start gap-2 text-wrap">
+                              <div className="flex flex-col gap-2">
+                                <h3 className="text-primary text-sm">
+                                  {item.title}
+                                </h3>
+                                <span
+                                  onClick={(e) => e.stopPropagation()} // Prevent the popover from closing
+                                >
+                                  <ShowMoreText
+                                    lines={1}
+                                    more="Xem thêm"
+                                    less="Ẩn bớt"
+                                    className="text-sm"
+                                    anchorClass="text-primary hover:cursor-pointer"
+                                    width={600}
+                                    truncatedEndingComponent={"  ... "}
+                                  >
+                                    <p className="text-sm">{item.message}</p>
+                                  </ShowMoreText>
+                                </span>
+                              </div>
+                              <p
+                                className={`${
+                                  item.readStatus === "Unread"
+                                    ? "text-primary"
+                                    : "text-muted-foreground"
+                                }   text-sm`}
+                              >
+                                {formatDistanceToNow(item.sendTime, {
+                                  locale: vi,
+                                })}
+                              </p>
+                            </div>
+                            {item.readStatus === "Unread" && (
+                              <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
+                            )}
+                            {/* <div className="absolute flex w-full items-end justify-end">
+                                  <Button
+                                    variant={"ghost"}
+                                    size={"sm"}
+                                    onClick={() => {
+                                      setPopoverOpen(false);
+                                      handleReadNotification(item.notiId);
+                                      if (item?.eventId)
+                                        router.push(`/su-kien/${item.eventId}`);
+                                    }}
+                                    className=" hover:bg-slate-400 px-2 py-2 rounded-full"
+                                  >
+                                    <Ellipsis></Ellipsis>
+                                  </Button>
+                                </div> */}
+                          </Button>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <div className="min-h-[24rem] flex flex-col gap-2 items-center w-full justify-center item-center">
+                      <BellOff className="text-primary h-8 w-8"></BellOff>
+                      <p className="text-primary">Chưa có thông báo</p>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex gap-4 items-center">
