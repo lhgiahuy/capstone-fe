@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellOff, Calendar, Search } from "lucide-react";
+import { Bell, BellOff, Calendar, Search, Trash } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
@@ -39,6 +39,8 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ScrollArea } from "../ui/scroll-area";
 import ShowMoreText from "react-show-more-text";
+import { clearNotification, deleteNotification } from "@/action/notification";
+import { toast } from "sonner";
 
 export default function UserNavBar() {
   const { data: user } = useQuery({
@@ -100,8 +102,34 @@ export default function UserNavBar() {
       query.invalidateQueries({ queryKey: ["Me"] });
     },
   });
+  const { mutate: clearNotificationMutation } = useMutation({
+    mutationFn: clearNotification,
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["notification"] });
+      query.invalidateQueries({ queryKey: ["Me"] });
+      toast("Đã xoá tất cả thông báo");
+    },
+    onError: () => toast("Có lỗi gì đã xảy ra!"),
+  });
+  const { mutate: deleteNotificationMutation } = useMutation({
+    mutationFn: (id: string) => deleteNotification(id),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["notification"] });
+      query.invalidateQueries({ queryKey: ["Me"] });
+      toast("Đã xoá thông báo");
+    },
+    onError: () => toast("Có lỗi gì đã xảy ra!"),
+  });
   const handleReadNotification = (notiId: string) => {
-    readNotificationMutation(notiId);
+    readNotificationMutation(notiId, {
+      onError: () => toast("Có lỗi gì đã xảy ra!"),
+    });
+  };
+  const handleClearNotification = () => {
+    clearNotificationMutation();
+  };
+  const handleDeleteNotification = (id: string) => {
+    deleteNotificationMutation(id);
   };
   return (
     <nav className="bg-primary sticky top-0 w-full z-30 text-primary-foreground">
@@ -271,7 +299,14 @@ export default function UserNavBar() {
                   )}
                 </PopoverTrigger>
                 <PopoverContent className="min-w-[32rem] flex flex-col gap-4">
-                  <h2 className="text-primary font-bold text-2xl">Thông báo</h2>
+                  <div className="w-full flex justify-between">
+                    <h2 className="text-primary font-bold text-2xl">
+                      Thông báo
+                    </h2>
+                    <Button onClick={handleClearNotification}>
+                      Xoá tất cả thông báo
+                    </Button>
+                  </div>
                   {notification?.length ? (
                     <ScrollArea className="h-[24rem] max-w-[32rem]">
                       <div className="w-full flex flex-col">
@@ -291,28 +326,40 @@ export default function UserNavBar() {
                               }
                             }}
                             key={item.notiId}
-                            className="flex relative gap-4 py-2 text-left w-full justify-between items-start h-full hover:bg-card px-4 rounded-lg py-2"
+                            className="flex group relative gap-4 py-2 text-left w-full justify-between items-start h-full hover:bg-card px-4 rounded-lg py-2"
                           >
                             <div className="flex flex-col w-fit justify-start gap-2 text-wrap">
                               <div className="flex flex-col gap-2">
                                 <h3 className="text-primary text-sm">
                                   {item.title}
                                 </h3>
-                                <span
-                                  onClick={(e) => e.stopPropagation()} // Prevent the popover from closing
-                                >
-                                  <ShowMoreText
-                                    lines={1}
-                                    more="Xem thêm"
-                                    less="Ẩn bớt"
-                                    className="text-sm"
-                                    anchorClass="text-primary hover:cursor-pointer"
-                                    width={600}
-                                    truncatedEndingComponent={"  ... "}
+                                <div className="flex">
+                                  <span
+                                    onClick={(e) => e.stopPropagation()} // Prevent the popover from closing
                                   >
-                                    <p className="text-sm">{item.message}</p>
-                                  </ShowMoreText>
-                                </span>
+                                    <ShowMoreText
+                                      lines={1}
+                                      more="Xem thêm"
+                                      less="Ẩn bớt"
+                                      className="text-sm"
+                                      anchorClass="text-primary hover:cursor-pointer"
+                                      width={550}
+                                      truncatedEndingComponent={"  ... "}
+                                    >
+                                      <p className="text-sm">{item.message}</p>
+                                    </ShowMoreText>
+                                  </span>
+                                  <Button
+                                    variant={"ghost"}
+                                    className="px-3 shrink-1 text-muted-foreground"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteNotification(item.notiId);
+                                    }}
+                                  >
+                                    <Trash className="w-5 h-5"></Trash>
+                                  </Button>
+                                </div>
                               </div>
                               <p
                                 className={`${
