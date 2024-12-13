@@ -47,6 +47,7 @@ import {
 // import { formatDate } from "@/lib/date";
 import QRCode from "qrcode";
 import { statusMap } from "@/interface/status";
+import { useState } from "react";
 
 export default function EventTable() {
   const [user] = useAtom(userAtom);
@@ -56,6 +57,7 @@ export default function EventTable() {
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "1", 10) || 1;
   const query = useQueryClient();
+  const [openDialog, setOpenDialog] = useState("");
   const { mutate: deleteEventMutation } = useMutation({
     mutationFn: (id: string) => deleteEvent(id),
     onSuccess: () =>
@@ -92,20 +94,6 @@ export default function EventTable() {
     cancelEventMutation(id, { onSuccess: () => toast("Huỷ event thành công") });
   };
   const columns: ColumnDef<Event>[] = [
-    // {
-    //   accessorKey: "thumbnailImg",
-    //   header: "Thumbnail",
-    //   cell: ({ row }) => {
-    //     return (
-    //       <Image
-    //         src={row.original.thumbnailImg || "/images/auth-bg.jpg"}
-    //         alt=""
-    //         width={100}
-    //         height={300}
-    //       ></Image>
-    //     );
-    //   },
-    // },
     {
       accessorKey: "posterImg",
       header: "Poster",
@@ -172,18 +160,18 @@ export default function EventTable() {
         );
       },
     },
-    // {
-    //   accessorKey: "proposal",
-    //   header: "Proposal",
-    //   cell: ({ row }) => {
-    //     return <p>{row.original.proposal}</p>;
-    //   },
-    // },
+
     {
       accessorKey: "status",
       header: "Trạng thái",
       cell: ({ row }) => {
-        return <Badge>{statusMap[row.original.status] || "Không rõ"}</Badge>;
+        const statusInfo = statusMap[row.original.status] || {
+          label: "Không xác định",
+          color: "gray",
+        };
+        return (
+          <Badge className={`${statusInfo.color}`}>{statusInfo.label}</Badge>
+        );
       },
     },
     {
@@ -191,7 +179,10 @@ export default function EventTable() {
       cell: ({ row }) => {
         return (
           <>
-            <AlertDialog>
+            <AlertDialog
+              open={openDialog !== ""}
+              onOpenChange={() => setOpenDialog("")}
+            >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
@@ -228,13 +219,14 @@ export default function EventTable() {
                     </DropdownMenuItem>
                   )}
                   {row.original.status === "Upcoming" && (
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setOpenDialog("cancel")}>
                       <AlertDialogTrigger asChild>
                         <p>Huỷ sự kiện</p>
                       </AlertDialogTrigger>
                     </DropdownMenuItem>
                   )}
-                  {row.original.status === "Draft" && (
+                  {(row.original.status === "Draft" ||
+                    row.original.status === "Rejected") && (
                     <DropdownMenuItem>
                       <Link
                         href={`/organizer/quan-ly-su-kien/chinh-sua-su-kien/${row.original.eventId}`}
@@ -243,18 +235,28 @@ export default function EventTable() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  {row.original.status === "Draft" && (
-                    <DropdownMenuItem>
+                  {(row.original.status === "Draft" ||
+                    row.original.status === "Rejected") && (
+                    <DropdownMenuItem onClick={() => setOpenDialog("delete")}>
+                      <p>Xoá sự kiện</p>
+                    </DropdownMenuItem>
+                  )}
+                  {row.original.status === "Rejected" && (
+                    <DropdownMenuItem onClick={() => setOpenDialog("note")}>
                       <AlertDialogTrigger asChild>
-                        <p>Xoá sự kiện</p>
+                        <p>Xem ghi chú</p>
                       </AlertDialogTrigger>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem>
+                    <Link href={row.original.proposal} className="w-full">
+                      Tải xuống proposal
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Dialog for Cancel Event */}
-              {row.original.status === "Upcoming" && (
+              {openDialog === "cancel" && (
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -275,9 +277,7 @@ export default function EventTable() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               )}
-
-              {/* Dialog for Delete Event */}
-              {row.original.status === "Draft" && (
+              {openDialog === "delete" && (
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -298,6 +298,28 @@ export default function EventTable() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               )}
+              {openDialog === "note" && (
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Ghi chú</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {row.original.processNote || "Không có ghi chú"}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Đóng</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        router.push(
+                          `/organizer/quan-ly-su-kien/chinh-sua-su-kien/${row.original.eventId}`
+                        )
+                      }
+                    >
+                      Chỉnh sửa sự kiện
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              )}
             </AlertDialog>
           </>
         );
@@ -309,8 +331,8 @@ export default function EventTable() {
   const hideColumns = ["isDeleted", "deletedAt"];
   const selectOptions = [
     {
-      option: Object.entries(statusMap).map(([value, name]) => ({
-        name,
+      option: Object.entries(statusMap).map(([value, { label }]) => ({
+        name: label,
         value,
       })),
       placeholder: "Status",

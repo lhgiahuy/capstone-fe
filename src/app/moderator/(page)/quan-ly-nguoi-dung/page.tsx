@@ -258,7 +258,7 @@ export default function ManagementUser() {
             <div className="space-y-4">
               <Textarea
                 className="w-full p-2 border rounded"
-                placeholder="Ghi lý do phê duyệt"
+                placeholder="Ghi chú..."
                 value={processNote}
                 rows={4}
                 onChange={(e) => setProcessNote(e.target.value)}

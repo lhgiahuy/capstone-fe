@@ -65,7 +65,8 @@ export default function UpdateForm({ data }: { data: Event }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const formType = ["Plain Text", "Choice"];
-
+  const [posterChanged, setPosterChanged] = useState(false);
+  const [thumbnailChanged, setThumbnailChanged] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
@@ -91,7 +92,10 @@ export default function UpdateForm({ data }: { data: Event }) {
   const [imagePopover, setImagePopover] = useState(false);
   const [editProposal, setEditProposal] = useState(false);
   const router = useRouter();
-
+  const onImageChange = (imageType: string) => {
+    if (imageType === "poster") setPosterChanged(true);
+    if (imageType === "thumbnail") setThumbnailChanged(true);
+  };
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     const startDate =
@@ -120,18 +124,30 @@ export default function UpdateForm({ data }: { data: Event }) {
       toast.error("Thời gian không hợp lệ");
       setIsLoading(false);
     } else {
-      const thumbnailUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.eventName}-thumbnail`,
-        file: values.event.thumbnailImg,
-      });
-      const posterUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.eventName}-poster`,
-        file: values.event.posterImg,
-      });
-      const proposalUrl = await uploadImageToStorage({
-        saveLocation: `events/${values.event.eventName}-proposal`,
-        file: values.event.proposal,
-      });
+      let posterUrl = data.posterImg; // Default to existing image
+      let thumbnailUrl = data.thumbnailImg; // Default to existing image
+      let proposalUrl = data.proposal; // Default to existing file
+
+      // Upload only if the image was changed
+      if (posterChanged) {
+        posterUrl = await uploadImageToStorage({
+          saveLocation: `events/${values.event.eventName}-poster`,
+          file: values.event.posterImg,
+        });
+      }
+      if (thumbnailChanged) {
+        thumbnailUrl = await uploadImageToStorage({
+          saveLocation: `events/${values.event.eventName}-thumbnail`,
+          file: values.event.thumbnailImg,
+        });
+      }
+      if (editProposal) {
+        proposalUrl = await uploadImageToStorage({
+          saveLocation: `events/${values.event.eventName}-proposal`,
+          file: values.event.proposal,
+        });
+      }
+
       updateEventMutate(
         {
           data: {
@@ -229,7 +245,11 @@ export default function UpdateForm({ data }: { data: Event }) {
                             <ImageInput
                               subtitle="Nên sử dụng hình khổ dọc"
                               placeholderImage={field.value}
-                              {...field}
+                              onChange={(file) => {
+                                onImageChange("poster"); // Track the change
+                                field.onChange(file); // Update the field's value in react-hook-form
+                              }}
+                              value={field.value}
                             />
                           </FormControl>
                           <FormMessage />
@@ -248,9 +268,13 @@ export default function UpdateForm({ data }: { data: Event }) {
                         <FormItem>
                           <FormControl>
                             <ImageInput
-                              subtitle="Nên sử dụng hình khổ ngang"
+                              subtitle="Nên sử dụng hình khổ dọc"
                               placeholderImage={field.value}
-                              {...field}
+                              onChange={(file) => {
+                                onImageChange("thumbnail");
+                                field.onChange(file);
+                              }}
+                              value={field.value}
                             />
                           </FormControl>
                           <FormMessage />

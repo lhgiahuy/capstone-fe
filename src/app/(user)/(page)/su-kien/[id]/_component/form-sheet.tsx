@@ -34,6 +34,7 @@ import OverlapDialog from "./overlap-dialog";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
+  const [isUnregistering, setIsUnregistering] = useState(false);
   const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
   const form = useForm<TypeOfRegistrationForm>({
     resolver: zodResolver(formSchema),
@@ -80,6 +81,15 @@ export default function FormSheet({ data }: { data: Event }) {
     });
     setOpen(false);
   };
+
+  const handleUnregistrationWithTimeout = () => {
+    setIsUnregistering(true);
+    setTimeout(() => {
+      handleUnregistration(); // Your original unregistration logic
+      setIsUnregistering(false);
+    }, 0); // Adjust the timeout duration as needed
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       {(() => {
@@ -135,10 +145,9 @@ export default function FormSheet({ data }: { data: Event }) {
           return (
             <Button
               size="lg"
-              variant="destructive"
-              className="text-lg w-full py-8"
-              disabled={isLoading}
-              onClick={handleUnregistration}
+              className="text-lg bg-slate-400 text-foreground hover:bg-slate-500 w-full py-8"
+              disabled={isLoading || isUnregistering}
+              onClick={handleUnregistrationWithTimeout}
             >
               Huỷ đăng ký
             </Button>

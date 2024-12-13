@@ -23,6 +23,17 @@ export async function getUser(props?: getUserProps) {
   }
 }
 
+export async function getBannedUser(props?: getUserProps) {
+  try {
+    const user = await userAxios.get("users/getListBannedUser", {
+      params: props,
+    });
+    return user.data;
+  } catch (error) {
+    console.error("Failed to fetch user data", error);
+  }
+}
+
 export async function approveVerifyUser(
   id: string,
   approved: boolean,

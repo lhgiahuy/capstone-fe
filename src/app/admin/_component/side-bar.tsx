@@ -1,13 +1,12 @@
 "use client";
 
 import {
-  Calendar,
   LayoutDashboard,
   Package2,
   User,
-  BellRing,
   Hash,
   TicketCheck,
+  UserX,
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -24,7 +23,7 @@ const containerVariants = {
     },
   },
   open: {
-    width: "18rem",
+    width: "22rem",
     transition: {
       type: "string",
       damping: 15,
@@ -56,24 +55,29 @@ export default function Sidebar() {
       link: "/admin",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
+    // {
+    //   title: "Quản lý sự kiện",
+    //   link: "/admin/quan-ly-su-kien",
+    //   icon: <Calendar className="h-5 w-5" />,
+    // },
     {
-      title: "Quản lý sự kiện",
-      link: "/admin/quan-ly-su-kien",
-      icon: <Calendar className="h-5 w-5" />,
-    },
-    {
-      title: "Quản lý người dùng",
+      title: "Danh sách tất cả người dùng",
       link: "/admin/quan-ly-nguoi-dung",
       icon: <User className="h-5 w-5" />,
     },
     {
-      title: "Thông báo",
-      link: "/admin/thong-bao",
-      icon: <BellRing className="h-5 w-5" />,
+      title: "Danh sách người dùng bị khoá",
+      link: "/admin/danh-sach-nguoi-dung-bi-khoa",
+      icon: <UserX className="h-5 w-5" />,
     },
+    // {
+    //   title: "Thông báo",
+    //   link: "/admin/thong-bao",
+    //   icon: <BellRing className="h-5 w-5" />,
+    // },
 
     {
-      title: "Thẻ sự kiện",
+      title: "Quản lý thẻ sự kiện",
       link: "/admin/quan-ly-the-su-kien",
       icon: <Hash className="h-5 w-5" />,
     },

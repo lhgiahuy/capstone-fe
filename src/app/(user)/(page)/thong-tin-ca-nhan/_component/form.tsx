@@ -137,6 +137,16 @@ export default function ProfileForm({ values }: any) {
                 <Ellipsis />
                 <p className="text-sm">Tài khoản đang xác thực</p>
               </div>
+            ) : values?.verifyStatus == "Rejected" ? (
+              <div className="flex flex-col gap-4  text-destructive items-center">
+                <div className="flex gap-2 items-center">
+                  <X />
+                  <p className="text-sm">Yêu cầu xác thực bị từ chối</p>
+                </div>
+                <p className="text-sm text-foreground text-muted-foreground">
+                  Ghi chú: {`${values?.processNote}`}
+                </p>
+              </div>
             ) : (
               <div className="flex gap-2 text-primary items-center">
                 <Check />
@@ -242,23 +252,24 @@ export default function ProfileForm({ values }: any) {
                   />
                 )}
               <div className="w-full flex justify-center gap-8 pt-8">
-                {values?.verifyStatus === "Unverified" && (
-                  <Button
-                    type="button"
-                    size={"lg"}
-                    disabled={isLoading}
-                    variant="secondary"
-                    className="w-2/3"
-                    onClick={() => router.push("/xac-thuc-tai-khoan")}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <></>
-                    )}
-                    Xác thực tài khoản
-                  </Button>
-                )}
+                {values?.verifyStatus === "Unverified" ||
+                  (values?.verifyStatus === "Rejected" && (
+                    <Button
+                      type="button"
+                      size={"lg"}
+                      disabled={isLoading}
+                      variant="secondary"
+                      className="w-2/3"
+                      onClick={() => router.push("/xac-thuc-tai-khoan")}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <></>
+                      )}
+                      Xác thực tài khoản
+                    </Button>
+                  ))}
                 <Button
                   type="submit"
                   size={"lg"}

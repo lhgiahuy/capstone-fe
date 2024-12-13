@@ -137,7 +137,7 @@ export default function EventDetail({ eventId }: { eventId: string }) {
                   <p>{data.linkEvent}</p>
                 )}
               </div>
-              {data.status === "Draft" ? (
+              {data.status === "Draft" || data.status === "Rejected" ? (
                 <div className="flex gap-4 w-full">
                   <Button variant={"secondary"} className="w-full py-8 text-lg">
                     <Link

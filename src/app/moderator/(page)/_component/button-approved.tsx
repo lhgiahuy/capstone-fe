@@ -63,14 +63,14 @@ export default function ButtonApproved({ eventId }: { eventId: string }) {
             >
               <X></X>
             </Button>
-            <h3 className="text-xl font-semibold mb-4">Nhập lý do:</h3>
+            {/* <h3 className="text-xl font-semibold mb-4">Nhập lý do:</h3> */}
             <Textarea
               id="processNote"
               value={processNote}
               onChange={(e) => setProcessNote(e.target.value)}
               className="border p-2 rounded w-full"
               rows={4}
-              placeholder="Nhập lý do..."
+              placeholder="Nhập ghi chú..."
             />
             <div className="mt-4 flex justify-end gap-2">
               <Button variant={"outline"} onClick={() => handleSubmit(false)}>
