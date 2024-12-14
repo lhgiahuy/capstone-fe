@@ -79,9 +79,9 @@ export default function EventDetail() {
 
     {
       accessorKey: "maxAttendees",
-      header: "Số người tham gia",
+      header: "Số người tham gia tối đa",
       cell: ({ row }) => {
-        return <div>{row.original.maxAttendees || "Chưa có dữ liệu"}</div>;
+        return <div>{row.original.subMaxAttendees || "Không có dữ liệu"}</div>;
       },
     },
 

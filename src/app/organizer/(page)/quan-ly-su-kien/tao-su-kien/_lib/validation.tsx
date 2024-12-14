@@ -42,11 +42,16 @@ const eventSchema = z
     message: "Vui lòng điền thông tin!",
     path: ["location"],
   });
-const createFormDetailsSchema = z.object({
-  name: stringSchema,
-  type: stringSchema,
-  options: z.string().array(),
-});
+const createFormDetailsSchema = z
+  .object({
+    name: stringSchema,
+    type: stringSchema,
+    options: z.string().array(),
+  })
+  .refine((data) => data.type !== "choice" || data.options, {
+    message: "Vui lòng điền thông tin!",
+    path: ["options"],
+  });
 
 export const formSchema = z.object({
   event: eventSchema,

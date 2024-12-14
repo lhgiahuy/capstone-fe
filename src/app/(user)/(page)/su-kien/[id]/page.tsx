@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useRouter } from "next/navigation";
+import OverlapDialog from "./_component/overlap-dialog";
 export default function EventDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { data } = useQuery<Event>({
@@ -268,6 +269,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className="flex gap-8"></div>
+      {data?.isOverlap && <OverlapDialog></OverlapDialog>}
     </div>
   );
 }

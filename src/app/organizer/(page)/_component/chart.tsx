@@ -1,9 +1,23 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+} from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { RegistrationDetail } from "@/interface/organizer-report";
 
 const chartConfig = {
@@ -11,22 +25,15 @@ const chartConfig = {
     label: "Sự kiện",
     color: "hsl(var(--primary))",
   },
+  noOfRegistered: {
+    label: "Số người đăng ký",
+    color: "hsl(var(--primary))",
+  },
+  noOfUsersAttended: {
+    label: "Số người tham gia",
+    color: "hsl(var(--secondary))",
+  },
 } satisfies ChartConfig;
-
-const monthLabels: Record<number, string> = {
-  1: "Tháng 1",
-  2: "Tháng 2",
-  3: "Tháng 3",
-  4: "Tháng 4",
-  5: "Tháng 5",
-  6: "Tháng 6",
-  7: "Tháng 7",
-  8: "Tháng 8",
-  9: "Tháng 9",
-  10: "Tháng 10",
-  11: "Tháng 11",
-  12: "Tháng 12",
-};
 
 export function Chart({
   registrationData,
@@ -41,40 +48,64 @@ export function Chart({
       </CardHeader>
       {registrationData ? (
         <CardContent className="flex-grow overflow-y-auto">
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <div className="w-full h-full mx-auto flex justify-center">
-              {/* Wrapper with max-width */}
+          <ChartContainer config={chartConfig}>
+            <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 accessibilityLayer
                 data={registrationData}
                 margin={{
-                  top: 20,
+                  top: 40,
                 }}
-                width={300} // Optional: Set a fixed width to match the max-w
-                height={400} // Optional: Adjust height as needed
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="month"
+                  dataKey="eventName"
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) => monthLabels[value] || value}
+                  tickFormatter={(value) => value.slice(0, 10)}
                 />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Bar
                   dataKey="noOfRegistered"
-                  fill="var(--color-event)"
-                  radius={8}
+                  fill="var(--color-noOfRegistered)"
+                  radius={4}
+                  barSize={60}
                 >
                   <LabelList
+                    dataKey={(entry: any) =>
+                      entry.noOfRegistered !== 0 ? entry.noOfRegistered : ""
+                    }
                     position="top"
                     offset={12}
                     className="fill-foreground"
-                    fontSize={12}
+                    fontSize={16}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="noOfUsersAttended"
+                  fill="var(--color-noOfUsersAttended)"
+                  radius={4}
+                  barSize={60}
+                >
+                  <LabelList
+                    dataKey={(entry: any) =>
+                      entry.noOfUsersAttended !== 0
+                        ? entry.noOfUsersAttended
+                        : ""
+                    }
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={16}
                   />
                 </Bar>
               </BarChart>
-            </div>
+            </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
       ) : (

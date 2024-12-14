@@ -4,10 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getReport } from "@/action/report";
 import { OverviewReport } from "@/interface/organizer-report";
 import { Chart } from "./_component/chart";
-import { DataTable } from "@/components/table/data-table";
-import { ColumnDef } from "@tanstack/react-table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, getFirstLetterOfName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { format, toDate } from "date-fns";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
@@ -39,28 +36,6 @@ export default function Dashboard() {
     noOfUsersAttended: data?.noOfUsersAttended,
     noOfUsersNotAttended: data?.noOfUsersNotAttended,
   };
-  const hideColumns = ["isDeleted", "deletedAt"];
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "username",
-      header: "Tên người dùng",
-      cell: ({ row }) => (
-        <div className="w-64 flex gap-4 items-center">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
-            <AvatarFallback>
-              {getFirstLetterOfName(row.original.username)}
-            </AvatarFallback>
-          </Avatar>
-          <p className="line-clamp-2">{row.original.username}</p>
-        </div>
-      ),
-    },
-    // {
-    //   accessorKey: "noOfEvents",
-    //   header: "Số sự kiện đã tham gia",
-    // },
-  ];
   const handleStartDateSelect = ({ fromDate }: { fromDate: Date }) => {
     addParam({
       fromDate: fromDate.toISOString(),
@@ -136,14 +111,14 @@ export default function Dashboard() {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={toDate(fromDate)}
+                selected={toDate(endDate)}
                 onSelect={(value) => {
                   if (value) {
                     handleEndDateSelect({ endDate: value });
                   }
                 }}
                 initialFocus
-                today={toDate(fromDate)}
+                today={toDate(endDate)}
               />
             </PopoverContent>
           </Popover>
@@ -153,7 +128,7 @@ export default function Dashboard() {
         <ModeratorOverview {...overviewData}></ModeratorOverview>
         <div className="flex h-full w-full justify-between gap-4">
           <Chart registrationData={data?.registrationDetails}></Chart>
-          <div className="flex flex-col gap-4 w-full max-w-[32rem]">
+          {/* <div className="flex flex-col gap-4 w-full">
             <h3 className="text-primary">
               Danh sách người dùng hay tham gia sự kiện
             </h3>
@@ -164,7 +139,7 @@ export default function Dashboard() {
               totalPages={data?.totalPages}
               noFilter
             />
-          </div>
+          </div> */}
           {/* <div className="flex flex-col gap-4">
             <h3 className="text-primary">
               Danh sách người dùng không tham gia sự kiện

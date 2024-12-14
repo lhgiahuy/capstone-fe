@@ -22,6 +22,7 @@ export interface Event {
   isOverlap: boolean;
   isReviewed: boolean;
   canReview: boolean;
+  subMaxAttendees: number;
   form: [
     {
       name: string;

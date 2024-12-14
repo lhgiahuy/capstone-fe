@@ -30,7 +30,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMe } from "@/action/user";
 import { registerEvent, submitForm, unRegisterEvent } from "@/action/event";
 import ReviewForm from "./review-form";
-import OverlapDialog from "./overlap-dialog";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
@@ -101,13 +100,11 @@ export default function FormSheet({ data }: { data: Event }) {
           isNotCompleted &&
           !data.isRegistered &&
           data.form.length > 0;
-        const shouldRegisterDisabled = !isVerified || isPending;
+        const shouldRegisterDisabled =
+          !isVerified || (isPending && !data.isRegistered);
         const canUnregister =
           data.isRegistered && !data.isReviewed && isNotCompleted;
-        const isOngoing = data.status === "InProgress";
         const isEnded = data.status === "Completed";
-        const hasOverlap =
-          data.isOverlap && isNotCompleted && !data.isRegistered;
 
         if (canRegister) {
           return (
@@ -154,20 +151,9 @@ export default function FormSheet({ data }: { data: Event }) {
           );
         }
 
-        if (hasOverlap) {
-          return <OverlapDialog id={data.eventId} />;
-        }
-
-        if (isOngoing) {
-          return (
-            <Button
-              size="lg"
-              className="text-lg py-8 w-full text-foreground hover:bg-green-600 bg-green-600"
-            >
-              Đang diễn ra
-            </Button>
-          );
-        }
+        // if (hasOverlap) {
+        //   return <OverlapDialog id={data.eventId} />;
+        // }
 
         return (
           <Button
