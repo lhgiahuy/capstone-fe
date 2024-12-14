@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -145,7 +145,9 @@ export default function CreateForm() {
           posterImg: posterUrl,
           thumbnailImg: thumbnailUrl,
           eventTags: values.event.eventTags,
-          maxAttendees: parseInt(values.event.maxAttendees || "0"),
+          maxAttendees: isNaN(parseInt(values.event.maxAttendees || ""))
+            ? null
+            : parseInt(values.event.maxAttendees || "0"),
           createFormDetailsReq: values.createFormDetailsReq,
           proposal: proposalUrl,
         },
@@ -305,7 +307,7 @@ export default function CreateForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Số lượng người tham gia (Có thể bỏ trống)
+                    Số lượng người tham gia tối đa (Có thể bỏ trống)
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="Số lượng" {...field} />
@@ -952,6 +954,11 @@ function AnswersFieldArray({
     control,
     name: `createFormDetailsReq.${parentIndex}.options`,
   });
+  useEffect(() => {
+    if (fields.length === 0) {
+      append("");
+    }
+  }, [fields, append]);
   const addOption = () => {
     const lastAnswer =
       form.getValues(

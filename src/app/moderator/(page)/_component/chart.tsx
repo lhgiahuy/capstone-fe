@@ -3,11 +3,16 @@
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { RegistrationDetail } from "@/interface/organizer-report";
 
 const chartConfig = {
-  event: {
+  noOfRegistered: {
     label: "Sự kiện",
     color: "hsl(var(--primary))",
   },
@@ -34,47 +39,49 @@ export function Chart({
   registrationData?: RegistrationDetail[];
 }) {
   return (
-    <Card className="min-h-[32rem] min-w-[32rem] w-full flex flex-col">
+    <Card className=" w-full flex flex-col">
       <CardHeader>
-        <CardTitle>Sự kiện</CardTitle>
+        <CardTitle>Tổng số sự kiện</CardTitle>
         {/* <CardDescription>Tháng 1, 2024 - Tháng 1, 2025 </CardDescription> */}
       </CardHeader>
       {registrationData ? (
         <CardContent className="flex-grow overflow-y-auto">
           <ChartContainer config={chartConfig} className="h-full w-full">
-            <div className="w-full h-full mx-auto flex justify-center">
-              {/* Wrapper with max-width */}
-              <BarChart
-                accessibilityLayer
-                data={registrationData}
-                margin={{
-                  top: 20,
-                }}
-                width={300} // Optional: Set a fixed width to match the max-w
-                height={400} // Optional: Adjust height as needed
+            <BarChart
+              accessibilityLayer
+              data={registrationData}
+              margin={{
+                top: 40,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => monthLabels[value] || value}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel indicator="dashed" />}
+              />
+              <Bar
+                dataKey="noOfRegistered"
+                fill="var(--color-noOfRegistered)"
+                radius={8}
               >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => monthLabels[value] || value}
+                <LabelList
+                  dataKey={(entry: any) =>
+                    entry.noOfRegistered !== 0 ? entry.noOfRegistered : ""
+                  }
+                  position="top"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={16}
                 />
-                <Bar
-                  dataKey="noOfRegistered"
-                  fill="var(--color-event)"
-                  radius={8}
-                >
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="fill-foreground"
-                    fontSize={12}
-                  />
-                </Bar>
-              </BarChart>
-            </div>
+              </Bar>
+            </BarChart>
           </ChartContainer>
         </CardContent>
       ) : (

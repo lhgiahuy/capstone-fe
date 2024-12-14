@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -1004,6 +1004,11 @@ function AnswersFieldArray({
     control,
     name: `createFormDetailsReq.${parentIndex}.options`,
   });
+  useEffect(() => {
+    if (fields.length === 0) {
+      append("");
+    }
+  }, [fields, append]);
   const addOption = () => {
     const lastAnswer =
       form.getValues(

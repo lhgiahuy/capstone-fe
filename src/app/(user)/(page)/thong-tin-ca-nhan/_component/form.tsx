@@ -252,24 +252,22 @@ export default function ProfileForm({ values }: any) {
                   />
                 )}
               <div className="w-full flex justify-center gap-8 pt-8">
-                {values?.verifyStatus === "Unverified" ||
-                  (values?.verifyStatus === "Rejected" && (
-                    <Button
-                      type="button"
-                      size={"lg"}
-                      disabled={isLoading}
-                      variant="secondary"
-                      className="w-2/3"
-                      onClick={() => router.push("/xac-thuc-tai-khoan")}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <></>
-                      )}
-                      Xác thực tài khoản
-                    </Button>
-                  ))}
+                {(values?.verifyStatus === "Unverified" ||
+                  values?.verifyStatus === "Rejected") && (
+                  <Button
+                    type="button"
+                    size="lg"
+                    disabled={isLoading}
+                    variant="secondary"
+                    className="w-2/3"
+                    onClick={() => router.push("/xac-thuc-tai-khoan")}
+                  >
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Xác thực tài khoản
+                  </Button>
+                )}
                 <Button
                   type="submit"
                   size={"lg"}
