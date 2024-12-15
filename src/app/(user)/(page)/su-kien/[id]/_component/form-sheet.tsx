@@ -94,7 +94,6 @@ export default function FormSheet({ data }: { data: Event }) {
       {(() => {
         const isVerified = user?.verifyStatus === "Verified";
         const isNotCompleted = data.status !== "Completed";
-        const isNotInProgress = data.status !== "InProgress";
         const canRegister =
           isVerified &&
           isNotCompleted &&
@@ -116,7 +115,7 @@ export default function FormSheet({ data }: { data: Event }) {
           );
         }
 
-        if (isNotCompleted && isNotInProgress && !data.isRegistered) {
+        if (isNotCompleted && !data.isRegistered) {
           return (
             <Button
               size="lg"
