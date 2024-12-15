@@ -81,7 +81,7 @@ export default function UpdateForm({ data }: { data: Event }) {
         endTime: formatTo12HourTime(data.endTime),
         eventLink: data.linkEvent,
         locationType: data.location !== "" ? "offline" : "online",
-        maxAttendees: data.maxAttendees.toString(),
+        maxAttendees: data?.maxAttendees ? data?.maxAttendees.toString() : "",
       },
     },
   });

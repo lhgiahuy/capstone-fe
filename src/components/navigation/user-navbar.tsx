@@ -491,6 +491,14 @@ export default function UserNavBar() {
           </div>
         </div>
       )}
+      {user?.isBanned && user && (
+        <div className="py-4 bg-destructive">
+          <div className="container text-accent">
+            Tài khoản của bạn đã bị tạm khóa do vượt quá số lần tham gia sự kiện
+            quy định.
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
