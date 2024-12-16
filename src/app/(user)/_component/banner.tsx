@@ -8,6 +8,8 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 
 const images = [
+  "/images/banner-4.jpg",
+
   "/images/banner-3.jpg",
   "/images/banner-1.jpg",
   "/images/banner-2.jpg",

@@ -142,6 +142,14 @@ export default function Page({ params }: { params: { id: string } }) {
         );
       },
     },
+
+    {
+      accessorKey: "studentId",
+      header: "MSSV",
+      cell: ({ row }) => {
+        return <div>{row.original.studentId || "Không có dữ liệu"}</div>;
+      },
+    },
     {
       accessorKey: "phoneNumber",
       header: ({ column }) => {

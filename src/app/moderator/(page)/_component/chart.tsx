@@ -1,11 +1,20 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+} from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -13,8 +22,12 @@ import { RegistrationDetail } from "@/interface/organizer-report";
 
 const chartConfig = {
   noOfRegistered: {
-    label: "Sự kiện",
+    label: "Số lượt đăng ký",
     color: "hsl(var(--primary))",
+  },
+  noOfEvents: {
+    label: "Số sự kiện",
+    color: "hsl(var(--secondary))",
   },
 } satisfies ChartConfig;
 
@@ -46,42 +59,62 @@ export function Chart({
       </CardHeader>
       {registrationData ? (
         <CardContent className="flex-grow overflow-y-auto">
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <BarChart
-              accessibilityLayer
-              data={registrationData}
-              margin={{
-                top: 40,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => monthLabels[value] || value}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel indicator="dashed" />}
-              />
-              <Bar
-                dataKey="noOfRegistered"
-                fill="var(--color-noOfRegistered)"
-                radius={8}
+          <ChartContainer config={chartConfig}>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                accessibilityLayer
+                data={registrationData}
+                margin={{
+                  top: 40,
+                }}
               >
-                <LabelList
-                  dataKey={(entry: any) =>
-                    entry.noOfRegistered !== 0 ? entry.noOfRegistered : ""
-                  }
-                  position="top"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={16}
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => monthLabels[value] || value}
                 />
-              </Bar>
-            </BarChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel indicator="dashed" />}
+                />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar
+                  dataKey="noOfRegistered"
+                  fill="var(--color-noOfRegistered)"
+                  radius={4}
+                  barSize={50}
+                >
+                  <LabelList
+                    dataKey={(entry: any) =>
+                      entry.noOfRegistered !== 0 ? entry.noOfRegistered : ""
+                    }
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={16}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="noOfEvents"
+                  fill="var(--color-noOfEvents)"
+                  radius={4}
+                  barSize={50}
+                >
+                  <LabelList
+                    dataKey={(entry: any) =>
+                      entry.noOfEvents !== 0 ? entry.noOfEvents : ""
+                    }
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={16}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
       ) : (

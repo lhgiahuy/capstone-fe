@@ -109,7 +109,9 @@ export default function FormSheet({ data }: { data: Event }) {
           return (
             <SheetTrigger asChild>
               <Button size="lg" className="text-md py-8 w-full">
-                Đăng ký
+                {data.maxAttendees
+                  ? `Đăng ký (còn ${data.maxAttendees}/${data.subMaxAttendees} lượt đăng ký)`
+                  : "Đăng ký"}
               </Button>
             </SheetTrigger>
           );
@@ -123,7 +125,9 @@ export default function FormSheet({ data }: { data: Event }) {
               disabled={shouldRegisterDisabled}
               onClick={handleRegistration}
             >
-              Đăng ký
+              {data.maxAttendees
+                ? `Đăng ký (còn ${data.maxAttendees}/${data.subMaxAttendees} lượt đăng ký)`
+                : "Đăng ký"}
             </Button>
           );
         }
