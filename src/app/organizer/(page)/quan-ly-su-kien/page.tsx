@@ -58,6 +58,7 @@ export default function EventTable() {
     parseInt(searchParams.get("PageNumber")?.toString() || "1", 10) || 1;
   const query = useQueryClient();
   const [openDialog, setOpenDialog] = useState("");
+  const [eventId, setEventId] = useState("");
   const { mutate: deleteEventMutation } = useMutation({
     mutationFn: (id: string) => deleteEvent(id),
     onSuccess: () =>
@@ -215,7 +216,12 @@ export default function EventTable() {
                     </DropdownMenuItem>
                   )}
                   {row.original.status === "Upcoming" && (
-                    <DropdownMenuItem onClick={() => setOpenDialog("cancel")}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setOpenDialog("cancel"),
+                          setEventId(row.original.eventId);
+                      }}
+                    >
                       <AlertDialogTrigger asChild>
                         <p>Huỷ sự kiện</p>
                       </AlertDialogTrigger>
@@ -233,12 +239,21 @@ export default function EventTable() {
                   )}
                   {(row.original.status === "Draft" ||
                     row.original.status === "Rejected") && (
-                    <DropdownMenuItem onClick={() => setOpenDialog("delete")}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setOpenDialog("delete"),
+                          setEventId(row.original.eventId);
+                      }}
+                    >
                       <p>Xoá sự kiện</p>
                     </DropdownMenuItem>
                   )}
                   {row.original.status === "Rejected" && (
-                    <DropdownMenuItem onClick={() => setOpenDialog("note")}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setOpenDialog("note"), setEventId(row.original.eventId);
+                      }}
+                    >
                       <AlertDialogTrigger asChild>
                         <p>Xem ghi chú</p>
                       </AlertDialogTrigger>
@@ -265,9 +280,7 @@ export default function EventTable() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Đóng</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleCancel(row.original.eventId)}
-                    >
+                    <AlertDialogAction onClick={() => handleCancel(eventId)}>
                       Huỷ
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -286,9 +299,7 @@ export default function EventTable() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Đóng</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleDelete(row.original.eventId)}
-                    >
+                    <AlertDialogAction onClick={() => handleDelete(eventId)}>
                       Xoá
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -307,7 +318,7 @@ export default function EventTable() {
                     <AlertDialogAction
                       onClick={() =>
                         router.push(
-                          `/organizer/quan-ly-su-kien/chinh-sua-su-kien/${row.original.eventId}`
+                          `/organizer/quan-ly-su-kien/chinh-sua-su-kien/${eventId}`
                         )
                       }
                     >
