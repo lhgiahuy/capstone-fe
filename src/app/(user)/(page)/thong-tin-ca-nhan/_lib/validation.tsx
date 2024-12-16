@@ -4,6 +4,7 @@ import { z } from "zod";
 export const formSchema = z.object({
   username: stringSchema,
   avatarUrl: stringSchema,
+  studentId: z.string().optional(),
   phoneNumber: z.string(),
   email: z.string(),
   cardUrl: z.string(),

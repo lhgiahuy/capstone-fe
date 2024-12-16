@@ -33,6 +33,7 @@ import ReviewForm from "./review-form";
 
 export default function FormSheet({ data }: { data: Event }) {
   const [open, setOpen] = useState(false); // State to manage Sheet visibility
+  const [isUnregistering, setIsUnregistering] = useState(false);
   const { data: user } = useQuery({ queryKey: ["Me"], queryFn: getMe });
   const form = useForm<TypeOfRegistrationForm>({
     resolver: zodResolver(formSchema),
@@ -80,52 +81,89 @@ export default function FormSheet({ data }: { data: Event }) {
     setOpen(false);
   };
 
+  const handleUnregistrationWithTimeout = () => {
+    setIsUnregistering(true);
+    setTimeout(() => {
+      handleUnregistration(); // Your original unregistration logic
+      setIsUnregistering(false);
+    }, 0); // Adjust the timeout duration as needed
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {user?.verifyStatus === "Verified" &&
-      data.status !== "Completed" &&
-      !data.isRegistered &&
-      data.form.length > 0 ? (
-        <SheetTrigger asChild>
-          <Button size="lg" className="text-md py-8 w-full">
-            Đăng ký
-          </Button>
-        </SheetTrigger>
-      ) : data.status === "Completed" && !data.isRegistered ? (
-        <Button
-          size="lg"
-          className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
-        >
-          Đã kết thúc
-        </Button>
-      ) : data.isRegistered && data.status === "Completed" ? (
-        <ReviewForm id={data.eventId}></ReviewForm>
-      ) : data.isRegistered && data.status !== "Completed" ? (
-        <Button
-          size="lg"
-          variant={"destructive"}
-          className="text-lg w-full py-8"
-          disabled={isLoading}
-          onClick={handleUnregistration}
-        >
-          Huỷ đăng ký
-        </Button>
-      ) : (
-        <Button
-          size="lg"
-          className="text-lg w-full py-8"
-          disabled={isPending || !(user?.verifyStatus === "Verified")}
-          onClick={handleRegistration}
-        >
-          Đăng ký
-        </Button>
-      )}
+      {(() => {
+        const isVerified = user?.verifyStatus === "Verified";
+        const isNotCompleted = data.status !== "Completed";
+        const canRegister =
+          isVerified &&
+          isNotCompleted &&
+          !data.isRegistered &&
+          data.form.length > 0;
+        const shouldRegisterDisabled =
+          !isVerified || (isPending && !data.isRegistered);
+        const canUnregister =
+          data.isRegistered && !data.isReviewed && isNotCompleted;
+        const isEnded = data.status === "Completed";
 
-      {/* <SheetTrigger asChild>
-        <Button size="lg" className="text-md py-8">
-          Đăng ký
-        </Button>
-      </SheetTrigger> */}
+        if (canRegister) {
+          return (
+            <SheetTrigger asChild>
+              <Button size="lg" className="text-md py-8 w-full">
+                Đăng ký
+              </Button>
+            </SheetTrigger>
+          );
+        }
+
+        if (isNotCompleted && !data.isRegistered) {
+          return (
+            <Button
+              size="lg"
+              className="text-lg w-full py-8"
+              disabled={shouldRegisterDisabled}
+              onClick={handleRegistration}
+            >
+              Đăng ký
+            </Button>
+          );
+        }
+
+        if (
+          data.isRegistered &&
+          isEnded &&
+          !data.isReviewed &&
+          data.canReview
+        ) {
+          return <ReviewForm id={data.eventId}></ReviewForm>;
+        }
+
+        if (canUnregister && !isEnded) {
+          return (
+            <Button
+              size="lg"
+              className="text-lg bg-slate-400 text-foreground hover:bg-slate-500 w-full py-8"
+              disabled={isLoading || isUnregistering}
+              onClick={handleUnregistrationWithTimeout}
+            >
+              Huỷ đăng ký
+            </Button>
+          );
+        }
+
+        // if (hasOverlap) {
+        //   return <OverlapDialog id={data.eventId} />;
+        // }
+
+        return (
+          <Button
+            size="lg"
+            className="text-lg py-8 w-full text-foreground hover:bg-orange-600 bg-orange-600"
+          >
+            Đã kết thúc
+          </Button>
+        );
+      })()}
+
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Form đăng ký sự kiện</SheetTitle>
@@ -139,7 +177,6 @@ export default function FormSheet({ data }: { data: Event }) {
               >
                 {data.form.map((item, index) => (
                   <div className="flex flex-col gap-4" key={index}>
-                    {/* <h2 className="text-xl">{`Câu hỏi ${index + 1}: `}</h2> */}
                     <FormField
                       control={form.control}
                       name={`data.${index}.question`}
@@ -176,20 +213,20 @@ export default function FormSheet({ data }: { data: Event }) {
                                 value={field.value}
                                 onValueChange={field.onChange}
                               >
-                                {item.options.map((item, index) => (
+                                {item.options.map((option, i) => (
                                   <div
-                                    key={index}
+                                    key={i}
                                     className="flex items-center space-x-2"
                                   >
                                     <RadioGroupItem
-                                      value={item}
-                                      id={`r${index}`}
+                                      value={option}
+                                      id={`r${i}`}
                                     />
                                     <Label
-                                      htmlFor={`r${index}`}
+                                      htmlFor={`r${i}`}
                                       className="text-md"
                                     >
-                                      {item}
+                                      {option}
                                     </Label>
                                   </div>
                                 ))}

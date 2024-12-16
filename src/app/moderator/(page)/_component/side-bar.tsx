@@ -1,11 +1,11 @@
 "use client";
 
 import {
+  BellRing,
   Calendar,
   LayoutDashboard,
   Package2,
   User,
-  BellRing,
 } from "lucide-react";
 import { motion, useAnimationControls } from "framer-motion";
 import Link from "next/link";
@@ -50,7 +50,7 @@ export default function Sidebar() {
 
   const menu = [
     {
-      title: "Bảng số liệu",
+      title: "Dashboard",
       link: "/moderator",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
@@ -65,8 +65,8 @@ export default function Sidebar() {
       icon: <User className="h-5 w-5" />,
     },
     {
-      title: "Thông báo",
-      link: "/admin/thong-bao",
+      title: "Gửi thông báo",
+      link: "/moderator/thong-bao",
       icon: <BellRing className="h-5 w-5" />,
     },
     // {

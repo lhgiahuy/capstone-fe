@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import LoginForm from "./_component/form";
 import { getServerAuthSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import LoginForm from "./_component/form";
 
 export const metadata: Metadata = {
   title: "Đăng nhập",

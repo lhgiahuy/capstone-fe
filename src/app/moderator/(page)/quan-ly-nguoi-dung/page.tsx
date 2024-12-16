@@ -17,39 +17,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-} from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
 import NavBar from "../_component/moderator-navbar";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 export default function ManagementUser() {
-  const [statusFilter, setStatusFilter] = useState<string>("Student");
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
+  const role = searchParams.get("role") || "Student";
+  const verified = searchParams.get("verified")?.toString() || "UnderVerify";
+  const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [processNote, setProcessNote] = useState("");
-  const { data, isPending } = useQuery({
-    queryKey: ["user", currentPage, statusFilter],
-    queryFn: () => getUser({ PageNumber: currentPage, roleName: statusFilter }),
+  const { data } = useQuery({
+    queryKey: ["user", currentPage, role, verified, searchKeyword],
+    queryFn: () =>
+      getUser({
+        PageNumber: currentPage,
+        roleName: role,
+        Verified: verified,
+        Username: searchKeyword,
+      }),
   });
   const query = useQueryClient();
   const approveMutation = useMutation({
@@ -67,26 +62,6 @@ export default function ManagementUser() {
       query.invalidateQueries({ queryKey: ["user"] });
     },
   });
-  const renderPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= data?.totalPages; i++) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href={`${pathname}?${new URLSearchParams({
-              ...Object.fromEntries(searchParamsPaging),
-              PageNumber: i.toString(),
-            }).toString()}`}
-            isActive={i == currentPage}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    return pages;
-  };
-  if (!data) return <></>;
 
   const columns: ColumnDef<any>[] = [
     {
@@ -123,51 +98,32 @@ export default function ManagementUser() {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
     },
-    {
-      accessorKey: "cardUrl",
-      header: "Thẻ sinh viên",
-      cell: ({ row }) => <a href={row.original.cardUrl}>View Card</a>, // Example to render link
-    },
+
     {
       accessorKey: "verified",
       header: "Xác thực",
       cell: ({ row }) => (
         <Badge
           className={`${
-            row.original.verified === 2
+            row.original.verified === "Verified"
               ? "bg-green-400"
+              : row.original.verified === "UnderVerify"
+              ? "bg-orange-600 text-foreground"
               : "bg-red-800 text-foreground"
           }`}
-        >{`${row.original.verified === 2 ? "Đã xác thực" : "Chưa xác thực"}
+        >{`${
+          row.original.verified === "Verified"
+            ? "Đã xác thực"
+            : row.original.verified === "UnderVerify"
+            ? "Đang chờ xác thực"
+            : "Chưa xác thực"
+        }
 `}</Badge>
       ),
     },
     {
       accessorKey: "roleName",
-      header: () => {
-        return (
-          <div className="flex items-center">
-            <div>Vai trò</div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8">
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Chọn role</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setStatusFilter("Student")}>
-                  Student
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("Organizer")}>
-                  Organizer
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      },
+      header: "Vai trò",
       cell: ({ row }) => (
         <Badge
           className={cn(
@@ -213,6 +169,7 @@ export default function ManagementUser() {
       id: "actions",
       cell: ({ row }) => {
         const user = row.original;
+        if (user.verified !== "UnderVerify") return <></>;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -229,14 +186,20 @@ export default function ManagementUser() {
                 Sao chép email người dùng
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedUser(user);
-                  setIsSheetOpen(true);
-                }}
-              >
-                Xác thực người dùng
+              {row.original.verified === "UnderVerify" && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setIsSheetOpen(true);
+                  }}
+                >
+                  Xác thực người dùng
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem>
+                <Link href={row.original.cardUrl}>
+                  Xem thẻ sinh viên/nhân viên
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -247,7 +210,29 @@ export default function ManagementUser() {
   ];
 
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
+  const selectOptions = [
+    {
+      option: [
+        { name: "Tất cả", value: "All" },
 
+        { name: "Đã xác thực", value: "Verified" },
+        { name: "Chưa xác thực", value: "Unverified" },
+        { name: "Đang chờ xác thực", value: "UnderVerify" },
+      ],
+      placeholder: "Xác thực",
+      title: "verified",
+      defaultValue: verified,
+    },
+    {
+      option: [
+        { name: "Sinh viên", value: "student" },
+        { name: "Organizer", value: "organizer" },
+      ],
+      placeholder: "Vai trò",
+      title: "role",
+      defaultValue: role,
+    },
+  ];
   return (
     <>
       <NavBar
@@ -259,15 +244,13 @@ export default function ManagementUser() {
         ]}
       />
       <div className="">
-        {isPending ? (
-          <></>
-        ) : (
-          <DataTable
-            hideColumns={hideColumns}
-            columns={columns}
-            data={data.items}
-          />
-        )}
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data?.items}
+          totalPages={data?.totalPages}
+          selectOptions={selectOptions}
+        />
         <Sheet open={isSheetOpen} onOpenChange={(open) => setIsSheetOpen(open)}>
           <SheetContent className="space-y-6">
             <SheetHeader>Phê duyệt người dùng</SheetHeader>
@@ -275,7 +258,7 @@ export default function ManagementUser() {
             <div className="space-y-4">
               <Textarea
                 className="w-full p-2 border rounded"
-                placeholder="Ghi lý do phê duyệt"
+                placeholder="Ghi chú..."
                 value={processNote}
                 rows={4}
                 onChange={(e) => setProcessNote(e.target.value)}
@@ -312,51 +295,6 @@ export default function ManagementUser() {
             </div>
           </SheetContent>
         </Sheet>
-        <Pagination>
-          <PaginationContent className="items-center mt-3">
-            <PaginationItem>
-              <Button
-                onClick={() =>
-                  router.replace(
-                    `${pathname}?${new URLSearchParams({
-                      ...Object.fromEntries(searchParamsPaging),
-                      PageNumber: `${(
-                        parseInt(currentPage.toString()) - 1
-                      ).toString()}`,
-                    }).toString()}`
-                  )
-                }
-                disabled={currentPage == 1}
-                size="icon"
-                variant="ghost"
-              >
-                <ChevronLeft />
-              </Button>
-            </PaginationItem>
-            {renderPageNumbers()}
-            <PaginationItem>
-              <Button
-                onClick={() =>
-                  router.push(
-                    `${pathname}?${new URLSearchParams({
-                      ...Object.fromEntries(searchParamsPaging),
-                      PageNumber: `${(
-                        parseInt(currentPage.toString()) + 1
-                      ).toString()}`,
-                    }).toString()}`
-                  )
-                }
-                disabled={currentPage == data?.totalPages}
-                size="icon"
-                variant="ghost"
-              >
-                <div className="flex gap-2 items-center">
-                  <ChevronRight />
-                </div>
-              </Button>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       </div>
     </>
   );

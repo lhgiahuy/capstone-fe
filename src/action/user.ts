@@ -1,20 +1,33 @@
 import { TypeOfSignUpForm } from "@/app/(auth)/dang-ky/_lib/validation";
 import { TypeOfLoginForm } from "@/app/(auth)/dang-nhap/_lib/validation";
+import { TypeOfOrganizerSignUpForm } from "@/app/organizer/(auth)/dang-ky/_lib/validation";
 import { userAxios } from "@/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
 export interface getUserProps {
-  // SearchKeyword?: string;
+  Username?: string;
   PageSize?: number;
   PageNumber?: number;
   isDescending?: boolean;
   orderBy?: string;
   roleName?: string;
+  Verified?: string;
 }
 
 export async function getUser(props?: getUserProps) {
   try {
     const user = await userAxios.get("/users", { params: props });
+    return user.data;
+  } catch (error) {
+    console.error("Failed to fetch user data", error);
+  }
+}
+
+export async function getBannedUser(props?: getUserProps) {
+  try {
+    const user = await userAxios.get("users/getListBannedUser", {
+      params: props,
+    });
     return user.data;
   } catch (error) {
     console.error("Failed to fetch user data", error);
@@ -48,7 +61,7 @@ export async function signUpStudent(data: TypeOfSignUpForm) {
   return await userAxios.post("/users/register", { ...data, role: "student" });
 }
 
-export async function signUpOrganizer(data: TypeOfSignUpForm) {
+export async function signUpOrganizer(data: TypeOfOrganizerSignUpForm) {
   return await userAxios.post("/users/register", {
     ...data,
     role: "organizer",
@@ -64,6 +77,7 @@ export async function updateInfo(data: any) {
     username: data.username,
     avatarUrl: data.avatarUrl,
     phoneNumber: data.phoneNumber,
+    studentId: data.studentId,
   });
 }
 
@@ -94,4 +108,47 @@ export async function getRegisteredEvent(
   } catch (error) {
     console.error("Failed to fetch event data", error);
   }
+}
+
+export async function verifyEmail(userId: string, token: string) {
+  try {
+    const res = await userAxios.get(
+      `/users/verify-email?userId=${userId}&token=${token}`
+    );
+    return res;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function getUserNotification() {
+  try {
+    const res = await userAxios.get(`/users/notifications`);
+    return res.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
+export async function readNotification(notiId: string) {
+  return await userAxios.put(`/notifications/${notiId}/read`);
+}
+
+export async function forgotPassword(email: string) {
+  return await userAxios.post(`/users/forgot-password`, { email: email });
+}
+
+export async function resetPassword({
+  userId,
+  token,
+  password,
+}: {
+  userId: string;
+  token: string;
+  password: string;
+}) {
+  return await userAxios.post(
+    `/users/reset-password?userId=${userId}&token=${token}`,
+    password
+  );
 }

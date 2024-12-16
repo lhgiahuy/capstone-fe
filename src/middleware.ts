@@ -17,7 +17,8 @@ export default withAuth(
     }
     if (
       !pathname.startsWith("/moderator") &&
-      req.nextauth.token?.roleName === "moderator"
+      req.nextauth.token?.roleName === "moderator" &&
+      pathname !== "/thong-tin-ca-nhan"
     ) {
       url.pathname = "/moderator";
       return NextResponse.redirect(url);
@@ -27,10 +28,13 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        if (pathname.startsWith("/admin")) {
+        if (pathname.startsWith("/admin") && pathname !== "/admin/dang-nhap") {
           return token?.roleName === "admin";
         }
-        if (pathname.startsWith("/moderator")) {
+        if (
+          pathname.startsWith("/moderator") &&
+          pathname !== "/admin/dang-nhap"
+        ) {
           return token?.roleName === "moderator";
         }
         if (

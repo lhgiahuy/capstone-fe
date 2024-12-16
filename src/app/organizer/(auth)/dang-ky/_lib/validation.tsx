@@ -8,6 +8,7 @@ export const formSchema = z
     username: stringSchema,
     email: stringSchema.email({ message: "Email không hợp lệ!" }),
     phoneNumber: z.string().optional(),
+    studentId: z.string().optional(),
     password: stringSchema.regex(
       passwordRegex,
       "Mật khẩu phải chứa ít nhất một chữ cái viết hoa, một chữ cái viết thường, một chữ số và một ký tự đặc biệt."
@@ -19,4 +20,4 @@ export const formSchema = z
     path: ["confirmPassword"],
   });
 
-export type TypeOfSignUpForm = z.infer<typeof formSchema>;
+export type TypeOfOrganizerSignUpForm = z.infer<typeof formSchema>;

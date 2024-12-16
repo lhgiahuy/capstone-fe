@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,9 +76,9 @@ export default function CreateForm() {
         location: "",
         eventLink: "",
         passwordMeeting: "",
-        date: new Date(),
-        startDate: new Date(),
-        endDate: new Date(),
+        date: new Date(new Date().setDate(new Date().getDate() + 7)),
+        startDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+        endDate: new Date(new Date().setDate(new Date().getDate() + 8)),
         startTime: "05:00",
         endTime: "08:00",
       },
@@ -145,19 +145,21 @@ export default function CreateForm() {
           posterImg: posterUrl,
           thumbnailImg: thumbnailUrl,
           eventTags: values.event.eventTags,
-          maxAttendee: parseInt(values.event.maxAttendees || "0"),
+          maxAttendees: isNaN(parseInt(values.event.maxAttendees || ""))
+            ? null
+            : parseInt(values.event.maxAttendees || "0"),
           createFormDetailsReq: values.createFormDetailsReq,
           proposal: proposalUrl,
         },
         {
           onSuccess: () => {
-            toast("Tạo event thành công"),
+            toast("Tạo sự kiện thành công"),
               setIsLoading(false),
               router.push("/organizer/quan-ly-su-kien?status=Draft");
           },
           onError: () => {
             setIsLoading(false);
-            toast.error("Tạo event thất bại");
+            toast.error("Tạo sự kiện thất bại");
           },
         }
       );
@@ -305,7 +307,7 @@ export default function CreateForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Số lượng người tham gia (Có thể bỏ trống)
+                    Số lượng người tham gia tối đa (Có thể bỏ trống)
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="Số lượng" {...field} />
@@ -403,7 +405,7 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
                                           <span>Chọn ngày</span>
                                         )}
@@ -422,10 +424,13 @@ export default function CreateForm() {
                                       disabled={(date) =>
                                         date <
                                         new Date(
-                                          new Date().setHours(0, 0, 0, 0)
+                                          new Date().setDate(
+                                            new Date().getDate() + 6
+                                          )
                                         )
                                       }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>
@@ -539,9 +544,9 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
-                                          <span>Pick a date</span>
+                                          <span>Chọn ngày</span>
                                         )}
                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                       </Button>
@@ -555,8 +560,16 @@ export default function CreateForm() {
                                       mode="single"
                                       selected={field.value}
                                       onSelect={field.onChange}
-                                      disabled={(date) => date < new Date()}
+                                      disabled={(date) =>
+                                        date <
+                                        new Date(
+                                          new Date().setDate(
+                                            new Date().getDate() + 6
+                                          )
+                                        )
+                                      }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>
@@ -624,7 +637,7 @@ export default function CreateForm() {
                                         )}
                                       >
                                         {field.value ? (
-                                          format(field.value, "P")
+                                          format(field.value, "dd/MM/yyyy")
                                         ) : (
                                           <span>Chọn ngày</span>
                                         )}
@@ -640,8 +653,16 @@ export default function CreateForm() {
                                       mode="single"
                                       selected={field.value}
                                       onSelect={field.onChange}
-                                      disabled={(date) => date < new Date()}
+                                      disabled={(date) =>
+                                        date <
+                                        new Date(
+                                          new Date().setDate(
+                                            new Date().getDate() + 7
+                                          )
+                                        )
+                                      }
                                       initialFocus
+                                      today={field.value}
                                     />
                                   </PopoverContent>
                                 </Popover>
@@ -749,7 +770,7 @@ export default function CreateForm() {
                             </FormItem>
                           )}
                         />
-                        <FormField
+                        {/* <FormField
                           control={form.control}
                           name="event.passwordMeeting"
                           render={({ field }) => (
@@ -763,7 +784,7 @@ export default function CreateForm() {
                               <FormMessage />
                             </FormItem>
                           )}
-                        />
+                        /> */}
                       </TabsContent>
                     </Tabs>
                   </FormControl>
@@ -933,6 +954,11 @@ function AnswersFieldArray({
     control,
     name: `createFormDetailsReq.${parentIndex}.options`,
   });
+  useEffect(() => {
+    if (fields.length === 0) {
+      append("");
+    }
+  }, [fields, append]);
   const addOption = () => {
     const lastAnswer =
       form.getValues(

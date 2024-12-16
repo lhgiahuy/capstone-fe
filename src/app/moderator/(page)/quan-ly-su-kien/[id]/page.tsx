@@ -1,5 +1,5 @@
 import NavBar from "../../_component/moderator-navbar";
-import DetailEvent from "./_component/detail-event";
+import DetailEvent from "./_component/event-detail";
 
 export default function Event({ params }: { params: { id: string } }) {
   return (

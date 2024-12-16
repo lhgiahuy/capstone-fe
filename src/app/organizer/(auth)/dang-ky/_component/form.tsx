@@ -15,13 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
-import { formSchema, TypeOfSignUpForm } from "../_lib/validation";
+import { formSchema, TypeOfOrganizerSignUpForm } from "../_lib/validation";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
   const router = useRouter();
-  const form = useForm<TypeOfSignUpForm>({
+  const form = useForm<TypeOfOrganizerSignUpForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
@@ -29,12 +29,13 @@ export default function SignUpForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      studentId: "",
     },
   });
   const { mutate: signUpMutate, isPending } = useMutation({
-    mutationFn: (data: TypeOfSignUpForm) => signUpOrganizer(data),
+    mutationFn: (data: TypeOfOrganizerSignUpForm) => signUpOrganizer(data),
   });
-  const onSubmit: SubmitHandler<TypeOfSignUpForm> = async (data) => {
+  const onSubmit: SubmitHandler<TypeOfOrganizerSignUpForm> = async (data) => {
     signUpMutate(data, {
       onSuccess: () => {
         router.push("/dang-ky-thanh-cong");
@@ -71,6 +72,7 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
+
         {/* <FormField
           control={form.control}
           name="phoneNumber"

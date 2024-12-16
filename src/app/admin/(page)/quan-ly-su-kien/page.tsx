@@ -13,12 +13,16 @@ import { ArrowUpDown } from "lucide-react";
 // import { parseISO } from "date-fns";
 import { getEvent } from "@/action/event";
 import AdminNavBar from "../../_component/admin-navbar";
+import { useSearchParams } from "next/navigation";
 // import { formatDate } from "@/lib/date";
 
 export default function Event() {
+  const searchParams = useSearchParams();
+  const currentPage =
+    parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
   const { data, isPending } = useQuery({
-    queryKey: ["events"],
-    queryFn: () => getEvent(),
+    queryKey: ["events", currentPage],
+    queryFn: () => getEvent({ PageNumber: currentPage }),
   });
   const columns: ColumnDef<Event>[] = [
     {
@@ -103,6 +107,7 @@ export default function Event() {
             hideColumns={hideColumns}
             columns={columns}
             data={data?.items}
+            totalPages={data?.totalPages}
           />
         )}
       </div>

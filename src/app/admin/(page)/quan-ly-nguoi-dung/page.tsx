@@ -17,54 +17,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-} from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { parseISO } from "date-fns";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SkeletonTable } from "../../_component/skeleton-table";
 
 export default function AdminManagementUser() {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParamsPaging = useSearchParams();
   const currentPage =
     parseInt(searchParams.get("PageNumber")?.toString() || "") || 1;
+  const role = searchParams.get("role") || "student";
   const { data, isPending } = useQuery({
-    queryKey: ["user", currentPage],
-    queryFn: () => getUser({ PageNumber: currentPage }),
+    queryKey: ["user", currentPage, role],
+    queryFn: () => getUser({ PageNumber: currentPage, roleName: role }),
   });
-  const renderPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= data?.totalPages; i++) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href={`${pathname}?${new URLSearchParams({
-              ...Object.fromEntries(searchParamsPaging),
-              PageNumber: i.toString(),
-            }).toString()}`}
-            isActive={i == currentPage}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    return pages;
-  };
+  const selectOptions = [
+    {
+      option: [
+        { name: "Tất cả", value: " " },
+        { name: "Sinh viên", value: "student" },
+        { name: "Organizer", value: "organizer" },
+        { name: "Moderator", value: "moderator" },
+      ],
+      placeholder: "Vai trò",
+      title: "role",
+      defaultValue: role,
+    },
+  ];
   // if (!data) return <></>;
   const columns: ColumnDef<User>[] = [
     {
@@ -96,7 +77,6 @@ export default function AdminManagementUser() {
       accessorKey: "email",
       header: "Email",
     },
-
     {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
@@ -117,16 +97,6 @@ export default function AdminManagementUser() {
         ) : (
           <p>Chưa có thẻ</p>
         ),
-    },
-    {
-      accessorKey: "verified",
-      header: "Xác nhận",
-      cell: ({ row }) =>
-        row.original.verified == "2"
-          ? "Đã xác thực"
-          : row.original.verified == "1"
-          ? "Đang xác thực"
-          : "Chưa xác thực",
     },
     {
       accessorKey: "roleName",
@@ -204,7 +174,7 @@ export default function AdminManagementUser() {
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Quản lý người dùng"]} />
+      <AdminNavBar links={["Danh sách tất cả người dùng"]} />
       {isPending ? (
         <SkeletonTable
           hideColumns={hideColumns}
@@ -215,53 +185,10 @@ export default function AdminManagementUser() {
           hideColumns={hideColumns}
           columns={columns}
           data={data.items}
+          totalPages={data.totalPages}
+          selectOptions={selectOptions}
         />
       )}
-      <Pagination>
-        <PaginationContent className="items-center mt-3">
-          <PaginationItem>
-            <Button
-              onClick={() =>
-                router.replace(
-                  `${pathname}?${new URLSearchParams({
-                    ...Object.fromEntries(searchParamsPaging),
-                    PageNumber: `${(
-                      parseInt(currentPage.toString()) - 1
-                    ).toString()}`,
-                  }).toString()}`
-                )
-              }
-              disabled={currentPage == 1}
-              size="icon"
-              variant="ghost"
-            >
-              <ChevronLeft />
-            </Button>
-          </PaginationItem>
-          {renderPageNumbers()}
-          <PaginationItem>
-            <Button
-              onClick={() =>
-                router.push(
-                  `${pathname}?${new URLSearchParams({
-                    ...Object.fromEntries(searchParamsPaging),
-                    PageNumber: `${(
-                      parseInt(currentPage.toString()) + 1
-                    ).toString()}`,
-                  }).toString()}`
-                )
-              }
-              disabled={currentPage == data?.totalPages}
-              size="icon"
-              variant="ghost"
-            >
-              <div className="flex gap-2 items-center">
-                <ChevronRight />
-              </div>
-            </Button>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </>
   );
 }

@@ -54,7 +54,6 @@ export default function MyEvent() {
   const eventDates = [...(upcomingEvent || []), ...(completedEvent || [])].map(
     (event) => dayjs(event.startTime).startOf("day").toDate()
   );
-  console.log(monthNum);
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl text-primary font-bold">Sự kiện của tôi</h1>
@@ -108,8 +107,8 @@ export default function MyEvent() {
         </div>
         <Tabs defaultValue="upcoming">
           <TabsList>
-            <TabsTrigger value="upcoming">Sắp diễn ra</TabsTrigger>
-            <TabsTrigger value="completed">Đã diễn ra</TabsTrigger>
+            <TabsTrigger value="upcoming">Chưa tham gia</TabsTrigger>
+            <TabsTrigger value="completed">Đã tham gia</TabsTrigger>
           </TabsList>
           <TabsContent value="upcoming">
             <EventList event={upcomingEvent} title="" ticketStyle vertical />

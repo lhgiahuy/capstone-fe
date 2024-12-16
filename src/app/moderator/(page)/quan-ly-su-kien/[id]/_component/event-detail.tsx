@@ -23,13 +23,14 @@ import {
 } from "@/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserById } from "@/action/user";
+import { getFirstLetterOfName } from "@/lib/utils";
 // import "../../../style/description.css";
 
 // import { Upload } from "lucide-react";
 
 export default function DetailEvent({ eventId }: { eventId: string }) {
   const { data } = useQuery<Event>({
-    queryKey: ["events"],
+    queryKey: ["events", eventId],
     queryFn: () => getEventById(eventId),
   });
   const { data: organizer } = useQuery({
@@ -81,7 +82,9 @@ export default function DetailEvent({ eventId }: { eventId: string }) {
                   <div className="flex justify-between space-x-4">
                     <Avatar>
                       <AvatarImage src={organizer?.avatarUrl} />
-                      <AvatarFallback>VC</AvatarFallback>
+                      <AvatarFallback>
+                        {getFirstLetterOfName(organizer?.username)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <h4 className="text-sm font-semibold">
@@ -147,6 +150,13 @@ export default function DetailEvent({ eventId }: { eventId: string }) {
                   ></div>
                 </div>
               </div>
+              {/* <div className="flex flex-col gap-2">
+                <h3 className="text-muted-foreground">Proposal sự kiện</h3>
+                <Separator></Separator>
+                <div className="text-foreground rounded-lg w-full min-h-screen">
+                  <div>{data.proposal}</div>
+                </div>
+              </div> */}
             </div>
           </div>
         </div>

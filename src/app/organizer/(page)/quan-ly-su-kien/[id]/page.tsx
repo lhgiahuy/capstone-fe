@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import NavBar from "../../_component/navbar";
-import UpdateForm from "./_component/update-form";
+import EventDetail from "./_component/event-detail";
 export const metadata: Metadata = {
   title: "Tạo sự kiện",
   description: "...",
@@ -17,7 +17,7 @@ export default function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <UpdateForm id={params.id} />
+      <EventDetail eventId={params.id} />
     </>
   );
 }

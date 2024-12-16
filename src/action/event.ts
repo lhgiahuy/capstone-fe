@@ -12,6 +12,27 @@ export interface getEventProps {
   InYear?: number;
 }
 
+export interface getParticipantProps {
+  SearchKeyword?: string;
+  PageSize?: number;
+  PageNumber?: number;
+  eventId?: string;
+}
+
+export interface getOrganizerEventProps {
+  UserId?: string;
+  SearchKeyword?: string;
+  PageSize?: number;
+  PageNumber?: number;
+  isDescending?: boolean;
+  orderBy?: string;
+  EventTypes?: string[];
+  InMonth?: number;
+  Status?: string;
+  EventTag?: string;
+  InYear?: number;
+}
+
 export async function getEvent(props?: getEventProps) {
   try {
     const params = new URLSearchParams();
@@ -47,6 +68,10 @@ export async function getEventById(id: string) {
 
 export async function createEvent(data: any) {
   return await userAxios.post("/events", data);
+}
+
+export async function updateEvent(data: any, eventId: string) {
+  return await userAxios.put(`/events/${eventId}`, data);
 }
 
 export async function submitForm(data: any, eventId: string) {
@@ -124,6 +149,19 @@ export async function updateEventType(
   }
 }
 
+export async function getEventByOrganizerPrivate(
+  props: getOrganizerEventProps
+) {
+  try {
+    const event = await userAxios.get(`/events/organizerPrivate`, {
+      params: props,
+    });
+    return event.data;
+  } catch (error) {
+    console.error("Failed to fetch event data", error);
+  }
+}
+
 export async function getEventByOrganizer({
   organizerId,
   status,
@@ -133,7 +171,7 @@ export async function getEventByOrganizer({
 }) {
   try {
     const event = await userAxios.get(
-      `/events/organizer?OrganizerId=${organizerId}&Status=${status}`
+      `/events/organizerPublic?OrganizerId=${organizerId}&Status=${status}`
     );
     return event.data;
   } catch (error) {
@@ -160,9 +198,12 @@ export async function submitEvent(eventId: string) {
   return await userAxios.put(`/events/${eventId}/submit`);
 }
 
-export async function getParticipant(eventId: string) {
+export async function getParticipant(props?: getParticipantProps) {
   try {
-    const participants = await userAxios.get(`/events/${eventId}/participants`);
+    const participants = await userAxios.get(
+      `/events/${props?.eventId}/participants`,
+      { params: props }
+    );
     return participants.data;
   } catch (error) {
     console.error("Failed to fetch event data", error);
@@ -208,4 +249,14 @@ export async function getReview(eventId: string) {
   } catch (error) {
     console.error("Failed to fetch event data", error);
   }
+}
+
+export async function CheckIn(eventId: string, userId: string) {
+  return await userAxios.put(
+    `/events/${eventId}/checkin-organizer?userId=${userId}`
+  );
+}
+
+export async function cancelEvent(eventId: string) {
+  return await userAxios.put(`/events/${eventId}/cancelEvent`);
 }

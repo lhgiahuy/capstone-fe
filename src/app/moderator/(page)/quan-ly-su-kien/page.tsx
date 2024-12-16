@@ -7,16 +7,8 @@ import { ColumnDef } from "@tanstack/react-table";
 // import { getFirstLetterOfName } from "@/lib/utils";
 import { DataTable } from "@/components/table/data-table";
 // import { User } from "@/interface/user";
-import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { parseISO } from "date-fns";
 import { getAllEvent } from "@/action/event";
@@ -24,30 +16,49 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import NavBar from "../_component/moderator-navbar";
 import { getFirstLetterOfName } from "@/lib/utils";
 import { Event } from "@/interface/event";
-import { formatDate } from "@/lib/date";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { statusMap } from "@/interface/status";
 
 export default function EventDetail() {
-  const [statusFilter, setStatusFilter] = useState<string>("underReview");
-  const { data, isPending } = useQuery({
-    queryKey: ["events", statusFilter],
-    queryFn: () => getAllEvent({ Status: statusFilter }),
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status") || "UnderReview";
+  const searchKeyword = searchParams.get("SearchKeyword")?.toString() || "";
+  const currentPage =
+    parseInt(searchParams.get("PageNumber")?.toString() || "1", 10) || 1;
+  const { data } = useQuery({
+    queryKey: ["events", status, searchKeyword, currentPage],
+    queryFn: () =>
+      getAllEvent({
+        Status: status,
+        SearchKeyword: searchKeyword,
+        PageNumber: currentPage,
+      }),
   });
-  const router = useRouter();
   const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "eventName",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Tên sự kiện
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      // header: ({ column }) => {
+      //   return (
+      //     <Button
+      //       variant="ghost"
+      //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      //     >
+      //       Tên sự kiện
+      //       <ArrowUpDown className="ml-2 h-4 w-4" />
+      //     </Button>
+      //   );
+      // },
+      header: "Tên sự kiện",
       cell: ({ row }) => (
         <div className="w-64 flex gap-4 items-center">
           <Avatar className="w-8 h-8">
@@ -67,60 +78,23 @@ export default function EventDetail() {
     },
 
     {
-      accessorKey: "startTime",
-      header: "Ngày bắt đầu",
-      cell: ({ row }) => {
-        return <div>{formatDate(row.original.startTime)}</div>;
-      },
-    },
-    {
-      accessorKey: "endTime",
-      header: "Ngày kết thúc",
-      cell: ({ row }) => {
-        return <div>{formatDate(row.original.startTime)}</div>;
-      },
-    },
-
-    {
       accessorKey: "maxAttendees",
-      header: "Số người tham gia",
+      header: "Số người tham gia tối đa",
       cell: ({ row }) => {
-        return <div>{row.original.maxAttendees || "chưa có dữ liệu"}</div>;
+        return <div>{row.original.subMaxAttendees || "Không có dữ liệu"}</div>;
       },
     },
 
     {
       accessorKey: "status",
-      header: () => {
+      header: "Trạng thái",
+      cell: ({ row }) => {
+        const statusInfo = statusMap[row.original.status] || {
+          label: "Không xác định",
+          color: "gray",
+        };
         return (
-          <div className="flex items-center">
-            <div>Trạng thái</div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8">
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Chọn trạng thái</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setStatusFilter("")}>
-                  Tất cả
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("upcoming")}>
-                  Sắp tới
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setStatusFilter("underReview")}
-                >
-                  Chờ xác thực
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("completed")}>
-                  Hoàn thành
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <Badge className={`${statusInfo.color}`}>{statusInfo.label}</Badge>
         );
       },
     },
@@ -129,41 +103,60 @@ export default function EventDetail() {
       id: "actions",
       cell: ({ row }) => {
         return (
-          <div className="w-[6rem] flex justify-center">
-            <Button
-              variant={"link"}
-              onClick={() =>
-                router.push(
-                  `/moderator/quan-ly-su-kien/${row.original.eventId}`
-                )
-              }
-            >
-              Xem thông tin
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Thực hiện</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link
+                  href={`/moderator/quan-ly-su-kien/${row.original.eventId}`}
+                >
+                  Xem thông tin
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={row.original.proposal}>Xem proposal</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
       enableHiding: false, // disable hiding for this column
     },
   ];
   const hideColumns = ["isDeleted", "deletedAt"];
+  const selectOptions = [
+    {
+      option: Object.entries(statusMap).map(([value, { label }]) => ({
+        name: label,
+        value,
+      })),
+      placeholder: "Status",
+      title: "status",
+      defaultValue: status,
+    },
+  ];
   return (
     <>
       <NavBar
         breadcrumb={[
           { title: "Quản lý sự kiện", link: "/moderator/quan-ly-su-kien" },
         ]}
-      />{" "}
+      />
       <div className="">
-        {isPending ? (
-          <></>
-        ) : (
-          <DataTable
-            hideColumns={hideColumns}
-            columns={columns}
-            data={data.items}
-          />
-        )}
+        <DataTable
+          hideColumns={hideColumns}
+          columns={columns}
+          data={data?.items}
+          selectOptions={selectOptions}
+          totalPages={data?.totalPages}
+        />
       </div>
     </>
   );
