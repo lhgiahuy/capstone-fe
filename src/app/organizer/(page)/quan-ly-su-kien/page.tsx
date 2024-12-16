@@ -150,14 +150,10 @@ export default function EventTable() {
       header: "Loại",
     },
     {
-      accessorKey: "maxAttendees",
-      header: "Số người tham gia",
+      accessorKey: "subMaxAttendees",
+      header: "Số người tham gia tối đa",
       cell: ({ row }) => {
-        return row.original.maxAttendees ? (
-          <p>{row.original.maxAttendees}</p>
-        ) : (
-          <p>Không có dữ liệu</p>
-        );
+        return <div>{row.original.subMaxAttendees || "Không có dữ liệu"}</div>;
       },
     },
 

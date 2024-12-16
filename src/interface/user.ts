@@ -14,6 +14,7 @@ export interface User {
   deletedAt: string | null;
   verified: string;
   isCheckin: string;
+  studentId: string;
 }
 
 export interface LoginResponse {

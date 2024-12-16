@@ -100,6 +100,13 @@ export default function ManagementUser() {
     },
 
     {
+      accessorKey: "studentId",
+      header: "MSSV",
+      cell: ({ row }) => {
+        return <div>{row.original.studentId || "Không có dữ liệu"}</div>;
+      },
+    },
+    {
       accessorKey: "verified",
       header: "Xác thực",
       cell: ({ row }) => (

@@ -208,7 +208,9 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                       <div className="flex flex-col gap-4 w-full">
                         <div className="flex w-full items-start justify-between">
                           <div className="flex flex-col gap-2">
-                            <div className="font-bold text-lg">Ẩn danh</div>
+                            <div className="whitespace-break-spaces">
+                              {item.comment}
+                            </div>
                             <div className="text-xs text-muted-foreground">
                               {formatDate(item.reviewDate)}
                             </div>
@@ -218,9 +220,6 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                             rating={item.rating}
                             variant="yellow"
                           />
-                        </div>
-                        <div className="whitespace-break-spaces">
-                          {item.comment}
                         </div>
                       </div>
                     </div>
@@ -232,9 +231,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                         className="p-4 flex gap-4 border-muted border-2 rounded-lg hover:border-primary"
                       >
                         <Avatar className="w-8 h-8 hover:cursor-pointer">
-                          <AvatarImage
-                            src={item.avatar || "https://github.com/shadcn.png"}
-                          />
+                          <AvatarImage src={"/images/avatar-placeholder.png"} />
                           <AvatarFallback>
                             {getFirstLetterOfName(item.fullname)}
                           </AvatarFallback>
@@ -242,8 +239,8 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                         <div className="flex flex-col gap-4 w-full">
                           <div className="flex w-full items-start justify-between">
                             <div className="flex flex-col gap-2">
-                              <div className="font-bold text-lg">
-                                {item.fullname}
+                              <div className="whitespace-break-spaces">
+                                {item.comment}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 {formatDate(item.reviewDate)}
@@ -254,9 +251,6 @@ export default function EventDetail({ params }: { params: { id: string } }) {
                               rating={item.rating}
                               variant="yellow"
                             />
-                          </div>
-                          <div className="whitespace-break-spaces">
-                            {item.comment}
                           </div>
                         </div>
                       </div>
