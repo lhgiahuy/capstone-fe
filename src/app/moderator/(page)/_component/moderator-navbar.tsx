@@ -85,7 +85,7 @@ export default function NavBar({ breadcrumb }: BreadcrumbsProps) {
           <DropdownMenuItem
             onClick={async () => {
               await signOutUser({ redirect: false });
-              window.location.href = "/admin/dang-nhap";
+              window.location.href = "/dang-nhap";
             }}
           >
             Đăng xuất

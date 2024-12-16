@@ -127,7 +127,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-16 pb-16">
         <ModeratorOverview {...overviewData}></ModeratorOverview>
         <div className="flex h-full w-full justify-between gap-4">
-          <Chart registrationData={data?.registrationDetails}></Chart>
+          <Chart registrationData={data?.details}></Chart>
           {/* <div className="flex flex-col gap-4 w-full">
             <h3 className="text-primary">
               Danh sách người dùng hay tham gia sự kiện
