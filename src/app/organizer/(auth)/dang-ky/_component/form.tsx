@@ -73,7 +73,7 @@ export default function SignUpForm() {
           )}
         />
 
-        {/* <FormField
+        <FormField
           control={form.control}
           name="phoneNumber"
           render={({ field }) => (
@@ -84,7 +84,7 @@ export default function SignUpForm() {
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
         <FormField
           control={form.control}
           name="password"

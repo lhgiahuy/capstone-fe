@@ -7,7 +7,7 @@ export const formSchema = z
   .object({
     username: stringSchema,
     email: stringSchema.email({ message: "Email không hợp lệ!" }),
-    phoneNumber: z.string().optional(),
+    phoneNumber: stringSchema,
     studentId: z.string().optional(),
     password: stringSchema.regex(
       passwordRegex,
