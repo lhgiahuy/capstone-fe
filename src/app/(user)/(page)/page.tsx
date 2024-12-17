@@ -1,5 +1,4 @@
 "use client";
-import Banner from "../_component/banner";
 import Slider from "../_component/slider";
 import EventList from "../_component/event-list";
 import { useQuery } from "@tanstack/react-query";
@@ -102,7 +101,8 @@ export default function Page() {
   });
   return (
     <div className="flex flex-col gap-16">
-      <Banner />
+      {/* <Banner /> */}
+      {/* <Image src={banner} alt="background"></Image> */}
       <Slider />
       <EventList data={list} title="Sự kiện đang diễn ra" />
       {/* <EventList data={completedList} title="Sự kiện đã diễn ra" /> */}
