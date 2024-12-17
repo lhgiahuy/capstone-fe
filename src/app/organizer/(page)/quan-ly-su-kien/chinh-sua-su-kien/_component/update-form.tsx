@@ -123,11 +123,16 @@ export default function UpdateForm({ data }: { data: Event }) {
     } else if (end <= start) {
       toast.error("Thời gian không hợp lệ");
       setIsLoading(false);
+    } else if (
+      values.event.maxAttendees &&
+      parseInt(values.event.maxAttendees || "0") <= 0
+    ) {
+      toast.error("Số lượng tham gia tối đa phải lớn hơn 0!");
+      setIsLoading(false);
     } else {
       let posterUrl = data.posterImg; // Default to existing image
       let thumbnailUrl = data.thumbnailImg; // Default to existing image
       let proposalUrl = data.proposal; // Default to existing file
-
       // Upload only if the image was changed
       if (posterChanged) {
         posterUrl = await uploadImageToStorage({
@@ -168,7 +173,9 @@ export default function UpdateForm({ data }: { data: Event }) {
             posterImg: posterUrl,
             thumbnailImg: thumbnailUrl,
             eventTags: values.event.eventTags,
-            maxAttendees: parseInt(values.event.maxAttendees || "0"),
+            maxAttendees: isNaN(parseInt(values.event.maxAttendees || ""))
+              ? null
+              : parseInt(values.event.maxAttendees || "0"),
             createFormDetailsReq: values.createFormDetailsReq,
             proposal: proposalUrl,
           },

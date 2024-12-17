@@ -113,6 +113,12 @@ export default function CreateForm() {
     } else if (end <= start) {
       toast.error("Thời gian không hợp lệ");
       setIsLoading(false);
+    } else if (
+      values.event.maxAttendees &&
+      parseInt(values.event.maxAttendees || "0") <= 0
+    ) {
+      toast.error("Số lượng tham gia tối đa phải lớn hơn 0!");
+      setIsLoading(false);
     } else {
       const thumbnailUrl = await uploadImageToStorage({
         saveLocation: `events/${values.event.title}-thumbnail`,
