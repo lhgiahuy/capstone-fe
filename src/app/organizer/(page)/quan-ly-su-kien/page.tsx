@@ -94,6 +94,7 @@ export default function EventTable() {
   const handleCancel = (id: string) => {
     cancelEventMutation(id, { onSuccess: () => toast("Huỷ event thành công") });
   };
+  const [processNote, setProcessNote] = useState("");
   const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "posterImg",
@@ -251,7 +252,9 @@ export default function EventTable() {
                   {row.original.status === "Rejected" && (
                     <DropdownMenuItem
                       onClick={() => {
-                        setOpenDialog("note"), setEventId(row.original.eventId);
+                        setOpenDialog("note"),
+                          setEventId(row.original.eventId),
+                          setProcessNote(row.original.processNote);
                       }}
                     >
                       <AlertDialogTrigger asChild>
@@ -310,7 +313,7 @@ export default function EventTable() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Ghi chú</AlertDialogTitle>
                     <AlertDialogDescription>
-                      {row.original.processNote || "Không có ghi chú"}
+                      {processNote || "Không có ghi chú"}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
