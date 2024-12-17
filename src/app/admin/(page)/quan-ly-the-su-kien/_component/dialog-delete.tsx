@@ -30,11 +30,10 @@ export default function DialogDelete({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             Hủy
           </Button>
           <Button
-            variant="destructive"
             onClick={() => {
               onDelete();
               onClose();

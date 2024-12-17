@@ -12,25 +12,17 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/data-table";
 
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Trash } from "lucide-react";
 
 import AdminNavBar from "../../_component/admin-navbar";
 
 // import { formatDate } from "@/lib/date";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { deleteEventType, getEventType } from "@/action/event";
 import { EventType } from "@/interface/event-type";
-import CreateEventType from "./_component/create-event-type";
 import DialogDeleteType from "./_component/dialog-delete-type";
 import { useState } from "react";
 import DialogUpdateType from "./_component/dialog-update-type";
+import { toast } from "sonner";
 
 export default function EventTypes() {
   const queryClient = useQueryClient();
@@ -47,10 +39,11 @@ export default function EventTypes() {
   const deleteType = useMutation({
     mutationFn: (eventTypeId: string) => deleteEventType(eventTypeId),
     onSuccess: () => {
-      alert("Xóa thẻ thành công!");
+      toast("Xóa thẻ thành công!");
       queryClient.invalidateQueries({ queryKey: ["types"] });
     },
     onError: (error) => {
+      toast("Xóa thẻ thất bại!");
       console.error("Failed to delete tag:", error);
     },
   });
@@ -76,55 +69,29 @@ export default function EventTypes() {
       cell: ({ row }) => {
         const type = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(type.eventTypeName)
-                }
-              >
-                Sao chép tên thẻ
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedTypeId(type.eventTypeId);
-                  setOpenDialog(true);
-                }}
-              >
-                Xoá thể loại
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem
-                onClick={() => {
-                  setSelectedTypeId(type.eventTypeId);
-                  setSelectedTypeName(type.eventTypeName);
-                  setOpenUpdateDialog(true);
-                }}
-              >
-                Cập nhật thể loại
-              </DropdownMenuItem> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-end">
+            <Button
+              variant={"ghost"}
+              onClick={() => {
+                setSelectedTypeId(type.eventTypeId);
+                setOpenDialog(true);
+              }}
+            >
+              <Trash className="text-muted-foreground"></Trash>
+            </Button>
+          </div>
         );
       },
-      enableHiding: false,
     },
   ];
   const hideColumns = [""];
   return (
     <>
-      <AdminNavBar links={["Quản lý thể loại sự kiện"]} />
-      <div className="mb-4 flex justify-end items-center">
-        <CreateEventType />
-      </div>
-      <div className="container max-w-[64rem]">
+      <AdminNavBar
+        breadcrumb={[{ title: "Quản lý thẻ loại sự kiện", link: "#" }]}
+      />
+
+      <div className="container max-w-[64rem] pb-16">
         {isPending ? (
           <></>
         ) : (

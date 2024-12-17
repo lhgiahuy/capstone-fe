@@ -152,3 +152,15 @@ export async function resetPassword({
     password
   );
 }
+
+export async function deleteUser(userId: string) {
+  return await userAxios.delete(`/users/${userId}`);
+}
+
+export async function unbanUser(userId: string) {
+  return await userAxios.post(`/users/${userId}/unban`);
+}
+
+export async function createModerator(data: any) {
+  return await userAxios.post("/users/addModerator", data);
+}
