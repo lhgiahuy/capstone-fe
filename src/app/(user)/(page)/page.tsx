@@ -3,7 +3,8 @@ import Slider from "../_component/slider";
 import EventList from "../_component/event-list";
 import { useQuery } from "@tanstack/react-query";
 import { getEvent } from "@/action/event";
-
+import banner from "/public/images/banner.png";
+import Image from "next/image";
 // export default function Page() {
 //   const targetRef = useRef<HTMLDivElement | null>(null);
 //   const { scrollYProgress } = useScroll({
@@ -101,11 +102,14 @@ export default function Page() {
   });
   return (
     <div className="flex flex-col gap-16">
-      {/* <Banner /> */}
-      {/* <Image src={banner} alt="background"></Image> */}
-      <Slider />
+      <div>
+        <Image src={banner} alt="background" className="mb-12" priority></Image>
+        <div className="flex flex-col gap-4">
+          <p className="text-4xl text-primary font-bold">Sự kiện sắp diễn ra</p>
+          <Slider />
+        </div>
+      </div>
       <EventList data={list} title="Sự kiện đang diễn ra" />
-      {/* <EventList data={completedList} title="Sự kiện đã diễn ra" /> */}
     </div>
   );
 }

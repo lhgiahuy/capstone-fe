@@ -11,7 +11,7 @@ export default function RootLayout({
       <div className="flex h-full">
         <div className="relative w-[40rem] h-screen">
           <Image
-            src={"/images/auth-bg.jpg"}
+            src={"/images/auth-bg.png"}
             alt="auth background"
             fill
             style={{ objectFit: "cover" }}
