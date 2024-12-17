@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminNavBar from "../../_component/admin-navbar";
-import { getUser } from "@/action/user";
+import { deleteUser, getUser } from "@/action/user";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, getFirstLetterOfName } from "@/lib/utils";
@@ -23,6 +23,7 @@ import { parseISO } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SkeletonTable } from "../../_component/skeleton-table";
+import { toast } from "sonner";
 
 export default function AdminManagementUser() {
   const searchParams = useSearchParams();
@@ -33,6 +34,18 @@ export default function AdminManagementUser() {
     queryKey: ["user", currentPage, role],
     queryFn: () => getUser({ PageNumber: currentPage, roleName: role }),
   });
+  const query = useQueryClient();
+  const { mutate: deleteUserMutation } = useMutation({
+    mutationFn: (id: string) => deleteUser(id),
+    onSuccess: () =>
+      query.invalidateQueries({ queryKey: ["user", currentPage, role] }),
+  });
+  const handleDeleteUser = (id: string) => {
+    deleteUserMutation(id, {
+      onSuccess: () => toast("Xoá tài khoản thành công!"),
+      onError: () => toast("Xoá tài khoản thất bại!"),
+    });
+  };
   const selectOptions = [
     {
       option: [
@@ -78,26 +91,23 @@ export default function AdminManagementUser() {
       header: "Email",
     },
     {
+      accessorKey: "studentId",
+      header: "MSSV",
+      cell: ({ row }) => {
+        return <div>{row.original.studentId || "Không có dữ liệu"}</div>;
+      },
+    },
+    {
       accessorKey: "phoneNumber",
       header: "Số điện thoại",
       cell: ({ row }) =>
-        row.original.phoneNumber ? <p>{row.original.phoneNumber}</p> : "N/A",
-    },
-    {
-      accessorKey: "cardUrl",
-      header: "Thẻ sinh viên",
-      cell: ({ row }) =>
-        row.original.cardUrl ? (
-          <Link
-            href={row.original.cardUrl}
-            className="text-primary hover:text-primary/80"
-          >
-            Xem thẻ
-          </Link>
+        row.original.phoneNumber ? (
+          <p>{row.original.phoneNumber}</p>
         ) : (
-          <p>Chưa có thẻ</p>
+          "Không có dữ liệu"
         ),
     },
+
     {
       accessorKey: "roleName",
       header: "Vai trò",
@@ -158,12 +168,24 @@ export default function AdminManagementUser() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(user.email)}
+                className="hover:cursor-pointer"
               >
                 Sao chép email người dùng
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
-              <DropdownMenuItem>Xoá người dùng</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleDeleteUser(row.original.userId)}
+                className="hover:cursor-pointer"
+              >
+                Xoá người dùng
+              </DropdownMenuItem>
+              {row.original.cardUrl && (
+                <DropdownMenuItem>
+                  <Link className="w-full" href={row.original.cardUrl}>
+                    Xem thẻ sinh viên/nhân viên
+                  </Link>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -174,7 +196,9 @@ export default function AdminManagementUser() {
   const hideColumns = ["createdAt", "updatedAt", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Danh sách tất cả người dùng"]} />
+      <AdminNavBar
+        breadcrumb={[{ title: "Danh sách người dùng ", link: "#" }]}
+      />
       {isPending ? (
         <SkeletonTable
           hideColumns={hideColumns}

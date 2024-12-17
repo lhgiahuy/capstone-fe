@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createEventType } from "@/action/event";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export default function CreateEventType() {
   const [open, setOpen] = useState(false);
@@ -22,18 +23,19 @@ export default function CreateEventType() {
   const mutation = useMutation({
     mutationFn: (eventTypeName: string) => createEventType(eventTypeName),
     onSuccess: () => {
-      alert("Tạo thành công!");
+      toast("Tạo thẻ loại thành công!");
       queryClient.invalidateQueries({
         queryKey: ["types"],
       });
     },
     onError: (error) => {
+      toast("Tạo thẻ loại thất bại!");
       console.error("Failed to create eventType:", error);
     },
   });
   const handleCreate = () => {
     if (!eventTypeName.trim()) {
-      alert("Vui lòng nhập tên laoij sự kiện!");
+      toast("Vui lòng nhập tên loại sự kiện!");
       return;
     }
     mutation.mutate(eventTypeName);
@@ -43,12 +45,11 @@ export default function CreateEventType() {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>
+          <Button variant={"outline"}>
             <Plus className="mr-2 h-4 w-4" />
             Thêm thể loại mới
           </Button>
         </DialogTrigger>
-
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Thêm thể loại mới</DialogTitle>
@@ -68,6 +69,7 @@ export default function CreateEventType() {
             <Button
               onClick={() => {
                 handleCreate(), setOpen(false);
+                setEventTypeName("");
               }}
             >
               Thêm

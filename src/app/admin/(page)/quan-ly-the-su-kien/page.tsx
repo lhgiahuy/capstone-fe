@@ -7,23 +7,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/data-table";
 
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Trash } from "lucide-react";
 
 import AdminNavBar from "../../_component/admin-navbar";
 import { deleteTag, getTag } from "@/action/tag";
 import { Tag } from "@/interface/tag";
 import { formatDate } from "@/lib/date";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import CreateTag from "./_component/create-tag";
 import DialogDelete from "./_component/dialog-delete";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function EventTag() {
   const queryClient = useQueryClient();
@@ -39,10 +31,12 @@ export default function EventTag() {
   const deleteMutation = useMutation({
     mutationFn: (tagId: string) => deleteTag(tagId),
     onSuccess: () => {
-      alert("Xóa thẻ thành công!");
+      toast("Xóa thẻ thành công!");
       queryClient.invalidateQueries({ queryKey: ["tags"] });
     },
     onError: (error) => {
+      toast("Xóa thẻ thất bại!");
+
       console.error("Failed to delete tag:", error);
     },
   });
@@ -84,31 +78,17 @@ export default function EventTag() {
       cell: ({ row }) => {
         const tag = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(tag.tagName)}
-              >
-                Sao chép tên thẻ
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedTagId(tag.tagId);
-                  setOpenDialog(true);
-                }}
-              >
-                Xoá thẻ
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-end">
+            <Button
+              variant={"ghost"}
+              onClick={() => {
+                setSelectedTagId(tag.tagId);
+                setOpenDialog(true);
+              }}
+            >
+              <Trash className="text-muted-foreground"></Trash>
+            </Button>
+          </div>
         );
       },
       enableHiding: false,
@@ -117,11 +97,9 @@ export default function EventTag() {
   const hideColumns = ["description", "isDeleted", "deletedAt"];
   return (
     <>
-      <AdminNavBar links={["Quản lý thẻ sự kiện"]} />
-      <div className="mb-4 flex justify-end  items-center">
-        <CreateTag />
-      </div>
-      <div className="">
+      <AdminNavBar breadcrumb={[{ title: "Quản lý thẻ sự kiện", link: "#" }]} />
+
+      <div className="container max-w-[64rem] pb-16">
         {isPending ? (
           <></>
         ) : (

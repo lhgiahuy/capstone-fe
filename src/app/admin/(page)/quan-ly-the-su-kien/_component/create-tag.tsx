@@ -14,6 +14,7 @@ import { ButtonCreateTag } from "@/interface/tag";
 import { createTag } from "@/action/tag";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 export default function CreateTag() {
   const [open, setOpen] = useState(false);
@@ -24,18 +25,19 @@ export default function CreateTag() {
     mutationFn: (tag: Partial<ButtonCreateTag>) =>
       createTag(tag.svgContent as string, tag.tagName as string),
     onSuccess: () => {
-      alert("Tạo thành công!");
+      toast("Tạo thẻ thành công!");
       queryClient.invalidateQueries({
         queryKey: ["tags"],
       });
     },
     onError: (error) => {
+      toast("Tạo thẻ thất bại!");
       console.error("Failed to update user:", error);
     },
   });
   const handleCreate = () => {
     if (!tagName.trim() || !svgContent.trim()) {
-      alert("Vui lòng nhập đầy đủ thông tin!");
+      toast("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
     mutation.mutate({
@@ -48,7 +50,7 @@ export default function CreateTag() {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>
+          <Button variant={"outline"}>
             <Plus className="mr-2 h-4 w-4" />
             Tạo Thẻ
           </Button>
@@ -77,7 +79,10 @@ export default function CreateTag() {
             </Button>
             <Button
               onClick={() => {
-                handleCreate(), setOpen(false);
+                handleCreate(),
+                  setOpen(false),
+                  setTagName(""),
+                  setSvgContent("");
               }}
             >
               Tạo Thẻ

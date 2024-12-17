@@ -203,11 +203,13 @@ export default function ManagementUser() {
                   Xác thực người dùng
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem>
-                <Link href={row.original.cardUrl}>
-                  Xem thẻ sinh viên/nhân viên
-                </Link>
-              </DropdownMenuItem>
+              {row.original.cardUrl && (
+                <DropdownMenuItem>
+                  <Link href={row.original.cardUrl}>
+                    Xem thẻ sinh viên/nhân viên
+                  </Link>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
