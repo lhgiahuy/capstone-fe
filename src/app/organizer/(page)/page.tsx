@@ -126,7 +126,7 @@ export default function Page() {
           </Popover>
         </div>
       </div>
-      <div className="flex flex-col gap-16 pb-16">
+      <div className="flex flex-col gap-8 pb-16">
         <Overview {...overviewData}></Overview>
         <div className="flex h-full w-full justify-between gap-4">
           <Chart registrationData={data?.events}></Chart>

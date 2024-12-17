@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateEventType } from "@/action/event";
+import { toast } from "sonner";
 
 interface DialogUpdateTypeProps {
   open: boolean;
@@ -32,11 +33,12 @@ export default function DialogUpdateType({
     mutationFn: (updatedName: string) =>
       updateEventType(eventTypeId as string, updatedName),
     onSuccess: () => {
-      alert("Cập nhật thành công!");
+      toast("Cập nhật thẻ loại thành công!");
       queryClient.invalidateQueries({ queryKey: ["types"] });
       onClose();
     },
     onError: (error) => {
+      toast("Cập nhật thẻ loại thất bại!");
       console.error("Failed to update event type:", error);
     },
   });

@@ -3,10 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getReport } from "@/action/report";
 import { OverviewReport } from "@/interface/organizer-report";
-import { DataTable } from "@/components/table/data-table";
-import { ColumnDef } from "@tanstack/react-table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, getFirstLetterOfName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { format, toDate } from "date-fns";
 import useSearchParamsHandler from "@/hooks/use-add-search-param";
@@ -18,9 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import NavBar from "@/app/moderator/(page)/_component/moderator-navbar";
 import ModeratorOverview from "@/app/moderator/(page)/_component/moderator-overview";
 import { Chart } from "@/app/moderator/(page)/_component/chart";
+import AdminNavBar from "../_component/admin-navbar";
 
 export default function Dashboard() {
   const [addParam] = useSearchParamsHandler();
@@ -39,28 +36,6 @@ export default function Dashboard() {
     noOfUsersAttended: data?.noOfUsersAttended,
     noOfUsersNotAttended: data?.noOfUsersNotAttended,
   };
-  const hideColumns = ["isDeleted", "deletedAt"];
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "username",
-      header: "Tên người dùng",
-      cell: ({ row }) => (
-        <div className="w-64 flex gap-4 items-center">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={row.original.avatarUrl} alt="user avatar" />
-            <AvatarFallback>
-              {getFirstLetterOfName(row.original.username)}
-            </AvatarFallback>
-          </Avatar>
-          <p className="line-clamp-2">{row.original.username}</p>
-        </div>
-      ),
-    },
-    // {
-    //   accessorKey: "noOfEvents",
-    //   header: "Số sự kiện đã tham gia",
-    // },
-  ];
   const handleStartDateSelect = ({ fromDate }: { fromDate: Date }) => {
     addParam({
       fromDate: fromDate.toISOString(),
@@ -73,7 +48,7 @@ export default function Dashboard() {
   };
   return (
     <>
-      <NavBar breadcrumb={[{ title: "Bảng số liệu", link: "#" }]} />
+      <AdminNavBar breadcrumb={[{ title: "Bảng số liệu", link: "#" }]} />
       <div className="flex w-full justify-end py-4">
         {/* <CalendarDatePicker
           variant={"default"}
@@ -149,34 +124,10 @@ export default function Dashboard() {
           </Popover>
         </div>
       </div>
-      <div className="flex flex-col gap-16 pb-16">
+      <div className="flex flex-col gap-8 pb-16">
         <ModeratorOverview {...overviewData}></ModeratorOverview>
         <div className="flex h-full w-full justify-between gap-4">
-          <Chart registrationData={data?.registrationDetails}></Chart>
-          <div className="flex flex-col gap-4 w-full max-w-[32rem]">
-            <h3 className="text-primary">
-              Danh sách người dùng hay tham gia sự kiện
-            </h3>
-            <DataTable
-              hideColumns={hideColumns}
-              columns={columns}
-              data={data?.usersAttended}
-              totalPages={data?.totalPages}
-              noFilter
-            />
-          </div>
-          {/* <div className="flex flex-col gap-4">
-            <h3 className="text-primary">
-              Danh sách người dùng không tham gia sự kiện
-            </h3>
-            <DataTable
-              hideColumns={hideColumns}
-              columns={columns}
-              data={data?.usersNotAttended}
-              totalPages={data?.totalPages}
-              noFilter
-            />
-          </div> */}
+          <Chart registrationData={data?.details}></Chart>
         </div>
       </div>
     </>

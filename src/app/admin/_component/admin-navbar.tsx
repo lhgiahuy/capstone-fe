@@ -24,60 +24,66 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { signOutUser } from "@/lib/auth";
-interface BreadcrumbsProps {
-  links: string[];
+import { AddModerator } from "./add-moderator";
+import CreateEventType from "../(page)/quan-ly-the-loai-su-kien/_component/create-event-type";
+import { usePathname } from "next/navigation";
+import CreateTag from "../(page)/quan-ly-the-su-kien/_component/create-tag";
+interface Breadcrumb {
+  link: string;
+  title: string;
 }
-export default function AdminNavBar({ links }: BreadcrumbsProps) {
+
+interface BreadcrumbsProps {
+  breadcrumb: Breadcrumb[];
+}
+export default function AdminNavBar({ breadcrumb }: BreadcrumbsProps) {
+  const pathname = usePathname();
   return (
     <div className="py-6 flex justify-between items-center">
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
-          {links.map((item, index) => (
+          {breadcrumb.map((item, index) => (
             <span key={index} className="flex items-center">
-              <BreadcrumbItem>
+              <BreadcrumbItem className="hover:text-accent-foreground">
                 <BreadcrumbLink asChild>
-                  <Link href="#">{item}</Link>
+                  <Link href={item.link}>{item.title}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {index < links.length - 1 && <BreadcrumbSeparator />}
+              {index < breadcrumb.length - 1 && <BreadcrumbSeparator />}
             </span>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      {/* <div className="relative ml-auto pr-4 flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Tìm kiếm..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-        />
-      </div> */}
-      <DropdownMenu>
-        <DropdownMenuTrigger className="focus:outline-none">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src="https://github.com/shadcn.png" alt="imgAvatar" />
-            <AvatarFallback className="text-black">Admin</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={10}>
-          <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link href="/profile">Hồ sơ</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/event">Sự kiện</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={async () => {
-              await signOutUser({ redirect: false });
-              window.location.href = "/dang-nhap";
-            }}
-          >
-            Đăng xuất
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+      <div className="flex gap-4 items-center">
+        {pathname === "/admin/quan-ly-the-loai-su-kien" && <CreateEventType />}
+        {pathname === "/admin/quan-ly-nguoi-dung" && <AddModerator />}
+        {pathname === "/admin/quan-ly-the-su-kien" && <CreateTag />}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="focus:outline-none">
+            <Avatar className="w-8 h-8">
+              <AvatarImage
+                src="https://github.com/shadcn.png"
+                alt="imgAvatar"
+              />
+              <AvatarFallback className="text-black">Admin</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={10}>
+            <DropdownMenuLabel>Admin</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={async () => {
+                await signOutUser({ redirect: false });
+                window.location.href = "/dang-nhap";
+              }}
+            >
+              Đăng xuất
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }
